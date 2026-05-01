@@ -8,6 +8,16 @@ export async function POST(req: NextRequest) {
       method: 'POST',
     });
     if (!result.ok) {
+      if (result.status === 401) {
+        return toRouteResponse({
+          ok: true,
+          status: 200,
+          data: {
+            message: 'Logged out successfully',
+          },
+        });
+      }
+
       return toRouteResponse(result);
     }
   } catch (error) {

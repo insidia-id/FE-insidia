@@ -22,7 +22,12 @@ export const useLogout = () => {
 
   return useMutation({
     mutationFn: async () => {
-      await logout();
+      try {
+        await logout();
+      } catch (error) {
+        console.error('LOGOUT_REQUEST_FAILED', error);
+      }
+
       return signOut({ redirect: false });
     },
     onSuccess: () => {

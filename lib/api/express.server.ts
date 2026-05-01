@@ -1,5 +1,7 @@
 import { headers } from 'next/headers';
 import { getToken } from 'next-auth/jwt';
+import { refreshAccessTokenOnce } from '@/features/auth/api/api';
+import type { AppToken } from '@/features/auth/types/auth.types';
 import { createHeaders, getJson, normalizeApiResult, type ApiResult } from './api.shared';
 
 const apiUrl = process.env.API_URL;
@@ -10,13 +12,7 @@ if (!apiUrl) {
 
 export async function apiFetchWithAuth<T = unknown>(path: string, init?: RequestInit): Promise<ApiResult<T>> {
   const requestHeaders = createHeaders(init);
-
-  const token = await getToken({
-    req: {
-      headers: Object.fromEntries((await headers()).entries()),
-    },
-    secret: process.env.BETTER_AUTH_SECRET,
-  });
+  const token = await resolveAuthToken();
   const accessToken = typeof token?.accessToken === 'string' ? token.accessToken : null;
 
   if (!accessToken) {
@@ -42,4 +38,31 @@ export async function apiFetchWithAuth<T = unknown>(path: string, init?: Request
   const payload = await getJson(response);
 
   return normalizeApiResult<T>(response, payload);
+}
+
+async function resolveAuthToken(): Promise<AppToken | null> {
+  const token = (await getToken({
+    req: {
+      headers: Object.fromEntries((await headers()).entries()),
+    },
+    secret: process.env.BETTER_AUTH_SECRET,
+  })) as AppToken | null;
+
+  if (!token?.refreshToken) {
+    return token;
+  }
+
+  const refreshTokenExpiresAt = typeof token.refreshTokenExpiresAt === 'number' ? token.refreshTokenExpiresAt : null;
+
+  if (refreshTokenExpiresAt && Date.now() >= refreshTokenExpiresAt) {
+    return token;
+  }
+
+  const accessTokenExpiresAt = typeof token.accessTokenExpiresAt === 'number' ? token.accessTokenExpiresAt : null;
+
+  if (!token.accessToken || (accessTokenExpiresAt !== null && Date.now() >= accessTokenExpiresAt - 5_000)) {
+    return refreshAccessTokenOnce(token);
+  }
+
+  return token;
 }
