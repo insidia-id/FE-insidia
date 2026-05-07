@@ -23,7 +23,7 @@ const stats = [
 
 export default async function AdminPage() {
   const session = await auth();
-
+  console.log('AdminPage session', session);
   if (!session?.user) {
     redirect('/login?callbackUrl=/admin');
   }
