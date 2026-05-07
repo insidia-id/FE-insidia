@@ -14,7 +14,7 @@ export async function apiFetchWithAuth<T = unknown>(path: string, init?: Request
   const requestHeaders = createHeaders(init);
   const token = await resolveAuthToken();
   const accessToken = typeof token?.accessToken === 'string' ? token.accessToken : null;
-  if (NODE_ENV === 'test') {
+  if (NODE_ENV !== 'development') {
     console.log('Resolved access token:', accessToken);
   }
   if (!accessToken) {
@@ -47,11 +47,15 @@ export async function apiFetchWithAuth<T = unknown>(path: string, init?: Request
 }
 
 async function resolveAuthToken(): Promise<AppToken | null> {
+  const incomingHeaders = await headers();
+  const secureCookie = incomingHeaders.get('x-forwarded-proto') === 'https' || process.env.NODE_ENV !== 'development';
+
   const token = (await getToken({
     req: {
-      headers: Object.fromEntries((await headers()).entries()),
+      headers: Object.fromEntries(incomingHeaders.entries()),
     },
     secret: process.env.BETTER_AUTH_SECRET,
+    secureCookie,
   })) as AppToken | null;
 
   if (!token?.refreshToken) {
