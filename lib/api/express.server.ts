@@ -2,7 +2,7 @@ import { headers } from 'next/headers';
 import { getToken } from 'next-auth/jwt';
 import { refreshAccessTokenOnce } from '@/features/auth/api/api';
 import type { AppToken } from '@/features/auth/types/auth.types';
-import { createHeaders, getJson, normalizeApiResult, type ApiResult } from './api.shared';
+import { buildClientError, createHeaders, getJson, unwrapData } from './api.shared';
 
 const apiUrl = process.env.API_URL;
 
@@ -10,21 +10,21 @@ if (!apiUrl) {
   throw new Error('API_URL environment variable is not defined');
 }
 
-export async function apiFetchWithAuth<T = unknown>(path: string, init?: RequestInit): Promise<ApiResult<T>> {
+export async function apiFetchWithAuth<T = unknown>(path: string, init?: RequestInit): Promise<T> {
   const requestHeaders = createHeaders(init);
   const token = await resolveAuthToken();
   const accessToken = typeof token?.accessToken === 'string' ? token.accessToken : null;
 
   if (!accessToken) {
-    return {
-      ok: false,
-      status: 401,
-      data: {
-        code: 'UNAUTHORIZED',
-        message: 'Unauthorized',
+    throw buildClientError(
+      {
+        error: {
+          code: 'UNAUTHORIZED',
+          message: 'Unauthorized',
+        },
       },
-      shouldAutoLogout: true,
-    };
+      401,
+    );
   }
 
   requestHeaders.set('Authorization', `Bearer ${accessToken}`);
@@ -37,7 +37,11 @@ export async function apiFetchWithAuth<T = unknown>(path: string, init?: Request
 
   const payload = await getJson(response);
 
-  return normalizeApiResult<T>(response, payload);
+  if (!response.ok) {
+    throw buildClientError(payload, response.status);
+  }
+
+  return unwrapData<T>(payload);
 }
 
 async function resolveAuthToken(): Promise<AppToken | null> {

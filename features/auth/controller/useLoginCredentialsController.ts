@@ -26,6 +26,12 @@ export function useLoginEmailController() {
   const onSubmit = (values: LoginEmailInput) => {
     requestOtpMutation.mutate(values, {
       onSuccess: (data) => {
+        if (!data?.token) {
+          form.setError('email', {
+            message: 'Email Sudah DiBlokir, Silakan coba email lain atau hubungi dukungan.',
+          });
+          return;
+        }
         const query = new URLSearchParams({
           callbackUrl,
           token: data.token,

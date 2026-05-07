@@ -1,17 +1,17 @@
-import { apiFetchInternal, apiFetchInternalData } from '@/lib/api/express.client';
+import { apiFetchInternal } from '@/lib/api/express.client';
 import { VerifyAuthOtpInput } from '../schema/auth.schema';
 import { AppAuthResponse, AppToken, GoogleExchangePayload, RefreshResponse } from '../types/auth.types';
 import { clearAuthToken, getInternalAuthToken } from '../auth.utils';
 const apiUrl = process.env.API_URL;
 
 export const verifyAuthOtp = (data: VerifyAuthOtpInput) => {
-  return apiFetchInternalData<AppAuthResponse>(`${apiUrl}/auth/verify-otp`, {
+  return apiFetchInternal<AppAuthResponse>(`${apiUrl}/auth/verify-otp`, {
     method: 'POST',
     body: JSON.stringify(data),
   });
 };
 export function exchangeGoogleLogin(data: GoogleExchangePayload) {
-  return apiFetchInternalData<AppAuthResponse>(`${apiUrl}/auth/google/exchange`, {
+  return apiFetchInternal<AppAuthResponse>(`${apiUrl}/auth/google/exchange`, {
     method: 'POST',
     headers: {
       'x-internal-token': getInternalAuthToken(),
@@ -25,29 +25,15 @@ export async function refreshAccessToken(token: AppToken): Promise<AppToken> {
   }
 
   try {
-    const result = await apiFetchInternal<RefreshResponse>(`${apiUrl}/auth/refresh`, {
+    const result = await apiFetchInternal(`${apiUrl}/auth/refresh`, {
       method: 'POST',
       body: JSON.stringify({
         refreshToken: token.refreshToken,
       }),
     });
 
-    if (!result.ok) {
-      if (result.status === 401) {
-        return clearAuthToken(token, 'SessionExpired');
-      }
-
-      return {
-        ...token,
-        accessToken: undefined,
-        error: 'RefreshAccessTokenError',
-      };
-    }
-
-    const data = result.data.data ?? result.data;
-
+    const data = result as RefreshResponse;
     if (!data?.accessToken || !data.accessTokenExpiresInSeconds) {
-      console.error('Invalid refresh payload:', result);
       return {
         ...token,
         accessToken: undefined,
@@ -65,7 +51,16 @@ export async function refreshAccessToken(token: AppToken): Promise<AppToken> {
       error: undefined,
     };
   } catch (error) {
-    console.error('Refresh access token exception:', error);
+    const apiError = error as {
+      status?: number;
+      code?: string;
+      message?: string;
+    };
+
+    if (apiError.status === 401) {
+      return clearAuthToken(token, 'SessionExpired');
+    }
+
     return {
       ...token,
       accessToken: undefined,
@@ -95,7 +90,7 @@ export async function refreshAccessTokenOnce(token: AppToken): Promise<AppToken>
   return promise;
 }
 export async function logout() {
-  return apiFetchInternalData(`/api/auth/logout`, {
+  return apiFetchInternal(`/api/auth/logout`, {
     method: 'POST',
   });
 }

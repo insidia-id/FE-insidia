@@ -1,20 +1,18 @@
 import { NextResponse } from 'next/server';
 
 type RouteResult<T = unknown> = {
-  ok: boolean;
-  status: number;
   data: T;
-  shouldAutoLogout?: boolean;
+  meta?: unknown;
 };
 
-type ErrorOptions = {
-  code?: string | null;
-  shouldAutoLogout?: boolean;
+export type ErrorOptions = {
+  code?: string;
   status?: number;
+  message: string;
 };
 
-export function toRouteResponse<T>(result: RouteResult<T>) {
-  return NextResponse.json(result, { status: result.status });
+export function toRouteResponse<T>(result: RouteResult<T>, status = 200) {
+  return NextResponse.json(result, { status });
 }
 
 export function toRouteError(message: string, options?: ErrorOptions) {
@@ -22,14 +20,28 @@ export function toRouteError(message: string, options?: ErrorOptions) {
 
   return NextResponse.json(
     {
-      ok: false,
-      status,
-      data: {
-        code: options?.code ?? (status >= 500 ? 'INTERNAL_SERVER_ERROR' : null),
+      error: {
+        code: options?.code ?? mapStatusToCode(status),
         message,
       },
-      shouldAutoLogout: options?.shouldAutoLogout ?? false,
     },
     { status },
   );
+}
+
+function mapStatusToCode(status: number) {
+  switch (status) {
+    case 400:
+      return 'BAD_REQUEST';
+    case 401:
+      return 'UNAUTHORIZED';
+    case 403:
+      return 'FORBIDDEN';
+    case 404:
+      return 'NOT_FOUND';
+    case 409:
+      return 'CONFLICT';
+    default:
+      return 'INTERNAL_SERVER_ERROR';
+  }
 }

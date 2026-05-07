@@ -7,7 +7,6 @@ import Link from 'next/link';
 import { LogIn } from 'lucide-react';
 import type { ComponentType } from 'react';
 import { useLogout } from '@/features/auth/hooks/useauth';
-import { is } from 'zod/v4/locales';
 type NavbarItem = {
   href: string;
   label: string;
