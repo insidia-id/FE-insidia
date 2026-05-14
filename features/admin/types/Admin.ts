@@ -1,6 +1,4 @@
-import type { LucideIcon } from 'lucide-react';
-
-import { type IconName } from '../components/AppsidebarAdmin';
+import type { IconName } from '../components/sidebar-icons';
 export type SubmenuItem = {
   title: string;
   href: string;
@@ -28,6 +26,5 @@ export type SidebarUser = {
 export type AppSidebarProps = {
   menuItems: MenuItem[];
   user: SidebarUser;
-  iconMap: Record<IconName, LucideIcon>;
   onLogout?: () => void;
 };

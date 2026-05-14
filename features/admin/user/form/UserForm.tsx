@@ -8,7 +8,7 @@ import { readErrorMessage } from '@/lib/form/form.helper';
 import { SocialLinks, StatusUser } from '../types/user.types';
 import { RoleUser } from '../types/user.types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { USER_ROLE_OPTIONS, USER_STATUS_OPTIONS } from '../components/HelperUser';
+import { getAssignableRoleOptions, USER_STATUS_OPTIONS, getScopeByRole } from '../components/HelperUser';
 
 type BaseUserFormShape = {
   email?: string;
@@ -21,6 +21,7 @@ type BaseUserFormShape = {
 
 type UserFormFieldsProps<TFieldValues extends FieldValues & BaseUserFormShape> = {
   form: UseFormReturn<TFieldValues, unknown, TFieldValues>;
+  currentUserRole?: string | null;
   isLoading: boolean;
   onCancel: () => void;
   onSubmit: SubmitHandler<TFieldValues>;
@@ -28,17 +29,18 @@ type UserFormFieldsProps<TFieldValues extends FieldValues & BaseUserFormShape> =
   mode: 'create' | 'update';
   children?: ReactNode;
 };
-export function UserFormFields<TFieldValues extends FieldValues & BaseUserFormShape>({ form, isLoading, onCancel, onSubmit, submitLabel, mode, children }: UserFormFieldsProps<TFieldValues>) {
+export function UserFormFields<TFieldValues extends FieldValues & BaseUserFormShape>({ form, currentUserRole, isLoading, onCancel, onSubmit, submitLabel, mode, children }: UserFormFieldsProps<TFieldValues>) {
   const isUpdateMode = mode === 'update';
+  const assignableRoleOptions = getAssignableRoleOptions(currentUserRole);
 
   return (
     <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
       <div className="grid gap-4 md:grid-cols-2">
-        <TextField id="user-email" label="Email" type="email" placeholder="Contoh: john.doe@example.com" error={readErrorMessage(form.formState.errors, 'email')} disabled={isLoading} {...form.register('email' as Path<TFieldValues>)} />
+        <TextField id="user-email" label="Email" type="email" placeholder="insidia@insidia.id" error={readErrorMessage(form.formState.errors, 'email')} disabled={isLoading} {...form.register('email' as Path<TFieldValues>)} />
 
-        <TextField id="user-name" label="Nama" placeholder="Contoh: John Doe" error={readErrorMessage(form.formState.errors, 'name')} disabled={isLoading} {...form.register('name' as Path<TFieldValues>)} />
+        <TextField id="user-name" label="Nama" placeholder="Kafka" error={readErrorMessage(form.formState.errors, 'name')} disabled={isLoading} {...form.register('name' as Path<TFieldValues>)} />
 
-        <TextField id="user-phone" label="Telepon" placeholder="Contoh: 081234567890" error={readErrorMessage(form.formState.errors, 'phone')} disabled={isLoading} {...form.register('phone' as Path<TFieldValues>)} />
+        <TextField id="user-phone" label="Telepon" placeholder="081234567890" error={readErrorMessage(form.formState.errors, 'phone')} disabled={isLoading} {...form.register('phone' as Path<TFieldValues>)} />
 
         <div className="space-y-2">
           <Label>Role User</Label>
@@ -47,21 +49,23 @@ export function UserFormFields<TFieldValues extends FieldValues & BaseUserFormSh
             name={'role' as Path<TFieldValues>}
             render={({ field }) => {
               const value = field.value as RoleUser | undefined;
+              const selectedValue = assignableRoleOptions.some((option) => option.value === value) ? value : undefined;
 
               return (
                 <Select
-                  disabled={isLoading}
+                  disabled={isLoading || assignableRoleOptions.length === 0}
                   onValueChange={(nextValue) => {
                     if (!nextValue) return;
                     field.onChange(nextValue);
+                    form.setValue('scope' as Path<TFieldValues>, getScopeByRole(nextValue) as TFieldValues[Path<TFieldValues>], { shouldDirty: true, shouldTouch: true });
                   }}
-                  value={value ?? undefined}
+                  value={selectedValue}
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Pilih role user" />
                   </SelectTrigger>
                   <SelectContent>
-                    {USER_ROLE_OPTIONS.map((option) => (
+                    {assignableRoleOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
                       </SelectItem>
@@ -73,6 +77,7 @@ export function UserFormFields<TFieldValues extends FieldValues & BaseUserFormSh
           />
           {readErrorMessage(form.formState.errors, 'role') && <p className="text-sm text-destructive">{readErrorMessage(form.formState.errors, 'role')}</p>}
         </div>
+        <TextField id="user-scope" label="Scope" placeholder="Scope" error={readErrorMessage(form.formState.errors, 'scope')} readOnly className="bg-muted" {...form.register('scope' as Path<TFieldValues>)} />
 
         <div className="space-y-2">
           <Label>Status User</Label>
@@ -109,8 +114,6 @@ export function UserFormFields<TFieldValues extends FieldValues & BaseUserFormSh
       </div>
       {isUpdateMode && (
         <div className="grid gap-4 md:grid-cols-2">
-          <TextField id="user-headline" label="Headline" placeholder="Contoh: Mentor Frontend" error={readErrorMessage(form.formState.errors, 'headline')} disabled={isLoading} {...form.register('headline' as Path<TFieldValues>)} />
-
           <TextField
             id="user-website-url"
             label="Website URL"

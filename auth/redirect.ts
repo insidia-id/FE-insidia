@@ -17,11 +17,14 @@ export function getSafeCallbackPath(callbackUrl?: string | null) {
     return DEFAULT_LOGIN_CALLBACK_URL;
   }
 }
+const adminAllowedRoles = new Set(['SUPER_ADMIN', 'ADMIN', 'MENTOR']);
 
 export function getRoleLandingPath(role?: string | null) {
-  if (role?.toUpperCase() === 'ADMIN') {
-    return '/admin';
+  const normalizedRole = role?.toUpperCase();
+
+  if (!normalizedRole) {
+    return '/';
   }
 
-  return '/';
+  return adminAllowedRoles.has(normalizedRole) ? '/admin' : '/';
 }

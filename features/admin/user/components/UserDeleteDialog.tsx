@@ -2,9 +2,11 @@
 
 import { ConfirmDeleteDialog } from '@/components/dialog/DialogDelete';
 import { useDeleteUser } from '../hooks/useUser';
+import type { UserScope } from '../types/user.types';
 
 type UserDeleteDialogProps = {
   userId: string | null;
+  scope?: UserScope;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
@@ -13,6 +15,7 @@ type UserDeleteDialogProps = {
 
 export function UserDeleteDialog({
   userId,
+  scope = 'PLATFORM',
   open,
   onOpenChange,
   onSuccess,
@@ -31,7 +34,7 @@ export function UserDeleteDialog({
           return;
         }
 
-        deleteUserMutation.mutate(userId, {
+        deleteUserMutation.mutate({ userId, scope }, {
           onSuccess: () => {
             onOpenChange(false);
             onSuccess?.();

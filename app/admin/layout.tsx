@@ -1,20 +1,15 @@
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
-// import { getUserProfile } from '@/features/account/profile/api/api';
 import { AppSidebarAdmin } from '@/features/admin/components/AppsidebarAdmin';
 import NavbarAdmin from '@/features/admin/components/NavbarAdmin';
-// import NavbarSeller from '@/features/seller/components/NavbarSeller';
 import { auth } from '@/auth/auth.config';
-import { UserProfile } from '../(public)/layout';
-
+import { UserProfile } from '@/features/admin/user/types/user.types';
 export const metadata = {
-  title: 'Dashboard Penjual - Ummang Food',
-  description: 'Kelola produk, pesanan, dan profil penjual Anda di dashboard penjual Ummang Food.',
+  title: 'Dashboard Admin - LmsInsidia',
+  description: 'Dashboard admin untuk LmsInsidia.',
 };
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
-  //   const userProfile = await getUserProfile();
   const session = await auth();
-
   const userProfile: UserProfile | null = session?.user
     ? {
         id: session.user.id,
@@ -27,7 +22,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
   return (
     <SidebarProvider>
       <div className="flex">
-        <AppSidebarAdmin />
+        <AppSidebarAdmin userProfile={userProfile} />
       </div>
       <SidebarInset className="min-w-0 overflow-x-hidden transition-all duration-300 ease-in-out">
         <div className="fixed top-0 left-0 right-0 z-50">

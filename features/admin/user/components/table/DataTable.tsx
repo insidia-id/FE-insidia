@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { User } from '../../types/user.types';
 import { useReactTable, getCoreRowModel, getFilteredRowModel, getSortedRowModel, SortingState, ColumnFiltersState, ColumnDef } from '@tanstack/react-table';
+import { getUserRole } from '../HelperUser';
 type UserTableProps = {
   users: User[];
   columns: ColumnDef<User>[];
@@ -29,7 +30,7 @@ export const DataTable = ({ users, columns, globalFilter, setGlobalFilter }: Use
       }
 
       const user = row.original;
-      return [user.name, user.email, user.role, user.status].filter(Boolean).some((value) => String(value).toLowerCase().includes(keyword));
+      return [user.name, user.email, getUserRole(user), user.status].filter(Boolean).some((value) => String(value).toLowerCase().includes(keyword));
     },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),

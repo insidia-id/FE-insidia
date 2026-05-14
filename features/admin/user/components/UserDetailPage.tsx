@@ -9,18 +9,19 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGetUserById } from '../hooks/useUser';
-import { formatDateTime, formatRole, getStatusVariant, formatStatus, formatBooleanLabel } from './HelperUser';
+import { formatDateTime, formatRole, getStatusVariant, formatStatus, formatBooleanLabel, getUserRole } from './HelperUser';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { UserDeleteDialog } from './UserDeleteDialog';
 
 type UserDetailPageProps = {
   userId: string;
+  scope?: 'PLATFORM' | 'MITRA';
 };
 
-export function UserDetailPage({ userId }: UserDetailPageProps) {
+export function UserDetailPage({ userId, scope = 'PLATFORM' }: UserDetailPageProps) {
   const router = useRouter();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const { data: user, isLoading, isError, error } = useGetUserById(userId);
+  const { data: user, isLoading, isError, error } = useGetUserById(userId, scope);
   const socialLinks = user?.socialLinks
     ? [
         { key: 'instagram', label: 'Instagram', href: user.socialLinks.instagram },
@@ -103,7 +104,7 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
                       <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">User ID</p>
                       <p className="font-mono text-sm text-foreground">{user.id}</p>
                       <h2 className="text-2xl font-semibold text-foreground">{user.name || 'Tanpa nama'}</h2>
-                      <p className="text-sm text-muted-foreground">{user.headline || 'Belum ada headline profil'}</p>
+                      <p className="text-sm text-muted-foreground">{user.bio || 'Belum ada bio profil'}</p>
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <Badge className="h-7 px-3 text-sm" variant={getStatusVariant(user.status)}>
@@ -139,7 +140,7 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
                         <ShieldCheck className="size-4" />
                         <p className="font-medium">Role</p>
                       </div>
-                      <p className="text-sm text-muted-foreground">{formatRole(user.role)}</p>
+                      <p className="text-sm text-muted-foreground">{formatRole(getUserRole(user))}</p>
                     </div>
 
                     <div className="rounded-xl border p-5">
@@ -223,6 +224,7 @@ export function UserDetailPage({ userId }: UserDetailPageProps) {
 
       <UserDeleteDialog
         userId={userId}
+        scope={scope}
         open={isDeleteOpen}
         onOpenChange={setIsDeleteOpen}
         onSuccess={() => {

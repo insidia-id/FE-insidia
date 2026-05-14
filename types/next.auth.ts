@@ -8,6 +8,7 @@ declare module 'next-auth' {
     email: string;
     name: string | null;
     role: string;
+    permissions: string[];
     image: string | null;
     accessToken?: string;
     refreshToken?: string;

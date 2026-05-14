@@ -7,7 +7,8 @@ const defaultValues: CreateUserInput = {
   email: '',
   name: '',
   phone: '',
-  role: 'USER_BIASA',
+  role: 'USER',
+  scope: 'PLATFORM',
   status: 'ACTIVE',
 };
 
@@ -20,6 +21,7 @@ export const CreateUserController = () => {
   const isSubmitting = createUserMutation.isPending;
 
   const onSubmit = (data: CreateUserInput) => {
+    console.log('Creating user with data:', data);
     createUserMutation.mutate(data, {
       onSuccess: () => {
         form.reset(defaultValues);

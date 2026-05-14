@@ -6,7 +6,11 @@ import { CreateUserController } from '../controller/CreateUserController';
 import { UserFormFields } from '../form/UserForm';
 import { CreateUserInput } from '../schema/user.schema';
 
-export function CreateUserPage() {
+type CreateUserPageProps = {
+  currentUserRole?: string | null;
+};
+
+export function CreateUserPage({ currentUserRole }: CreateUserPageProps) {
   const router = useRouter();
   const { form, isSubmitting, onSubmit } = CreateUserController();
 
@@ -27,6 +31,7 @@ export function CreateUserPage() {
           <CardContent>
             <UserFormFields<CreateUserInput>
               form={form}
+              currentUserRole={currentUserRole}
               isLoading={isSubmitting}
               mode="create"
               onCancel={() => {

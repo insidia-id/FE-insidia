@@ -9,6 +9,7 @@ export function toAppUser(user: AppAuthResponse['user']): AppUser {
     email: user.email,
     name: user.name ?? null,
     role: user.role,
+    permissions: user.permissions ?? [],
     image: user.image ?? null,
   };
 }
@@ -31,6 +32,7 @@ export function mergeTokenWithUser(token: AppToken, user: User): AppToken {
       email: user.email,
       name: user.name ?? null,
       role: user.role,
+      permissions: user.permissions ?? [],
       image: user.image ?? null,
     },
     accessToken: user.accessToken,

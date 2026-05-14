@@ -5,15 +5,7 @@ export const metadata = {
   title: 'Insidia - Marketplace untuk kebutuhan gaming kamu',
   description: 'Temukan berbagai produk gaming terbaik di Insidia, marketplace yang didedikasikan untuk para gamer. Dapatkan penawaran menarik dan layanan terbaik untuk kebutuhan gaming kamu.',
 };
-
-export type UserProfile = {
-  id: string;
-  name: string | null;
-  image: string | null;
-  email?: string | null;
-  role?: string | null;
-};
-
+import { UserProfile } from '@/features/admin/user/types/user.types';
 export default async function PublicLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
 

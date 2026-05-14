@@ -29,10 +29,16 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const filter = searchParams.get('filter');
+    const scope = searchParams.get('scope');
     const params = new URLSearchParams();
+
     if (filter) {
       params.set('filter', filter);
     }
+    if (scope) {
+      params.set('scope', scope);
+    }
+
     const data = await apiFetchWithAuth(`/admin/user?${params.toString()}`, {
       method: 'GET',
     });

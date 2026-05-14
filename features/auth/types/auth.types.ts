@@ -5,6 +5,7 @@ export type AppUser = {
   email: string;
   name: string | null;
   role: string;
+  permissions: string[];
   image: string | null;
 };
 

@@ -4,16 +4,18 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useGetUserById, useUpdateUser } from '../hooks/useUser';
 import { UpdateUserInput, updateUserSchema } from '../schema/user.schema';
+import type { UserScope } from '../types/user.types';
+import { getUserRole, getUserScope } from '../components/HelperUser';
 
 const defaultValues: UpdateUserInput = {
   id: '',
   email: '',
   name: '',
   phone: '',
-  role: 'USER_BIASA',
+  role: 'USER',
+  scope: 'PLATFORM',
   status: 'ACTIVE',
   bio: '',
-  headline: '',
   websiteUrl: '',
   socialLinks: {
     instagram: '',
@@ -22,7 +24,7 @@ const defaultValues: UpdateUserInput = {
   },
 };
 
-export function UpdateUserController(userId: string) {
+export function UpdateUserController(userId: string, scope: UserScope = 'PLATFORM') {
   const form = useForm<UpdateUserInput>({
     resolver: zodResolver(updateUserSchema) as Resolver<UpdateUserInput>,
     defaultValues: {
@@ -31,7 +33,7 @@ export function UpdateUserController(userId: string) {
     },
   });
 
-  const { data: user, isLoading, isError, error } = useGetUserById(userId);
+  const { data: user, isLoading, isError, error } = useGetUserById(userId, scope);
   const updateUserMutation = useUpdateUser();
   useEffect(() => {
     if (!user) return;
@@ -41,10 +43,10 @@ export function UpdateUserController(userId: string) {
       email: user.email,
       name: user.name ?? '',
       phone: user.phone ?? '',
-      role: user.role,
+      role: getUserRole(user),
+      scope: getUserScope(user),
       status: user.status,
       bio: user.bio ?? '',
-      headline: user.headline ?? '',
       websiteUrl: user.websiteUrl ?? '',
       socialLinks: {
         instagram: user.socialLinks?.instagram ?? '',
@@ -69,10 +71,10 @@ export function UpdateUserController(userId: string) {
             email: updatedUser.email,
             name: updatedUser.name ?? '',
             phone: updatedUser.phone ?? '',
-            role: updatedUser.role,
+            role: getUserRole(updatedUser),
+            scope: getUserScope(updatedUser),
             status: updatedUser.status,
             bio: updatedUser.bio ?? '',
-            headline: updatedUser.headline ?? '',
             websiteUrl: updatedUser.websiteUrl ?? '',
             socialLinks: {
               instagram: updatedUser.socialLinks?.instagram ?? '',

@@ -23,13 +23,14 @@ const stats = [
 
 export default async function AdminPage() {
   const session = await auth();
-  console.log('AdminPage session', session);
   if (!session?.user) {
     redirect('/login?callbackUrl=/admin');
   }
 
-  if (session.user.role?.toUpperCase() !== 'ADMIN') {
-    redirect(getRoleLandingPath(session.user.role));
+  const landingPath = getRoleLandingPath(session.user.role);
+
+  if (landingPath !== '/admin') {
+    redirect(landingPath);
   }
 
   return (

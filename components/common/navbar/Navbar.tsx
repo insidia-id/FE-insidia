@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ShoppingCart, User, Menu, Heart, Package, Store, Bell, LayoutDashboard, Settings, LogOut, BookOpen, Award, Info } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -18,29 +17,32 @@ type UserProfile = {
   email?: string | null;
   role?: string | null;
 };
+
+const navLinks = [
+  { href: '/auth-redirect', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/bootcamps', label: 'Learning Path', icon: BookOpen },
+  { href: '/courses', label: 'Courses', icon: Award },
+  { href: '/about', label: 'Tentang', icon: Info },
+];
+
+const navUser = [
+  { href: '/profile', label: 'Profil Saya', icon: User },
+  {
+    href: '/auth-redirect',
+    label: 'Dashboard',
+    icon: LayoutDashboard,
+    roles: ['SUPER_ADMIN'],
+  },
+  { href: '/orders', label: 'Pesanan Saya', icon: Package },
+  { href: '/address', label: 'Alamat Saya', icon: Store },
+  { href: '/settings', label: 'Pengaturan', icon: Settings },
+];
+
+const navActions = [{ label: 'Keluar', icon: LogOut, action: 'logout' }];
+
 const Navbar = ({ userProfile }: { userProfile: UserProfile | null }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-  const navLinks = [
-    { href: '/auth-redirect', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/bootcamps', label: 'Learning Path', icon: BookOpen },
-    { href: '/courses', label: 'Courses', icon: Award },
-    { href: '/about', label: 'Tentang', icon: Info },
-  ];
-
-  const navUser = [
-    { href: '/profile', label: 'Profil Saya', icon: User },
-    {
-      href: '/auth-redirect',
-      label: 'Dashboard',
-      icon: LayoutDashboard,
-      roles: ['ADMIN', 'SELLER'],
-    },
-    { href: '/orders', label: 'Pesanan Saya', icon: Package },
-    { href: '/address', label: 'Alamat Saya', icon: Store },
-    { href: '/settings', label: 'Pengaturan', icon: Settings },
-  ];
-  const navActions = [{ label: 'Keluar', icon: LogOut, action: 'logout' }];
   return (
     <>
       <TopNavAudience />
@@ -113,13 +115,11 @@ const Navbar = ({ userProfile }: { userProfile: UserProfile | null }) => {
             </div>
           </div>
 
-          <AnimatePresence>
-            {isSearchOpen && (
-              <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="pb-4 md:hidden">
-                <Input placeholder="Cari..." />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {isSearchOpen && (
+            <div className="pb-4 md:hidden">
+              <Input placeholder="Cari..." />
+            </div>
+          )}
         </nav>
       </header>
     </>

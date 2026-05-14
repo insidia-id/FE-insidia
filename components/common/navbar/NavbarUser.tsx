@@ -28,6 +28,7 @@ type UserProfile = {
 };
 
 export const NavbarUser = ({ userProfile, navItems, navActions }: { userProfile: UserProfile | null; navItems?: NavbarItem[]; navActions?: NavbarAction[] }) => {
+  const { mutate: logout, isPending } = useLogout();
   const displayName = userProfile?.name ?? 'User';
   const displayImage = userProfile?.image ?? '';
 
@@ -41,7 +42,6 @@ export const NavbarUser = ({ userProfile, navItems, navActions }: { userProfile:
       </Link>
     );
   }
-  const { mutate: logout, isPending } = useLogout();
   const filteredNav = navItems?.filter((item) => {
     if (!item.roles) return true;
     return item.roles.includes(userProfile.role ?? '');

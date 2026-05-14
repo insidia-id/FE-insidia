@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
-export default function ForbiddenPage() {
+export default async function ForbiddenPage() {
   return (
     <main className="min-h-screen bg-[#F6F6F8] px-4 py-12">
       <div className="mx-auto max-w-xl">

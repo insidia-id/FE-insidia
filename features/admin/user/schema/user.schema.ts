@@ -1,6 +1,5 @@
 import { z } from 'zod';
-
-export const userRoleValues = ['ADMIN', 'ADMIN_MENTOR', 'ADMIN_AKADEMIK', 'MENTOR', 'AKADEMIK', 'GURU', 'MURID', 'WALI_MURID', 'USER_BIASA'] as const;
+export const userRoleValues = ['SUPER_ADMIN', 'ADMIN', 'MENTOR', 'USER', 'AKADEMIK'] as const;
 
 export const userStatusValues = ['ACTIVE', 'SUSPENDED', 'BANNED'] as const;
 
@@ -40,6 +39,7 @@ export const createUserSchema = z.object({
   name: optionalNullableStringSchema,
   phone: optionalNullableStringSchema,
   role: z.enum(userRoleValues),
+  scope: z.enum(['PLATFORM', 'MITRA']).default('PLATFORM'),
   status: z.enum(userStatusValues),
 });
 
@@ -52,8 +52,8 @@ export type UpdateUserSocialLinksInput = {
 
 export const updateUserSchema = createUserSchema.partial().extend({
   id: z.string(),
+  scope: z.enum(['PLATFORM', 'MITRA']).default('PLATFORM'),
   bio: optionalNullableStringSchema,
-  headline: optionalNullableStringSchema,
   websiteUrl: optionalNullableStringSchema,
   socialLinks: socialLinksSchema,
 });
@@ -63,9 +63,9 @@ export type UpdateUserInput = {
   name?: string | null;
   phone?: string | null;
   role?: (typeof userRoleValues)[number];
+  scope: 'PLATFORM' | 'MITRA';
   status?: (typeof userStatusValues)[number];
   bio: string | null;
-  headline: string | null;
   websiteUrl: string | null;
   socialLinks?: UpdateUserSocialLinksInput;
 };

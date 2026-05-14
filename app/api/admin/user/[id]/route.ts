@@ -9,8 +9,11 @@ type RouteContext = {
 export async function GET(req: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params;
+    const { searchParams } = new URL(req.url);
+    const scope = searchParams.get('scope');
+    const queryString = scope ? `?scope=${scope}` : '';
 
-    const data = await apiFetchWithAuth(`/admin/user/${id}`, {
+    const data = await apiFetchWithAuth(`/admin/user/${id}${queryString}`, {
       method: 'GET',
     });
     return toRouteResponse({ data });
@@ -53,7 +56,11 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
 export async function DELETE(req: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params;
-    await apiFetchWithAuth(`/admin/user/${id}`, {
+    const { searchParams } = new URL(req.url);
+    const scope = searchParams.get('scope');
+    const queryString = scope ? `?scope=${scope}` : '';
+
+    await apiFetchWithAuth(`/admin/user/${id}${queryString}`, {
       method: 'DELETE',
     });
     return toRouteResponse({ data: null });

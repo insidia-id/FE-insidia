@@ -8,12 +8,14 @@ import { UserFormFields } from '../form/UserForm';
 import { UpdateUserInput } from '../schema/user.schema';
 
 type UpdateUserPageProps = {
+  currentUserRole?: string | null;
   userId: string;
+  scope?: 'PLATFORM' | 'MITRA';
 };
 
-export function UpdateUserPage({ userId }: UpdateUserPageProps) {
+export function UpdateUserPage({ userId, currentUserRole, scope = 'PLATFORM' }: UpdateUserPageProps) {
   const router = useRouter();
-  const { form, user, isLoading, isError, error, isSubmitting, onSubmit } = UpdateUserController(userId);
+  const { form, user, isLoading, isError, error, isSubmitting, onSubmit } = UpdateUserController(userId, scope);
 
   return (
     <main className="min-h-screen bg-muted/30 px-4 py-10">
@@ -42,14 +44,15 @@ export function UpdateUserPage({ userId }: UpdateUserPageProps) {
             ) : (
               <UserFormFields<UpdateUserInput>
                 form={form}
+                currentUserRole={currentUserRole}
                 isLoading={isSubmitting}
                 mode="update"
                 onCancel={() => {
-                  router.push(`/admin/users/${userId}`);
+                  router.push(`/admin/users/${userId}?scope=${scope}`);
                 }}
                 onSubmit={(data) => {
                   onSubmit(data, (updatedUserId) => {
-                    router.push(`/admin/users/${updatedUserId}`);
+                    router.push(`/admin/users/${updatedUserId}?scope=${scope}`);
                   });
                 }}
                 submitLabel="Simpan Perubahan"

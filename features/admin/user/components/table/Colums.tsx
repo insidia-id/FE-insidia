@@ -6,10 +6,13 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useUpdateUser } from '../../hooks/useUser';
-import { formatDateTime, getStatusVariant, formatStatus, USER_ROLE_OPTIONS, USER_STATUS_OPTIONS } from '../HelperUser';
+import { canManageRole, formatDateTime, getAssignableRoleOptions, getScopeByRole, getStatusVariant, formatStatus, getUserRole, getUserScope, USER_ROLE_OPTIONS, USER_STATUS_OPTIONS } from '../HelperUser';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-function RoleSelectCell({ user, onChange, isLoading }: { user: User; onChange: (role: RoleUser) => void; isLoading: boolean }) {
-  const currentRoleLabel = USER_ROLE_OPTIONS.find((option) => option.value === user.role)?.label ?? user.role;
+function RoleSelectCell({ currentUserRole, user, onChange, isLoading }: { currentUserRole?: string | null; user: User; onChange: (role: RoleUser) => void; isLoading: boolean }) {
+  const currentRole = getUserRole(user);
+  const currentRoleLabel = USER_ROLE_OPTIONS.find((option) => option.value === currentRole)?.label ?? currentRole;
+  const assignableRoleOptions = getAssignableRoleOptions(currentUserRole);
+  const canManageCurrentRole = canManageRole(currentUserRole, currentRole);
 
   return (
     <div className="flex items-center gap-2">
@@ -17,15 +20,15 @@ function RoleSelectCell({ user, onChange, isLoading }: { user: User; onChange: (
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="size-8" disabled={isLoading}>
+          <Button variant="ghost" size="icon" className="size-8" disabled={isLoading || !canManageCurrentRole || assignableRoleOptions.length === 0}>
             <MoreVertical className="size-4" />
             <span className="sr-only">Buka menu role</span>
           </Button>
         </DropdownMenuTrigger>
 
         <DropdownMenuContent align="end" className="w-48">
-          {USER_ROLE_OPTIONS.map((option) => (
-            <DropdownMenuItem key={option.value} onClick={() => onChange(option.value)} className={option.value === user.role ? 'font-semibold' : ''}>
+          {assignableRoleOptions.map((option) => (
+            <DropdownMenuItem key={option.value} onClick={() => onChange(option.value)} className={option.value === currentRole ? 'font-semibold' : ''}>
               {option.label}
             </DropdownMenuItem>
           ))}
@@ -60,10 +63,12 @@ function StatusSelectCell({ user, onChange, isLoading }: { user: User; onChange:
   );
 }
 type UseUserColumnsProps = {
+  currentUserRole?: string | null;
   setSelectedUserId: (id: string | null) => void;
+  setSelectedUserScope: (scope: 'PLATFORM' | 'MITRA') => void;
   setIsDeleteOpen: (open: boolean) => void;
 };
-export const useUserColumns = ({ setSelectedUserId, setIsDeleteOpen }: UseUserColumnsProps) => {
+export const useUserColumns = ({ currentUserRole, setSelectedUserId, setSelectedUserScope, setIsDeleteOpen }: UseUserColumnsProps) => {
   const updateUserMutation = useUpdateUser();
 
   return useMemo<ColumnDef<User>[]>(
@@ -89,14 +94,16 @@ export const useUserColumns = ({ setSelectedUserId, setIsDeleteOpen }: UseUserCo
       },
 
       {
-        accessorKey: 'role',
+        id: 'role',
+        accessorFn: (user) => getUserRole(user),
         cell: ({ row }) => (
           <RoleSelectCell
+            currentUserRole={currentUserRole}
             user={row.original}
             onChange={(role) =>
               updateUserMutation.mutate({
                 userId: row.original.id,
-                data: { role },
+                data: { role, scope: getScopeByRole(role) },
               })
             }
             isLoading={updateUserMutation.isPending}
@@ -149,28 +156,31 @@ export const useUserColumns = ({ setSelectedUserId, setIsDeleteOpen }: UseUserCo
 
                 <DropdownMenuContent align="end" className="w-40">
                   <DropdownMenuItem asChild>
-                    <Link href={`/admin/users/${user.id}`} className="flex items-center gap-2">
+                    <Link href={`/admin/users/${user.id}?scope=${getUserScope(user)}`} className="flex items-center gap-2">
                       <Eye className="size-4" />
                       Detail
                     </Link>
                   </DropdownMenuItem>
 
                   <DropdownMenuItem asChild>
-                    <Link href={`/admin/users/${user.id}/edit`} className="flex items-center gap-2">
+                    <Link href={`/admin/users/${user.id}/edit?scope=${getUserScope(user)}`} className="flex items-center gap-2">
                       <Pencil className="size-4" />
                       Edit
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setSelectedUserId(user.id);
-                      setIsDeleteOpen(true);
-                    }}
-                    className="text-destructive"
-                  >
-                    <Trash2 className="size-4" />
-                    Hapus User
-                  </DropdownMenuItem>
+                  {user.deletedAt === null && (
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setSelectedUserId(user.id);
+                        setSelectedUserScope(getUserScope(user));
+                        setIsDeleteOpen(true);
+                      }}
+                      className="text-destructive"
+                    >
+                      <Trash2 className="size-4" />
+                      Hapus User
+                    </DropdownMenuItem>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -178,6 +188,6 @@ export const useUserColumns = ({ setSelectedUserId, setIsDeleteOpen }: UseUserCo
         },
       },
     ],
-    [setIsDeleteOpen, setSelectedUserId, updateUserMutation],
+    [currentUserRole, setIsDeleteOpen, setSelectedUserId, setSelectedUserScope, updateUserMutation],
   );
 };

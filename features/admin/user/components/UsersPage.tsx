@@ -6,12 +6,21 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useGetUsers } from '../hooks/useUser';
 import { UserTable } from './table/UserTable';
 import { useState } from 'react';
-import type { UserFilter } from '../types/user.types';
+import type { UserFilter, UserScope } from '../types/user.types';
+import { filterUsersByManageableRoles } from './HelperUser';
 
 export type SetUserFilter = Dispatch<SetStateAction<UserFilter>>;
-export function UsersPage() {
-  const [filter, setFilter] = useState<UserFilter>('active');
-  const { data: users = [], isLoading, isError, error } = useGetUsers(filter);
+export type SetUserScope = Dispatch<SetStateAction<UserScope>>;
+
+type UsersPageProps = {
+  currentUserRole?: string | null;
+};
+
+export function UsersPage({ currentUserRole }: UsersPageProps) {
+  const [filter, setFilter] = useState<UserFilter>('available');
+  const [scope, setScope] = useState<UserScope>('PLATFORM');
+  const { data: users = [], isLoading, isError, error } = useGetUsers(filter, scope);
+  const visibleUsers = filterUsersByManageableRoles(users, currentUserRole);
 
   return (
     <main className="min-h-screen bg-muted/30 px-4 py-10">
@@ -25,7 +34,7 @@ export function UsersPage() {
         <Card>
           <CardHeader>
             <CardTitle>Daftar User</CardTitle>
-            <CardDescription>{isLoading ? 'Memuat data user...' : `${users.length} user ditemukan`}</CardDescription>
+            <CardDescription>{isLoading ? 'Memuat data user...' : `${visibleUsers.length} user ditemukan`}</CardDescription>
           </CardHeader>
           <CardContent>
             {isLoading ? (
@@ -38,7 +47,7 @@ export function UsersPage() {
             ) : isError ? (
               <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{error instanceof Error ? error.message : 'Gagal memuat data user.'}</div>
             ) : (
-              <UserTable users={users} filter={filter} setFilter={setFilter} />
+              <UserTable currentUserRole={currentUserRole} users={visibleUsers} filter={filter} setFilter={setFilter} scope={scope} setUserScope={setScope} />
             )}
           </CardContent>
         </Card>

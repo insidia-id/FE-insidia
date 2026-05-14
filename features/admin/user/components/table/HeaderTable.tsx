@@ -3,26 +3,42 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { roleFilterOptions, statusFilterOptions, UserFilterOptions } from '../HelperUser';
+import { getRoleFilterOptions, statusFilterOptions, UserFilterOptions, UserScopeOptions } from '../HelperUser';
 import { Table } from '@tanstack/react-table';
-import type { SetUserFilter } from '../UsersPage';
-import type { User, UserFilter } from '../../types/user.types';
+import type { SetUserFilter, SetUserScope } from '../UsersPage';
+import type { User, UserFilter, UserScope } from '../../types/user.types';
 type HeaderTableProps = {
+  currentUserRole?: string | null;
   table: Table<User>;
   setGlobalFilter: (value: string) => void;
   globalFilter: string;
   filter: UserFilter;
   setFilter: SetUserFilter;
+  scope: UserScope;
+  setUserScope: SetUserScope;
 };
-export const HeaderTable = ({ table, setGlobalFilter, globalFilter, filter, setFilter }: HeaderTableProps) => {
+export const HeaderTable = ({ currentUserRole, table, setGlobalFilter, globalFilter, filter, setFilter, scope, setUserScope }: HeaderTableProps) => {
+  const roleFilterOptions = getRoleFilterOptions(currentUserRole);
+
   return (
     <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
       <div className="flex flex-1 flex-col gap-3 md:flex-row">
-        <div className="relative w-full md:max-w-sm">
+        <div className="relative w-full md:max-w-xs">
           <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input className="pl-9" onChange={(event) => setGlobalFilter(event.target.value)} placeholder="Cari nama, email, role, status..." value={globalFilter} />
         </div>
-
+        <Select onValueChange={(value) => setUserScope(value as UserScope)} value={scope}>
+          <SelectTrigger className="w-full md:w-[220px]">
+            <SelectValue placeholder="Filter scope" />
+          </SelectTrigger>
+          <SelectContent>
+            {UserScopeOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <Select
           onValueChange={(value) => {
             table.getColumn('status')?.setFilterValue(value === 'all' ? undefined : value);
@@ -58,10 +74,7 @@ export const HeaderTable = ({ table, setGlobalFilter, globalFilter, filter, setF
             ))}
           </SelectContent>
         </Select>
-        <Select
-          onValueChange={(value) => setFilter(value as UserFilter)}
-          value={filter}
-        >
+        <Select onValueChange={(value) => setFilter(value as UserFilter)} value={filter}>
           <SelectTrigger className="w-full md:w-[220px]">
             <SelectValue placeholder="Filter user" />
           </SelectTrigger>
