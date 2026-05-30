@@ -1,6 +1,7 @@
 import { UpdateUserPage } from '@/features/admin/user/components/UpdateUserPage';
-import { auth } from '@/auth/auth.config';
-import { forbidden } from 'next/navigation';
+import { getProfileUser } from '@/features/auth/api/api.server';
+import { toUserProfile } from '@/features/auth/auth.utils';
+import { forbidden, redirect } from 'next/navigation';
 
 type AdminUserEditPageProps = {
   params: Promise<{
@@ -12,16 +13,14 @@ type AdminUserEditPageProps = {
 };
 
 export default async function AdminUserEditPage({ params, searchParams }: AdminUserEditPageProps) {
-  const session = await auth();
-  const role = session?.user?.role;
-
-  if (!role || !['SUPER_ADMIN', 'ADMIN'].includes(role)) {
-    forbidden();
+  const profile = await getProfileUser();
+  if (!profile) {
+    redirect('/login?callbackUrl=/admin/users');
   }
-
+  const userProfile = toUserProfile(profile);
   const { id } = await params;
   const query = await searchParams;
-  const scope = (Array.isArray(query.scope) ? query.scope[0] : query.scope) === 'MITRA' ? 'MITRA' : 'PLATFORM';
+  const scope = (Array.isArray(query.scope) ? query.scope[0] : query.scope) === 'MITRA' ? 'MITRA' : 'INSIDIA';
 
-  return <UpdateUserPage currentUserRole={role} userId={id} scope={scope} />;
+  return <UpdateUserPage currentProfile={userProfile} userId={id} scope={scope} />;
 }

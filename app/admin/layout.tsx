@@ -1,35 +1,46 @@
+import { redirect } from 'next/navigation';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
+import { AuthSessionProvider } from '@/auth/AuthSessionProvider';
 import { AppSidebarAdmin } from '@/features/admin/components/AppsidebarAdmin';
 import NavbarAdmin from '@/features/admin/components/NavbarAdmin';
-import { auth } from '@/auth/auth.config';
-import { UserProfile } from '@/features/admin/user/types/user.types';
+import { getProfileUser } from '@/features/auth/api/api.server';
+import { toUserProfile } from '@/features/auth/auth.utils';
+import { getRoleLandingPath } from '@/auth/redirect';
+
 export const metadata = {
   title: 'Dashboard Admin - LmsInsidia',
   description: 'Dashboard admin untuk LmsInsidia.',
 };
 
 export default async function Layout({ children }: { children: React.ReactNode }) {
-  const session = await auth();
-  const userProfile: UserProfile | null = session?.user
-    ? {
-        id: session.user.id,
-        name: session.user.name ?? null,
-        image: session.user.image ?? null,
-        email: session.user.email ?? null,
-        role: session.user.role ?? null,
-      }
-    : null;
+  const userProfile = await getProfileUser();
+  if (!userProfile) {
+    redirect('/login?callbackUrl=/admin');
+  }
+  if (userProfile.status === 'BANNED') {
+    redirect('/force-logout');
+  }
+
+  const landingPath = getRoleLandingPath(userProfile.insidiaRole, userProfile.mitraRoles);
+  if (landingPath !== '/admin') {
+    redirect(landingPath);
+  }
+
+  const profile = toUserProfile(userProfile);
+
   return (
-    <SidebarProvider>
-      <div className="flex">
-        <AppSidebarAdmin userProfile={userProfile} />
-      </div>
-      <SidebarInset className="min-w-0 overflow-x-hidden transition-all duration-300 ease-in-out">
-        <div className="fixed top-0 left-0 right-0 z-50">
-          <NavbarAdmin userProfile={userProfile} />
+    <AuthSessionProvider>
+      <SidebarProvider>
+        <div className="flex">
+          <AppSidebarAdmin userProfile={profile} contextMitraSlug={null} />
         </div>
-        <div className="min-w-0 pt-17">{children}</div>
-      </SidebarInset>
-    </SidebarProvider>
+        <SidebarInset className="min-w-0 overflow-x-hidden transition-all duration-300 ease-in-out">
+          <div className="fixed top-0 left-0 right-0 z-50">
+            <NavbarAdmin userProfile={profile} />
+          </div>
+          <div className="min-w-0 pt-17">{children}</div>
+        </SidebarInset>
+      </SidebarProvider>
+    </AuthSessionProvider>
   );
 }

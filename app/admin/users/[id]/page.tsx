@@ -1,6 +1,7 @@
 import { UserDetailPage } from '@/features/admin/user/components/UserDetailPage';
-import { auth } from '@/auth/auth.config';
+import { getProfileUser } from '@/features/auth/api/api.server';
 import { forbidden } from 'next/navigation';
+import { toUserProfile } from '@/features/auth/auth.utils';
 
 type AdminUserDetailPageProps = {
   params: Promise<{
@@ -12,8 +13,8 @@ type AdminUserDetailPageProps = {
 };
 
 export default async function AdminUserDetailPage({ params, searchParams }: AdminUserDetailPageProps) {
-  const session = await auth();
-  const role = session?.user?.role;
+  const profile = await getProfileUser();
+  const role = profile ? profile.insidiaRole : null;
 
   if (!role || !['SUPER_ADMIN', 'ADMIN'].includes(role)) {
     forbidden();
@@ -21,7 +22,7 @@ export default async function AdminUserDetailPage({ params, searchParams }: Admi
 
   const { id } = await params;
   const query = await searchParams;
-  const scope = (Array.isArray(query.scope) ? query.scope[0] : query.scope) === 'MITRA' ? 'MITRA' : 'PLATFORM';
+  const scope = (Array.isArray(query.scope) ? query.scope[0] : query.scope) === 'MITRA' ? 'MITRA' : 'INSIDIA';
 
-  return <UserDetailPage userId={id} scope={scope} />;
+  return <UserDetailPage userId={id} scope={scope} currentUserProfile={toUserProfile(profile!)} />;
 }

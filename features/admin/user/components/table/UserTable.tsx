@@ -1,35 +1,34 @@
 'use client';
 
-import { useState } from 'react';
 import { flexRender } from '@tanstack/react-table';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import type { User, UserFilter, UserScope } from '../../types/user.types';
-import { DataTable } from './DataTable';
-import { useUserColumns } from './Colums';
 import { HeaderTable } from './HeaderTable';
 import { UserDeleteDialog } from '../UserDeleteDialog';
-import type { SetUserFilter, SetUserScope } from '../UsersPage';
+import { UserTableController } from '../../controller/UserTableController';
+import { AuthProfileResponse } from '@/features/auth/types/auth.types';
+import { getUserRole } from '../../HelperUser';
+
 type UserTableProps = {
-  currentUserRole?: string | null;
+  currentProfile: AuthProfileResponse;
   users: User[];
   filter: UserFilter;
-  setFilter: SetUserFilter;
+  onFilterChange: (filter: UserFilter) => void;
   scope: UserScope;
-  setUserScope: SetUserScope;
+  onScopeChange: (scope: UserScope) => void;
 };
 
-export function UserTable({ currentUserRole, users, filter, setFilter, scope, setUserScope }: UserTableProps) {
-  const [globalFilter, setGlobalFilter] = useState('');
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [selectedUserScope, setSelectedUserScope] = useState<UserScope>('PLATFORM');
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-
-  const columns = useUserColumns({ currentUserRole, setSelectedUserId, setSelectedUserScope, setIsDeleteOpen });
-  const table = DataTable({ users, columns, globalFilter, setGlobalFilter });
+export function UserTable({ currentProfile, users, filter, onFilterChange, scope, onScopeChange }: UserTableProps) {
+  const { columns, table, globalFilter, selectedUserId, selectedUserScope, isDeleteOpen, onDeleteDialogChange, onDeleteSuccess, onGlobalFilterChange } = UserTableController({
+    currentProfile,
+    users,
+    scope,
+  });
+  console.log(getUserRole(users[0], scope), users[0]);
   return (
     <>
       <div className="space-y-4">
-        <HeaderTable currentUserRole={currentUserRole} table={table} setGlobalFilter={setGlobalFilter} globalFilter={globalFilter} filter={filter} setFilter={setFilter} scope={scope} setUserScope={setUserScope} />
+        <HeaderTable currentProfile={currentProfile} table={table} onGlobalFilterChange={onGlobalFilterChange} globalFilter={globalFilter} filter={filter} onFilterChange={onFilterChange} scope={scope} onScopeChange={onScopeChange} />
         <div className="rounded-xl border bg-background">
           <Table>
             <TableHeader>
@@ -61,16 +60,7 @@ export function UserTable({ currentUserRole, users, filter, setFilter, scope, se
           </Table>
         </div>
       </div>
-      <UserDeleteDialog
-        userId={selectedUserId}
-        scope={selectedUserScope}
-        open={isDeleteOpen}
-        onOpenChange={setIsDeleteOpen}
-        onSuccess={() => {
-          setSelectedUserId(null);
-          setSelectedUserScope('PLATFORM');
-        }}
-      />
+      <UserDeleteDialog userId={selectedUserId} scope={selectedUserScope} open={isDeleteOpen} onOpenChange={onDeleteDialogChange} onSuccess={onDeleteSuccess} />
     </>
   );
 }

@@ -6,7 +6,6 @@ const MOBILE_MEDIA_QUERY = `(max-width: ${MOBILE_BREAKPOINT - 1}px)`;
 function subscribe(onStoreChange: () => void) {
   const mediaQueryList = window.matchMedia(MOBILE_MEDIA_QUERY);
   mediaQueryList.addEventListener('change', onStoreChange);
-
   return () => mediaQueryList.removeEventListener('change', onStoreChange);
 }
 

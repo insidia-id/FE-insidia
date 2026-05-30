@@ -5,7 +5,6 @@ import { toRouteError, toRouteResponse } from '@/lib/api/route-response';
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-
     const data = await apiFetchWithAuth('/admin/user', {
       method: 'POST',
       body: JSON.stringify(body),
@@ -30,6 +29,7 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const filter = searchParams.get('filter');
     const scope = searchParams.get('scope');
+    const mitraId = searchParams.get('mitraId');
     const params = new URLSearchParams();
 
     if (filter) {
@@ -37,6 +37,9 @@ export async function GET(req: NextRequest) {
     }
     if (scope) {
       params.set('scope', scope);
+    }
+    if (mitraId) {
+      params.set('mitraId', mitraId);
     }
 
     const data = await apiFetchWithAuth(`/admin/user?${params.toString()}`, {

@@ -12,7 +12,6 @@ async function baseFetch<T>(input: string, init?: RequestInit): Promise<T> {
     headers: createHeaders(init),
     cache: 'no-store',
   });
-
   const payload = await getJson(response);
   if (!response.ok) {
     throw buildClientError(payload, response.status);

@@ -1,4 +1,4 @@
-export type AccessScope = 'PLATFORM' | 'MITRA';
+export type AccessScope = 'INSIDIA' | 'MITRA';
 
 export type Permission = {
   id: string;
@@ -30,7 +30,7 @@ export type Role = {
   permissions: RolePermission[];
   _count: {
     permissions: number;
-    platformUsers: number;
+    insidiaUsers: number;
     mitraUsers: number;
   };
 };

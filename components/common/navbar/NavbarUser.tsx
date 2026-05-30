@@ -7,29 +7,28 @@ import Link from 'next/link';
 import { LogIn } from 'lucide-react';
 import type { ComponentType } from 'react';
 import { useLogout } from '@/features/auth/hooks/useauth';
+import { getNameInitials } from '@/features/admin/user/lib/user.mapper';
+import { AuthProfileResponse } from '@/features/auth/types/auth.types';
 type NavbarItem = {
   href: string;
   label: string;
   icon: ComponentType<{ className?: string }>;
   onClick?: () => void;
-  roles?: string[];
 };
 type NavbarAction = {
   label: string;
   icon: ComponentType<{ className?: string }>;
   action: 'logout' | string;
 };
-type UserProfile = {
-  id: string;
-  name: string | null;
-  image: string | null;
-  email?: string | null;
-  role?: string | null;
+type NavbarUserProps = {
+  userProfile: AuthProfileResponse | null;
+  navItems?: NavbarItem[];
+  navActions?: NavbarAction[];
 };
-
-export const NavbarUser = ({ userProfile, navItems, navActions }: { userProfile: UserProfile | null; navItems?: NavbarItem[]; navActions?: NavbarAction[] }) => {
+export const NavbarUser = ({ userProfile, navItems, navActions }: NavbarUserProps) => {
   const { mutate: logout, isPending } = useLogout();
-  const displayName = userProfile?.name ?? 'User';
+  const Name = getNameInitials(userProfile?.insidiaRole ?? 'USER');
+  const displayName = userProfile?.name ?? Name;
   const displayImage = userProfile?.image ?? '';
 
   if (!userProfile) {
@@ -42,10 +41,7 @@ export const NavbarUser = ({ userProfile, navItems, navActions }: { userProfile:
       </Link>
     );
   }
-  const filteredNav = navItems?.filter((item) => {
-    if (!item.roles) return true;
-    return item.roles.includes(userProfile.role ?? '');
-  });
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -61,7 +57,7 @@ export const NavbarUser = ({ userProfile, navItems, navActions }: { userProfile:
         <DropdownMenuLabel>{displayName}</DropdownMenuLabel>
 
         <DropdownMenuSeparator />
-        {filteredNav?.map((item) =>
+        {navItems?.map((item) =>
           item.onClick ? (
             <DropdownMenuItem key={item.href} onClick={item.onClick} className="flex items-center">
               <item.icon className="mr-2 h-4 w-4" />

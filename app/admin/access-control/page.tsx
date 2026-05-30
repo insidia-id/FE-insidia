@@ -1,13 +1,15 @@
-import { auth } from '@/auth/auth.config';
+import { PagePermission } from '@/app/middleware';
 import { AccessControlPage } from '@/features/admin/access-control/components/AccessControlPage';
+import { getProfileUser } from '@/features/auth/api/api.server';
+import { toUserProfile } from '@/features/auth/auth.utils';
 import { redirect } from 'next/navigation';
+import { Permissions } from '@/lib/helper/permission.helper';
 export default async function AdminAccessControlPage() {
-  const session = await auth();
-  const role = session?.user?.role;
-
-  if (role !== 'SUPER_ADMIN') {
-    redirect('/403');
+  const profile = await getProfileUser();
+  if (!profile) {
+    redirect('/login?callbackUrl=/admin/access-control');
   }
-
-  return <AccessControlPage />;
+  const usersProfile = toUserProfile(profile);
+  PagePermission(profile, [Permissions.permissionCodes.viewMitraPermissions]);
+  return <AccessControlPage currentProfile={usersProfile} />;
 }

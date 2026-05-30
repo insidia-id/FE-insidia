@@ -1,5 +1,7 @@
-export type RoleUser = 'SUPER_ADMIN' | 'ADMIN' | 'MENTOR' | 'USER' | 'AKADEMIK';
-export type UserScope = 'PLATFORM' | 'MITRA';
+export type InsidiaRole = 'SUPER_ADMIN' | 'ADMIN' | 'MENTOR' | 'USER';
+export type MitraRole = 'AKADEMIK' | 'MURID' | 'GURU' | 'WALI_MURID';
+export type RoleUser = InsidiaRole | MitraRole;
+export type UserScope = 'INSIDIA' | 'MITRA';
 export type StatusUser = 'ACTIVE' | 'SUSPENDED' | 'BANNED';
 export type UserFilter = 'all' | 'available' | 'deleted';
 export type SocialLinks = {
@@ -38,8 +40,8 @@ export type User = {
   updatedAt: string;
   deletedAt: string | null;
 
-  platformRole: UserRoleRelation | null;
-  mitraRoles: UserMitraRoleRelation[];
+  insidiaRole: UserRoleRelation | null;
+  mitraRoles: UserMitraRoleRelation | null;
 };
 export type UserDetail = User & {
   normalizedEmail: string;
@@ -51,13 +53,4 @@ export type UserDetail = User & {
   websiteUrl: string | null;
   socialLinks?: SocialLinks | null;
   createdById: string | null;
-};
-
-export type UserProfile = {
-  id: string;
-  name: string | null;
-  image: string | null;
-  email?: string | null;
-  role: string;
-  permissions?: string[];
 };

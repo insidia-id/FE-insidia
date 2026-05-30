@@ -10,8 +10,17 @@ export async function GET(req: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params;
     const { searchParams } = new URL(req.url);
+    const mitraId = searchParams.get('mitraId');
     const scope = searchParams.get('scope');
-    const queryString = scope ? `?scope=${scope}` : '';
+    const params = new URLSearchParams();
+
+    if (scope) {
+      params.set('scope', scope);
+    }
+    if (mitraId) {
+      params.set('mitraId', mitraId);
+    }
+    const queryString = params.toString() ? `?${params.toString()}` : '';
 
     const data = await apiFetchWithAuth(`/admin/user/${id}${queryString}`, {
       method: 'GET',
@@ -58,7 +67,16 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
     const { id } = await context.params;
     const { searchParams } = new URL(req.url);
     const scope = searchParams.get('scope');
-    const queryString = scope ? `?scope=${scope}` : '';
+    const mitraId = searchParams.get('mitraId');
+    const params = new URLSearchParams();
+
+    if (scope) {
+      params.set('scope', scope);
+    }
+    if (mitraId) {
+      params.set('mitraId', mitraId);
+    }
+    const queryString = params.toString() ? `?${params.toString()}` : '';
 
     await apiFetchWithAuth(`/admin/user/${id}${queryString}`, {
       method: 'DELETE',

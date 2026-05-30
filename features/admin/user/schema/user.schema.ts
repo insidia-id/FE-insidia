@@ -1,6 +1,5 @@
 import { z } from 'zod';
-export const userRoleValues = ['SUPER_ADMIN', 'ADMIN', 'MENTOR', 'USER', 'AKADEMIK'] as const;
-
+export const userRoleValues = ['SUPER_ADMIN', 'ADMIN', 'MENTOR', 'USER', 'AKADEMIK', 'MURID', 'GURU', 'WALI_MURID'] as const;
 export const userStatusValues = ['ACTIVE', 'SUSPENDED', 'BANNED'] as const;
 
 const optionalNullableStringSchema = z
@@ -33,15 +32,57 @@ const socialLinksSchema = z
     const hasValue = Object.values(value).some((item) => typeof item === 'string' && item.trim() !== '');
     return hasValue ? value : undefined;
   });
-
-export const createUserSchema = z.object({
+const baseUserSchema = z.object({
   email: z.string().trim().email('Email tidak valid'),
   name: optionalNullableStringSchema,
   phone: optionalNullableStringSchema,
   role: z.enum(userRoleValues),
-  scope: z.enum(['PLATFORM', 'MITRA']).default('PLATFORM'),
+  mitraRole: z.enum(['AKADEMIK', 'MURID', 'GURU', 'WALI_MURID']).optional(),
+  scope: z.enum(['INSIDIA', 'MITRA']).default('INSIDIA'),
   status: z.enum(userStatusValues),
+  mitraId: z.string().optional(),
 });
+
+function validateMitraSelection(
+  data: {
+    role?: (typeof userRoleValues)[number];
+    mitraRole?: 'AKADEMIK' | 'MURID' | 'GURU' | 'WALI_MURID';
+    mitraId?: string;
+    scope?: 'INSIDIA' | 'MITRA';
+  },
+  ctx: z.RefinementCtx,
+) {
+  const isMitraScoped = data.scope === 'MITRA' || Boolean(data.mitraRole);
+
+  if (isMitraScoped && !data.mitraRole) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['mitraRole'],
+      message: 'Role mitra wajib dipilih',
+    });
+  }
+
+  if (isMitraScoped && !data.mitraId) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['mitraId'],
+      message: 'Mitra wajib dipilih untuk user scope mitra',
+    });
+  }
+}
+
+export const createUserSchema = baseUserSchema.superRefine(validateMitraSelection);
+
+export const updateUserSchema = baseUserSchema
+  .partial()
+  .extend({
+    id: z.string(),
+    scope: z.enum(['INSIDIA', 'MITRA']).default('INSIDIA'),
+    bio: optionalNullableStringSchema,
+    websiteUrl: optionalNullableStringSchema,
+    socialLinks: socialLinksSchema,
+  })
+  .superRefine(validateMitraSelection);
 
 export type CreateUserInput = z.input<typeof createUserSchema>;
 export type UpdateUserSocialLinksInput = {
@@ -50,20 +91,15 @@ export type UpdateUserSocialLinksInput = {
   github?: string;
 };
 
-export const updateUserSchema = createUserSchema.partial().extend({
-  id: z.string(),
-  scope: z.enum(['PLATFORM', 'MITRA']).default('PLATFORM'),
-  bio: optionalNullableStringSchema,
-  websiteUrl: optionalNullableStringSchema,
-  socialLinks: socialLinksSchema,
-});
 export type UpdateUserInput = {
   id: string;
   email?: string;
   name?: string | null;
   phone?: string | null;
   role?: (typeof userRoleValues)[number];
-  scope: 'PLATFORM' | 'MITRA';
+  mitraRole?: 'AKADEMIK' | 'MURID' | 'GURU' | 'WALI_MURID';
+  mitraId?: string;
+  scope: 'INSIDIA' | 'MITRA';
   status?: (typeof userStatusValues)[number];
   bio: string | null;
   websiteUrl: string | null;

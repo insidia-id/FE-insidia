@@ -1,6 +1,15 @@
 import { NextRequest } from 'next/server';
 import { apiFetchWithAuth } from '@/lib/api/express.server';
+import type { ApiErrorIssue } from '@/lib/api/api.shared';
 import { toRouteError, toRouteResponse } from '@/lib/api/route-response';
+
+type ApiRouteError = {
+  status?: number;
+  code?: string;
+  message?: string;
+  errors?: ApiErrorIssue[];
+  details?: unknown;
+};
 
 export async function GET(req: NextRequest) {
   try {
@@ -19,12 +28,14 @@ export async function GET(req: NextRequest) {
 
     return toRouteResponse({ data });
   } catch (error) {
-    const apiError = error as { status?: number; code?: string; message?: string };
+    const apiError = error as ApiRouteError;
 
     return toRouteError(apiError.message ?? 'Failed to fetch permissions', {
       status: apiError.status ?? 500,
       code: apiError.code ?? 'FETCH_PERMISSIONS_FAILED',
       message: apiError.message ?? 'Failed to fetch permissions',
+      errors: apiError.errors,
+      details: apiError.details,
     });
   }
 }
@@ -36,15 +47,16 @@ export async function POST(req: NextRequest) {
       method: 'POST',
       body: JSON.stringify(body),
     });
-
+    console.log('Created permission:', data);
     return toRouteResponse({ data }, 201);
   } catch (error) {
-    const apiError = error as { status?: number; code?: string; message?: string };
-
+    const apiError = error as ApiRouteError;
     return toRouteError(apiError.message ?? 'Failed to create permission', {
       status: apiError.status ?? 500,
       code: apiError.code ?? 'CREATE_PERMISSION_FAILED',
       message: apiError.message ?? 'Failed to create permission',
+      errors: apiError.errors,
+      details: apiError.details,
     });
   }
 }

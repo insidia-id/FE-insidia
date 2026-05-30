@@ -2,33 +2,29 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { ArrowLeft, ExternalLink, Link as LinkIcon, Mail, MoreVertical, Pencil, Phone, ShieldCheck, Trash2, UserRound } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useGetUserById } from '../hooks/useUser';
-import { formatDateTime, formatRole, getStatusVariant, formatStatus, formatBooleanLabel, getUserRole } from './HelperUser';
+import { formatDateTime, formatRole, getStatusVariant, formatStatus, formatBooleanLabel, getUserRole, getUsersHref } from '../HelperUser';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { UserDeleteDialog } from './UserDeleteDialog';
+import { UserDetailController } from '../controller/UserDetailController';
+import type { UserScope } from '../types/user.types';
+import { AuthProfileResponse } from '@/features/auth/types/auth.types';
 
 type UserDetailPageProps = {
   userId: string;
-  scope?: 'PLATFORM' | 'MITRA';
+  scope?: UserScope;
+  currentUserProfile: AuthProfileResponse;
 };
 
-export function UserDetailPage({ userId, scope = 'PLATFORM' }: UserDetailPageProps) {
+export function UserDetailPage({ userId, scope = 'INSIDIA', currentUserProfile }: UserDetailPageProps) {
   const router = useRouter();
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const { data: user, isLoading, isError, error } = useGetUserById(userId, scope);
-  const socialLinks = user?.socialLinks
-    ? [
-        { key: 'instagram', label: 'Instagram', href: user.socialLinks.instagram },
-        { key: 'linkedin', label: 'LinkedIn', href: user.socialLinks.linkedin },
-        { key: 'github', label: 'GitHub', href: user.socialLinks.github },
-      ].filter((item) => Boolean(item.href))
-    : [];
+  const mitraId = currentUserProfile?.mitraRoles?.mitraId;
+  const mitraSlug = currentUserProfile?.mitraRoles?.mitraSlug ?? null;
+  const { user, isLoading, isError, error, isDeleteOpen, socialLinks, onDeleteDialogChange } = UserDetailController(userId, scope, mitraId);
 
   return (
     <>
@@ -43,7 +39,7 @@ export function UserDetailPage({ userId, scope = 'PLATFORM' }: UserDetailPagePro
 
             <div className="flex flex-wrap gap-2">
               <Button asChild variant="outline">
-                <Link href="/admin/users">
+                <Link href={getUsersHref(currentUserProfile?.mitraRoles?.mitraSlug ?? null, `users?scope=${scope}`)} className="flex items-center gap-2">
                   <ArrowLeft className="size-4" />
                   Kembali ke daftar
                 </Link>
@@ -69,7 +65,7 @@ export function UserDetailPage({ userId, scope = 'PLATFORM' }: UserDetailPagePro
 
                   <DropdownMenuContent align="end" className="w-48">
                     <DropdownMenuItem asChild>
-                      <Link href={`/admin/users/${userId}/edit`} className="flex items-center gap-2">
+                      <Link href={getUsersHref(mitraSlug, `users/${userId}/edit?scope=${scope}`)} className="flex items-center gap-2">
                         <Pencil className="size-4" />
                         Edit User
                       </Link>
@@ -78,7 +74,7 @@ export function UserDetailPage({ userId, scope = 'PLATFORM' }: UserDetailPagePro
                     <DropdownMenuItem
                       className="text-destructive focus:text-destructive"
                       onClick={() => {
-                        setIsDeleteOpen(true);
+                        onDeleteDialogChange(true);
                       }}
                     >
                       <Trash2 className="size-4" />
@@ -226,9 +222,9 @@ export function UserDetailPage({ userId, scope = 'PLATFORM' }: UserDetailPagePro
         userId={userId}
         scope={scope}
         open={isDeleteOpen}
-        onOpenChange={setIsDeleteOpen}
+        onOpenChange={onDeleteDialogChange}
         onSuccess={() => {
-          router.push('/admin/users');
+          router.push(getUsersHref(mitraSlug, 'users'));
         }}
       />
     </>

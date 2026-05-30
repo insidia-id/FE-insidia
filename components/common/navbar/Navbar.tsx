@@ -3,20 +3,14 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Search, ShoppingCart, User, Menu, Heart, Package, Store, Bell, LayoutDashboard, Settings, LogOut, BookOpen, Award, Info } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, Heart, Bell, LayoutDashboard, Settings, LogOut, BookOpen, Award, Info } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { NavbarUser } from './NavbarUser';
 import { TopNavAudience } from './AudienceSwitcher';
-type UserProfile = {
-  id: string;
-  name: string | null;
-  image: string | null;
-  email?: string | null;
-  role?: string | null;
-};
+import { AuthProfileResponse } from '@/features/auth/types/auth.types';
 
 const navLinks = [
   { href: '/auth-redirect', label: 'Dashboard', icon: LayoutDashboard },
@@ -31,16 +25,13 @@ const navUser = [
     href: '/auth-redirect',
     label: 'Dashboard',
     icon: LayoutDashboard,
-    roles: ['SUPER_ADMIN'],
   },
-  { href: '/orders', label: 'Pesanan Saya', icon: Package },
-  { href: '/address', label: 'Alamat Saya', icon: Store },
   { href: '/settings', label: 'Pengaturan', icon: Settings },
 ];
 
 const navActions = [{ label: 'Keluar', icon: LogOut, action: 'logout' }];
 
-const Navbar = ({ userProfile }: { userProfile: UserProfile | null }) => {
+const Navbar = ({ userProfile }: { userProfile: AuthProfileResponse | null }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
@@ -77,7 +68,7 @@ const Navbar = ({ userProfile }: { userProfile: UserProfile | null }) => {
             </Sheet>
 
             <Link href="/" className="flex items-center">
-              <Image src="/logo.png" alt="Logo" width={100} height={100} />
+              <Image src="/logo.png" alt="Logo" width={100} height={100} className="h-auto w-[100px]" />
             </Link>
 
             <div className="hidden items-center space-x-4 lg:flex">

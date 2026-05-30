@@ -8,8 +8,9 @@ import { readErrorMessage } from '@/lib/form/form.helper';
 import { SocialLinks, StatusUser } from '../types/user.types';
 import { RoleUser } from '../types/user.types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { getAssignableRoleOptions, USER_STATUS_OPTIONS, getScopeByRole } from '../components/HelperUser';
-
+import { getAssignableRoleOptions, USER_STATUS_OPTIONS, getScopeByRole } from '../HelperUser';
+import { MitrasController } from '../../mitras/controller/MitrasController';
+import { Combobox } from '@/components/common/Combobox';
 type BaseUserFormShape = {
   email?: string;
   name?: string | null;
@@ -28,11 +29,12 @@ type UserFormFieldsProps<TFieldValues extends FieldValues & BaseUserFormShape> =
   submitLabel: string;
   mode: 'create' | 'update';
   children?: ReactNode;
+  scope?: 'INSIDIA' | 'MITRA';
 };
-export function UserFormFields<TFieldValues extends FieldValues & BaseUserFormShape>({ form, currentUserRole, isLoading, onCancel, onSubmit, submitLabel, mode, children }: UserFormFieldsProps<TFieldValues>) {
-  const isUpdateMode = mode === 'update';
+export function UserFormFields<TFieldValues extends FieldValues & BaseUserFormShape>({ form, currentUserRole, isLoading, onCancel, onSubmit, submitLabel, mode, children, scope }: UserFormFieldsProps<TFieldValues>) {
   const assignableRoleOptions = getAssignableRoleOptions(currentUserRole);
-
+  const { mitraOptions, setMitraQuery, isLoading: isLoadingMitras } = MitrasController();
+  const isUpdateMode = mode === 'update';
   return (
     <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
       <div className="grid gap-4 md:grid-cols-2">
@@ -42,41 +44,41 @@ export function UserFormFields<TFieldValues extends FieldValues & BaseUserFormSh
 
         <TextField id="user-phone" label="Telepon" placeholder="081234567890" error={readErrorMessage(form.formState.errors, 'phone')} disabled={isLoading} {...form.register('phone' as Path<TFieldValues>)} />
 
-        <div className="space-y-2">
-          <Label>Role User</Label>
-          <Controller
-            control={form.control}
-            name={'role' as Path<TFieldValues>}
-            render={({ field }) => {
-              const value = field.value as RoleUser | undefined;
-              const selectedValue = assignableRoleOptions.some((option) => option.value === value) ? value : undefined;
-
-              return (
-                <Select
-                  disabled={isLoading || assignableRoleOptions.length === 0}
-                  onValueChange={(nextValue) => {
-                    if (!nextValue) return;
-                    field.onChange(nextValue);
-                    form.setValue('scope' as Path<TFieldValues>, getScopeByRole(nextValue) as TFieldValues[Path<TFieldValues>], { shouldDirty: true, shouldTouch: true });
-                  }}
-                  value={selectedValue}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Pilih role user" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {assignableRoleOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              );
-            }}
-          />
-          {readErrorMessage(form.formState.errors, 'role') && <p className="text-sm text-destructive">{readErrorMessage(form.formState.errors, 'role')}</p>}
-        </div>
+        {(currentUserRole === 'SUPER_ADMIN' || currentUserRole === 'ADMIN') && (
+          <div className="space-y-2">
+            <Label>Role Insidia</Label>
+            <Controller
+              control={form.control}
+              name={'role' as Path<TFieldValues>}
+              render={({ field }) => {
+                return (
+                  <Select
+                    disabled={isLoading || assignableRoleOptions.length === 0}
+                    onValueChange={(nextValue) => {
+                      if (!nextValue) return;
+                      field.onChange(nextValue);
+                    }}
+                    value={field.value}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Pilih role user" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {assignableRoleOptions
+                        .filter((option) => option.scope === 'INSIDIA')
+                        .map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                );
+              }}
+            />
+            {readErrorMessage(form.formState.errors, 'role') && <p className="text-sm text-destructive">{readErrorMessage(form.formState.errors, 'role')}</p>}
+          </div>
+        )}
         <TextField id="user-scope" label="Scope" placeholder="Scope" error={readErrorMessage(form.formState.errors, 'scope')} readOnly className="bg-muted" {...form.register('scope' as Path<TFieldValues>)} />
 
         <div className="space-y-2">
@@ -111,9 +113,72 @@ export function UserFormFields<TFieldValues extends FieldValues & BaseUserFormSh
           />
           {readErrorMessage(form.formState.errors, 'status') && <p className="text-sm text-destructive">{readErrorMessage(form.formState.errors, 'status')}</p>}
         </div>
+
+        <div className="space-y-2">
+          <Label>Role Mitra</Label>
+          <Controller
+            control={form.control}
+            name={'mitraRole' as Path<TFieldValues>}
+            render={({ field }) => {
+              const value = field.value as string | undefined;
+              return (
+                <Select
+                  disabled={isLoading}
+                  onValueChange={(nextValue) => {
+                    if (!nextValue) return;
+                    field.onChange(nextValue);
+                    form.setValue('scope' as Path<TFieldValues>, getScopeByRole(nextValue) as TFieldValues[Path<TFieldValues>], { shouldDirty: true, shouldTouch: true });
+                  }}
+                  value={value || undefined}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Pilih role mitra" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {assignableRoleOptions
+                      .filter((option) => option.scope === 'MITRA')
+                      .map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                  </SelectContent>
+                </Select>
+              );
+            }}
+          />
+          {readErrorMessage(form.formState.errors, 'mitraRole') && <p className="text-sm text-destructive">{readErrorMessage(form.formState.errors, 'mitraRole')}</p>}
+        </div>
+        {currentUserRole === 'SUPER_ADMIN' && (
+          <div className="space-y-2">
+            <Label>Mitra</Label>
+
+            <Controller
+              control={form.control}
+              name={'mitraId' as Path<TFieldValues>}
+              render={({ field }) => (
+                <Combobox
+                  data={mitraOptions}
+                  value={field.value as string | undefined}
+                  onChange={(value) => {
+                    field.onChange(value);
+                  }}
+                  placeholder="Pilih mitra"
+                  disabled={isLoading || isLoadingMitras}
+                  onSearch={setMitraQuery}
+                />
+              )}
+            />
+
+            {readErrorMessage(form.formState.errors, 'mitraId') && <p className="text-sm text-destructive">{readErrorMessage(form.formState.errors, 'mitraId')}</p>}
+          </div>
+        )}
       </div>
+
       {isUpdateMode && (
         <div className="grid gap-4 md:grid-cols-2">
+          {scope === 'MITRA' && <></>}
+
           <TextField
             id="user-website-url"
             label="Website URL"

@@ -4,8 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useGetUserById, useUpdateUser } from '../hooks/useUser';
 import { UpdateUserInput, updateUserSchema } from '../schema/user.schema';
-import type { UserScope } from '../types/user.types';
-import { getUserRole, getUserScope } from '../components/HelperUser';
+import type { UserDetail, UserScope } from '../types/user.types';
+import { getUserScope } from '../HelperUser';
 
 const defaultValues: UpdateUserInput = {
   id: '',
@@ -13,7 +13,7 @@ const defaultValues: UpdateUserInput = {
   name: '',
   phone: '',
   role: 'USER',
-  scope: 'PLATFORM',
+  scope: 'INSIDIA',
   status: 'ACTIVE',
   bio: '',
   websiteUrl: '',
@@ -24,7 +24,28 @@ const defaultValues: UpdateUserInput = {
   },
 };
 
-export function UpdateUserController(userId: string, scope: UserScope = 'PLATFORM') {
+function toUpdateUserFormValues(user: UserDetail, activeScope: UserScope): UpdateUserInput {
+  return {
+    id: user.id,
+    email: user.email,
+    name: user.name ?? '',
+    phone: user.phone ?? '',
+    role: user.insidiaRole?.role.code ?? 'USER',
+    mitraRole: user.mitraRoles?.role.code as UpdateUserInput['mitraRole'],
+    mitraId: user.mitraRoles?.mitraId ?? undefined,
+    scope: getUserScope(activeScope),
+    status: user.status,
+    bio: user.bio ?? '',
+    websiteUrl: user.websiteUrl ?? '',
+    socialLinks: {
+      instagram: user.socialLinks?.instagram ?? '',
+      linkedin: user.socialLinks?.linkedin ?? '',
+      github: user.socialLinks?.github ?? '',
+    },
+  };
+}
+
+export function UpdateUserController(userId: string, scope: UserScope = 'INSIDIA') {
   const form = useForm<UpdateUserInput>({
     resolver: zodResolver(updateUserSchema) as Resolver<UpdateUserInput>,
     defaultValues: {
@@ -38,23 +59,8 @@ export function UpdateUserController(userId: string, scope: UserScope = 'PLATFOR
   useEffect(() => {
     if (!user) return;
 
-    form.reset({
-      id: user.id,
-      email: user.email,
-      name: user.name ?? '',
-      phone: user.phone ?? '',
-      role: getUserRole(user),
-      scope: getUserScope(user),
-      status: user.status,
-      bio: user.bio ?? '',
-      websiteUrl: user.websiteUrl ?? '',
-      socialLinks: {
-        instagram: user.socialLinks?.instagram ?? '',
-        linkedin: user.socialLinks?.linkedin ?? '',
-        github: user.socialLinks?.github ?? '',
-      },
-    });
-  }, [form, user]);
+    form.reset(toUpdateUserFormValues(user, scope));
+  }, [form, user, scope]);
 
   const onSubmit = (values: UpdateUserInput, onSuccess?: (updatedUserId: string) => void) => {
     const { id, ...payload } = values;
@@ -66,22 +72,7 @@ export function UpdateUserController(userId: string, scope: UserScope = 'PLATFOR
       },
       {
         onSuccess: (updatedUser) => {
-          form.reset({
-            id: updatedUser.id,
-            email: updatedUser.email,
-            name: updatedUser.name ?? '',
-            phone: updatedUser.phone ?? '',
-            role: getUserRole(updatedUser),
-            scope: getUserScope(updatedUser),
-            status: updatedUser.status,
-            bio: updatedUser.bio ?? '',
-            websiteUrl: updatedUser.websiteUrl ?? '',
-            socialLinks: {
-              instagram: updatedUser.socialLinks?.instagram ?? '',
-              linkedin: updatedUser.socialLinks?.linkedin ?? '',
-              github: updatedUser.socialLinks?.github ?? '',
-            },
-          });
+          form.reset(toUpdateUserFormValues(updatedUser, scope));
 
           onSuccess?.(updatedUser.id);
         },

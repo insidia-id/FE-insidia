@@ -6,17 +6,19 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { UpdateUserController } from '../controller/UpdateUserController';
 import { UserFormFields } from '../form/UserForm';
 import { UpdateUserInput } from '../schema/user.schema';
+import { AuthProfileResponse } from '@/features/auth/types/auth.types';
+import { getUsersHref } from '../HelperUser';
 
 type UpdateUserPageProps = {
-  currentUserRole?: string | null;
+  currentProfile: AuthProfileResponse;
   userId: string;
-  scope?: 'PLATFORM' | 'MITRA';
+  scope?: 'INSIDIA' | 'MITRA';
 };
 
-export function UpdateUserPage({ userId, currentUserRole, scope = 'PLATFORM' }: UpdateUserPageProps) {
+export function UpdateUserPage({ userId, currentProfile, scope = 'INSIDIA' }: UpdateUserPageProps) {
   const router = useRouter();
   const { form, user, isLoading, isError, error, isSubmitting, onSubmit } = UpdateUserController(userId, scope);
-
+  const userRole = currentProfile?.mitraRoles?.roleCode ?? currentProfile?.insidiaRole;
   return (
     <main className="min-h-screen bg-muted/30 px-4 py-10">
       <section className="mx-auto w-full max-w-4xl space-y-6">
@@ -44,18 +46,19 @@ export function UpdateUserPage({ userId, currentUserRole, scope = 'PLATFORM' }: 
             ) : (
               <UserFormFields<UpdateUserInput>
                 form={form}
-                currentUserRole={currentUserRole}
+                currentUserRole={userRole}
                 isLoading={isSubmitting}
                 mode="update"
                 onCancel={() => {
-                  router.push(`/admin/users/${userId}?scope=${scope}`);
+                  router.push(getUsersHref(currentProfile?.mitraRoles?.mitraSlug ?? null, `users/${userId}?scope=${scope}`));
                 }}
                 onSubmit={(data) => {
                   onSubmit(data, (updatedUserId) => {
-                    router.push(`/admin/users/${updatedUserId}?scope=${scope}`);
+                    router.push(getUsersHref(currentProfile?.mitraRoles?.mitraSlug ?? null, `users/${updatedUserId}?scope=${scope}`));
                   });
                 }}
                 submitLabel="Simpan Perubahan"
+                scope={scope}
               />
             )}
           </CardContent>

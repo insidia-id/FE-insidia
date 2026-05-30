@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation';
 import { ShieldCheck, Users, BookOpenCheck } from 'lucide-react';
-import { auth } from '@/auth/auth.config';
-import { getRoleLandingPath } from '@/auth/redirect';
+import { getProfileUser } from '@/features/auth/api/api.server';
 
 const stats = [
   {
@@ -22,23 +21,17 @@ const stats = [
 ];
 
 export default async function AdminPage() {
-  const session = await auth();
-  if (!session?.user) {
-    redirect('/login?callbackUrl=/admin');
+  const profile = await getProfileUser();
+
+  if (!profile) {
+    redirect('/login?callbackUrl=/admin/users');
   }
-
-  const landingPath = getRoleLandingPath(session.user.role);
-
-  if (landingPath !== '/admin') {
-    redirect(landingPath);
-  }
-
   return (
     <main className="min-h-screen bg-muted/30 px-4 py-10">
       <section className="mx-auto w-full max-w-6xl space-y-8">
         <div className="rounded-lg border bg-background p-6 shadow-sm">
           <p className="text-sm font-medium uppercase tracking-[0.14em] text-muted-foreground">Dashboard Admin</p>
-          <h1 className="mt-3 text-3xl font-semibold text-foreground">Selamat datang, {session.user.name ?? session.user.email}</h1>
+          <h1 className="mt-3 text-3xl font-semibold text-foreground">Selamat datang, {profile.name ?? profile.email}</h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Halaman awal admin sudah siap. Kamu bisa lanjut isi modul manajemen dari sini.</p>
         </div>
 

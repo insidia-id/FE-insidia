@@ -5,8 +5,8 @@ import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
-import type { UserProfile } from '@/features/admin/user/types/user.types';
 import Image from 'next/image';
+import { AuthProfileResponse } from '@/features/auth/types/auth.types';
 
 const navItems = [
   { href: '/profile', label: 'Profil Saya', icon: User },
@@ -15,7 +15,7 @@ const navItems = [
 
 const navActions = [{ label: 'Keluar', icon: LogOut, action: 'logout' }];
 
-const NavbarAdmin = ({ userProfile }: { userProfile: UserProfile | null }) => {
+const NavbarAdmin = ({ userProfile }: { userProfile: AuthProfileResponse | null }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
@@ -24,7 +24,7 @@ const NavbarAdmin = ({ userProfile }: { userProfile: UserProfile | null }) => {
         <div className="flex items-center gap-4">
           <div className="flex items-center  justify-center p-3">
             <div className="flex  w-full items-center overflow-hidden justify-center gap-2">
-              <Image src="/logo.png" alt="Ummang Food Logo" width={100} height={100} className="object-contain" />
+              <Image src="/logo.png" alt="Ummang Food Logo" width={100} height={100} className="h-auto w-[100px] object-contain" />
             </div>
           </div>
 

@@ -1,10 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { QueryClientProvider } from '@tanstack/react-query';
-import { QueryClient } from '@tanstack/react-query';
-
-import { SessionProvider } from 'next-auth/react';
-import { SessionGuard } from '@/auth/SessionGuard';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -22,9 +18,6 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <SessionProvider refetchOnWindowFocus={false}>
-      <SessionGuard />
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </SessionProvider>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 }

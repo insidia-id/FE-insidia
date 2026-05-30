@@ -5,15 +5,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { CreateUserController } from '../controller/CreateUserController';
 import { UserFormFields } from '../form/UserForm';
 import { CreateUserInput } from '../schema/user.schema';
+import { AuthProfileResponse } from '@/features/auth/types/auth.types';
+import { getUsersHref } from '../HelperUser';
 
 type CreateUserPageProps = {
-  currentUserRole?: string | null;
+  currentProfile: AuthProfileResponse;
 };
 
-export function CreateUserPage({ currentUserRole }: CreateUserPageProps) {
+export function CreateUserPage({ currentProfile }: CreateUserPageProps) {
   const router = useRouter();
-  const { form, isSubmitting, onSubmit } = CreateUserController();
-
+  const activeMitraRole = currentProfile.mitraRoles;
+  const contextMitraId = activeMitraRole?.mitraId;
+  const contextMitraSlug = activeMitraRole?.mitraSlug ?? null;
+  const { form, isSubmitting, onSubmit } = CreateUserController(contextMitraId);
+  const userRole = activeMitraRole?.roleCode ?? currentProfile?.insidiaRole;
   return (
     <main className="min-h-screen bg-muted/30 px-4 py-10">
       <section className="mx-auto w-full max-w-4xl space-y-6">
@@ -31,7 +36,7 @@ export function CreateUserPage({ currentUserRole }: CreateUserPageProps) {
           <CardContent>
             <UserFormFields<CreateUserInput>
               form={form}
-              currentUserRole={currentUserRole}
+              currentUserRole={userRole}
               isLoading={isSubmitting}
               mode="create"
               onCancel={() => {
@@ -40,7 +45,7 @@ export function CreateUserPage({ currentUserRole }: CreateUserPageProps) {
                   return;
                 }
 
-                router.push('/admin');
+                router.push(getUsersHref(contextMitraSlug, 'users'));
               }}
               onSubmit={onSubmit}
               submitLabel="Simpan User"

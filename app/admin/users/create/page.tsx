@@ -1,15 +1,16 @@
 import { CreateUserPage } from '@/features/admin/user/components/CreateUserPage';
 
-import { forbidden } from 'next/navigation';
-import { auth } from '@/auth/auth.config';
+import { redirect } from 'next/navigation';
+import { getProfileUser } from '@/features/auth/api/api.server';
+import { toUserProfile } from '@/features/auth/auth.utils';
 
 export default async function AdminCreateUserPage() {
-  const session = await auth();
+  const profile = await getProfileUser();
 
-  const role = session?.user?.role;
-  if (!role || !['SUPER_ADMIN', 'ADMIN'].includes(role)) {
-    forbidden();
+  if (!profile) {
+    redirect('/login?callbackUrl=/admin/users');
   }
+  const userProfile = toUserProfile(profile);
 
-  return <CreateUserPage currentUserRole={role} />;
+  return <CreateUserPage currentProfile={userProfile} />;
 }

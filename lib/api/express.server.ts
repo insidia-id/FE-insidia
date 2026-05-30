@@ -5,7 +5,6 @@ import type { AppToken } from '@/features/auth/types/auth.types';
 import { buildClientError, createHeaders, getJson, unwrapData } from './api.shared';
 
 const apiUrl = process.env.API_URL;
-const NODE_ENV = process.env.NODE_ENV;
 if (!apiUrl) {
   throw new Error('API_URL environment variable is not defined');
 }
@@ -14,9 +13,7 @@ export async function apiFetchWithAuth<T = unknown>(path: string, init?: Request
   const requestHeaders = createHeaders(init);
   const token = await resolveAuthToken();
   const accessToken = typeof token?.accessToken === 'string' ? token.accessToken : null;
-  if (NODE_ENV !== 'development') {
-    console.log('Resolved access token:', accessToken);
-  }
+
   if (!accessToken) {
     throw buildClientError(
       {
@@ -36,9 +33,8 @@ export async function apiFetchWithAuth<T = unknown>(path: string, init?: Request
     headers: requestHeaders,
     cache: 'no-store',
   });
-
   const payload = await getJson(response);
-
+  console.log('API Response:', payload);
   if (!response.ok) {
     throw buildClientError(payload, response.status);
   }

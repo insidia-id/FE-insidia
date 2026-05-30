@@ -29,14 +29,12 @@ export function useVerifyOtpController({ callbackUrl, token }: UseVerifyOtpContr
 
   const onSubmit = async (values: VerifyAuthOtpInput) => {
     setIsSubmitting(true);
-
     try {
       const result = await signIn('credentials', {
         ...values,
         redirect: false,
         redirectTo: safeCallbackUrl,
       });
-      console.log('SIGNIN RESULT', result);
       if (result?.error === 'CredentialsSignin') {
         form.setError('otp', { message: 'OTP salah atau kadaluarsa.' });
         return;

@@ -3,36 +3,38 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { getRoleFilterOptions, statusFilterOptions, UserFilterOptions, UserScopeOptions } from '../HelperUser';
+import { getAssignableScopeOptions, getRoleFilterOptions, getUsersHref, statusFilterOptions, UserFilterOptions } from '../../HelperUser';
 import { Table } from '@tanstack/react-table';
-import type { SetUserFilter, SetUserScope } from '../UsersPage';
 import type { User, UserFilter, UserScope } from '../../types/user.types';
+import { AuthProfileResponse } from '@/features/auth/types/auth.types';
+
 type HeaderTableProps = {
-  currentUserRole?: string | null;
+  currentProfile: AuthProfileResponse;
   table: Table<User>;
-  setGlobalFilter: (value: string) => void;
+  onGlobalFilterChange: (value: string) => void;
   globalFilter: string;
   filter: UserFilter;
-  setFilter: SetUserFilter;
+  onFilterChange: (filter: UserFilter) => void;
   scope: UserScope;
-  setUserScope: SetUserScope;
+  onScopeChange: (scope: UserScope) => void;
 };
-export const HeaderTable = ({ currentUserRole, table, setGlobalFilter, globalFilter, filter, setFilter, scope, setUserScope }: HeaderTableProps) => {
+export const HeaderTable = ({ currentProfile, table, onGlobalFilterChange, globalFilter, filter, onFilterChange, scope, onScopeChange }: HeaderTableProps) => {
+  const currentUserRole = currentProfile.mitraRoles?.roleCode ?? currentProfile.insidiaRole ?? null;
   const roleFilterOptions = getRoleFilterOptions(currentUserRole);
-
+  const getCurrentScope = getAssignableScopeOptions(currentUserRole);
   return (
     <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
       <div className="flex flex-1 flex-col gap-3 md:flex-row">
         <div className="relative w-full md:max-w-xs">
           <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input className="pl-9" onChange={(event) => setGlobalFilter(event.target.value)} placeholder="Cari nama, email, role, status..." value={globalFilter} />
+          <Input className="pl-9" onChange={(event) => onGlobalFilterChange(event.target.value)} placeholder="Cari nama, email, role, status..." value={globalFilter} />
         </div>
-        <Select onValueChange={(value) => setUserScope(value as UserScope)} value={scope}>
+        <Select onValueChange={(value) => onScopeChange(value as UserScope)} value={scope}>
           <SelectTrigger className="w-full md:w-[220px]">
             <SelectValue placeholder="Filter scope" />
           </SelectTrigger>
           <SelectContent>
-            {UserScopeOptions.map((option) => (
+            {getCurrentScope.map((option) => (
               <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>
@@ -74,7 +76,7 @@ export const HeaderTable = ({ currentUserRole, table, setGlobalFilter, globalFil
             ))}
           </SelectContent>
         </Select>
-        <Select onValueChange={(value) => setFilter(value as UserFilter)} value={filter}>
+        <Select onValueChange={(value) => onFilterChange(value as UserFilter)} value={filter}>
           <SelectTrigger className="w-full md:w-[220px]">
             <SelectValue placeholder="Filter user" />
           </SelectTrigger>
@@ -89,7 +91,7 @@ export const HeaderTable = ({ currentUserRole, table, setGlobalFilter, globalFil
       </div>
 
       <Button asChild variant="insidia">
-        <Link href="/admin/users/create">
+        <Link href={getUsersHref(currentProfile.mitraRoles?.mitraSlug ?? null, 'users/create')}>
           <Plus className="size-4" />
           Tambah User
         </Link>

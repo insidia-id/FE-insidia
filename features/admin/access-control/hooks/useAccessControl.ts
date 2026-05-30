@@ -1,37 +1,27 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { getMutationErrorMessage } from '@/lib/error/error.message';
-import {
-  createPermission,
-  createRole,
-  deletePermission,
-  deleteRole,
-  getPermissions,
-  getRoles,
-  replaceRolePermissions,
-  updatePermission,
-  updateRole,
-} from '../api/api.client';
+import { createPermission, createRole, deletePermission, deleteRole, getPermissions, getRoles, replaceRolePermissions, updatePermission, updateRole } from '../api/api.client';
 import type { PermissionFormValues, RoleFormValues } from '../schema/access-control.schema';
 import type { AccessScope } from '../types/access-control.types';
 
 export const accessControlKeys = {
-  rolesByScope: (scope: AccessScope) => ['roles', scope] as const,
-  roles: (scope: AccessScope, includeDeleted: boolean) => ['roles', scope, includeDeleted] as const,
-  permissions: (scope: AccessScope) => ['permissions', scope] as const,
+  rolesByScope: (scope: AccessScope, mitraId?: string) => ['roles', scope, mitraId ?? 'global'] as const,
+  roles: (scope: AccessScope, includeDeleted: boolean, mitraId?: string) => ['roles', scope, includeDeleted, mitraId ?? 'global'] as const,
+  permissions: (scope: AccessScope, mitraId?: string) => ['permissions', scope, mitraId ?? 'global'] as const,
 };
 
-export function useGetRoles(scope: AccessScope, includeDeleted = false) {
+export function useGetRoles(scope: AccessScope, includeDeleted = false, mitraId?: string) {
   return useQuery({
-    queryKey: accessControlKeys.roles(scope, includeDeleted),
-    queryFn: () => getRoles(scope, includeDeleted),
+    queryKey: accessControlKeys.roles(scope, includeDeleted, mitraId),
+    queryFn: () => getRoles(scope, includeDeleted, mitraId),
   });
 }
 
-export function useGetPermissions(scope: AccessScope) {
+export function useGetPermissions(scope: AccessScope, mitraId?: string) {
   return useQuery({
-    queryKey: accessControlKeys.permissions(scope),
-    queryFn: () => getPermissions(scope),
+    queryKey: accessControlKeys.permissions(scope, mitraId),
+    queryFn: () => getPermissions(scope, mitraId),
   });
 }
 
@@ -84,10 +74,10 @@ export function useReplaceRolePermissions() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ roleId, permissionIds }: { roleId: string; permissionIds: string[]; scope: AccessScope }) => replaceRolePermissions(roleId, permissionIds),
+    mutationFn: ({ roleId, permissionIds, mitraId }: { roleId: string; permissionIds: string[]; scope: AccessScope; mitraId?: string }) => replaceRolePermissions(roleId, permissionIds, mitraId),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: accessControlKeys.rolesByScope(variables.scope) });
-      queryClient.invalidateQueries({ queryKey: accessControlKeys.permissions(variables.scope) });
+      queryClient.invalidateQueries({ queryKey: accessControlKeys.rolesByScope(variables.scope, variables.mitraId) });
+      queryClient.invalidateQueries({ queryKey: accessControlKeys.permissions(variables.scope, variables.mitraId) });
       toast.success('Permission role berhasil diperbarui');
     },
     onError: (error) => {
@@ -106,6 +96,7 @@ export function useCreatePermission() {
       toast.success('Permission berhasil dibuat');
     },
     onError: (error) => {
+      console.error('Create Permission Error:', error);
       toast.error(getMutationErrorMessage(error, 'Gagal membuat permission'));
     },
   });

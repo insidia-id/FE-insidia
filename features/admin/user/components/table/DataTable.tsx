@@ -1,14 +1,15 @@
 import { useState } from 'react';
-import { User } from '../../types/user.types';
+import { User, UserScope } from '../../types/user.types';
 import { useReactTable, getCoreRowModel, getFilteredRowModel, getSortedRowModel, SortingState, ColumnFiltersState, ColumnDef } from '@tanstack/react-table';
-import { getUserRole } from '../HelperUser';
+import { getUserRole, getUserScope } from '../../HelperUser';
 type UserTableProps = {
   users: User[];
   columns: ColumnDef<User>[];
+  scope: UserScope;
   globalFilter: string;
-  setGlobalFilter: (value: string) => void;
+  onGlobalFilterChange: (value: string) => void;
 };
-export const DataTable = ({ users, columns, globalFilter, setGlobalFilter }: UserTableProps) => {
+export const useUserDataTable = ({ users, columns, scope, globalFilter, onGlobalFilterChange }: UserTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([{ id: 'createdAt', desc: true }]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   return useReactTable({
@@ -21,7 +22,7 @@ export const DataTable = ({ users, columns, globalFilter, setGlobalFilter }: Use
     },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
-    onGlobalFilterChange: setGlobalFilter,
+    onGlobalFilterChange,
     globalFilterFn: (row, _columnId, filterValue) => {
       const keyword = String(filterValue).trim().toLowerCase();
 
@@ -30,7 +31,7 @@ export const DataTable = ({ users, columns, globalFilter, setGlobalFilter }: Use
       }
 
       const user = row.original;
-      return [user.name, user.email, getUserRole(user), user.status].filter(Boolean).some((value) => String(value).toLowerCase().includes(keyword));
+      return [user.name, user.email, getUserRole(user, scope), user.status].filter(Boolean).some((value) => String(value).toLowerCase().includes(keyword));
     },
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),

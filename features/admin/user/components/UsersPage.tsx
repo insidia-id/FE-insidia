@@ -1,27 +1,17 @@
 'use client';
 
-import type { Dispatch, SetStateAction } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useGetUsers } from '../hooks/useUser';
 import { UserTable } from './table/UserTable';
-import { useState } from 'react';
-import type { UserFilter, UserScope } from '../types/user.types';
-import { filterUsersByManageableRoles } from './HelperUser';
-
-export type SetUserFilter = Dispatch<SetStateAction<UserFilter>>;
-export type SetUserScope = Dispatch<SetStateAction<UserScope>>;
+import { UsersController } from '../controller/UsersController';
+import { AuthProfileResponse } from '@/features/auth/types/auth.types';
 
 type UsersPageProps = {
-  currentUserRole?: string | null;
+  currentProfile: AuthProfileResponse;
 };
 
-export function UsersPage({ currentUserRole }: UsersPageProps) {
-  const [filter, setFilter] = useState<UserFilter>('available');
-  const [scope, setScope] = useState<UserScope>('PLATFORM');
-  const { data: users = [], isLoading, isError, error } = useGetUsers(filter, scope);
-  const visibleUsers = filterUsersByManageableRoles(users, currentUserRole);
-
+export function UsersPage({ currentProfile }: UsersPageProps) {
+  const { filter, scope, visibleUsers, isLoading, isError, error, onFilterChange, onScopeChange } = UsersController(currentProfile);
   return (
     <main className="min-h-screen bg-muted/30 px-4 py-10">
       <section className="mx-auto w-full max-w-6xl space-y-6">
@@ -47,7 +37,7 @@ export function UsersPage({ currentUserRole }: UsersPageProps) {
             ) : isError ? (
               <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{error instanceof Error ? error.message : 'Gagal memuat data user.'}</div>
             ) : (
-              <UserTable currentUserRole={currentUserRole} users={visibleUsers} filter={filter} setFilter={setFilter} scope={scope} setUserScope={setScope} />
+              <UserTable currentProfile={currentProfile} users={visibleUsers} filter={filter} onFilterChange={onFilterChange} scope={scope} onScopeChange={onScopeChange} />
             )}
           </CardContent>
         </Card>

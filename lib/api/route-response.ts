@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import type { ApiErrorIssue } from './api.shared';
 
 type RouteResult<T = unknown> = {
   data: T;
@@ -9,6 +10,8 @@ export type ErrorOptions = {
   code?: string;
   status?: number;
   message: string;
+  errors?: ApiErrorIssue[];
+  details?: unknown;
 };
 
 export function toRouteResponse<T>(result: RouteResult<T>, status = 200) {
@@ -23,6 +26,9 @@ export function toRouteError(message: string, options?: ErrorOptions) {
       error: {
         code: options?.code ?? mapStatusToCode(status),
         message,
+        status,
+        errors: options?.errors,
+        details: options?.details,
       },
     },
     { status },

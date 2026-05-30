@@ -1,173 +1,130 @@
 import type { MenuItem } from '../types/Admin';
-export const superAdminMenuItems: MenuItem[] = [
-  {
-    title: 'Beranda',
-    icon: 'House',
-    href: '/',
-    exact: true,
-  },
-  {
-    title: 'Dashboard',
-    icon: 'LayoutDashboard',
-    href: '/admin',
-    exact: true,
-  },
-  {
-    title: 'Manajemen User',
-    icon: 'Users',
-    href: '/admin/users',
-    submenu: [
-      { title: 'Semua User', href: '/admin/users', icon: 'Users', exact: true },
-      { title: 'Tambah User', href: '/admin/users/create', icon: 'UserPlus' },
-      // { title: 'Instructor', href: '/super-admin/users?role=instructor', icon: 'GraduationCap' },
-      // { title: 'Student', href: '/super-admin/users?role=student', icon: 'User' },
-      // { title: 'User Nonaktif', href: '/admin/users?status=inactive', icon: 'UserX' },
-    ],
-  },
-  {
-    title: 'Role & Permission',
-    icon: 'Shield',
-    href: '/admin/access-control',
-    exact: true,
-  },
-  //   {
-  //     title: 'Kursus',
-  //     icon: 'BookOpen',
-  //     href: '/super-admin/courses',
-  //     submenu: [
-  //       { title: 'Semua Kursus', href: '/super-admin/courses', icon: 'BookOpen', exact: true },
-  //       { title: 'Draft', href: '/super-admin/courses?status=draft', icon: 'FileText' },
-  //       { title: 'Published', href: '/super-admin/courses?status=published', icon: 'CheckCircle' },
-  //       { title: 'Archived', href: '/super-admin/courses?status=archived', icon: 'Archive' },
-  //       { title: 'Kategori Kursus', href: '/super-admin/courses/categories', icon: 'Tags' },
-  //     ],
-  //   },
-  //   {
-  //     title: 'Materi Pembelajaran',
-  //     icon: 'Library',
-  //     href: '/super-admin/contents',
-  //     submenu: [
-  //       { title: 'Semua Materi', href: '/super-admin/contents', icon: 'Library', exact: true },
-  //       { title: 'Video', href: '/super-admin/contents?type=video', icon: 'Video' },
-  //       { title: 'Dokumen', href: '/super-admin/contents?type=document', icon: 'FileText' },
-  //       { title: 'Quiz', href: '/super-admin/contents?type=quiz', icon: 'CircleHelp' },
-  //       { title: 'Assignment', href: '/super-admin/contents?type=assignment', icon: 'ClipboardList' },
-  //     ],
-  //   },
-  //   {
-  //     title: 'Kelas',
-  //     icon: 'School',
-  //     href: '/super-admin/classes',
-  //     submenu: [
-  //       { title: 'Semua Kelas', href: '/super-admin/classes', icon: 'School', exact: true },
-  //       { title: 'Aktif', href: '/super-admin/classes?status=active', icon: 'CheckCircle' },
-  //       { title: 'Selesai', href: '/super-admin/classes?status=completed', icon: 'BadgeCheck' },
-  //       { title: 'Terjadwal', href: '/super-admin/classes?status=scheduled', icon: 'CalendarClock' },
-  //     ],
-  //   },
-  //   {
-  //     title: 'Enrollment',
-  //     icon: 'UserPlus',
-  //     href: '/super-admin/enrollments',
-  //     submenu: [
-  //       { title: 'Semua Enrollment', href: '/super-admin/enrollments', icon: 'UserPlus', exact: true },
-  //       { title: 'Aktif', href: '/super-admin/enrollments?status=active', icon: 'CheckCircle' },
-  //       { title: 'Pending', href: '/super-admin/enrollments?status=pending', icon: 'Clock' },
-  //       { title: 'Selesai', href: '/super-admin/enrollments?status=completed', icon: 'BadgeCheck' },
-  //     ],
-  //   },
-  //   {
-  //     title: 'Sertifikat',
-  //     icon: 'Award',
-  //     href: '/super-admin/certificates',
-  //     submenu: [
-  //       { title: 'Semua Sertifikat', href: '/super-admin/certificates', icon: 'Award', exact: true },
-  //       { title: 'Template Sertifikat', href: '/super-admin/certificates/templates', icon: 'FileBadge' },
-  //       { title: 'Terbitkan Sertifikat', href: '/super-admin/certificates/issue', icon: 'Send' },
-  //       { title: 'Verifikasi Sertifikat', href: '/super-admin/certificates/verify', icon: 'ShieldCheck' },
-  //     ],
-  //   },
-  //   {
-  //     title: 'Assessment',
-  //     icon: 'ClipboardCheck',
-  //     href: '/super-admin/assessments',
-  //     submenu: [
-  //       { title: 'Quiz', href: '/super-admin/assessments/quizzes', icon: 'CircleHelp' },
-  //       { title: 'Assignment', href: '/super-admin/assessments/assignments', icon: 'ClipboardList' },
-  //       { title: 'Bank Soal', href: '/super-admin/assessments/question-bank', icon: 'Database' },
-  //       { title: 'Penilaian', href: '/super-admin/assessments/grading', icon: 'ClipboardCheck' },
-  //     ],
-  //   },
-  //   {
-  //     title: 'Laporan',
-  //     icon: 'BarChart3',
-  //     href: '/super-admin/reports',
-  //     submenu: [
-  //       { title: 'Ringkasan', href: '/super-admin/reports', icon: 'TrendingUp', exact: true },
-  //       { title: 'Progress Siswa', href: '/super-admin/reports/student-progress', icon: 'LineChart' },
-  //       { title: 'Performa Kursus', href: '/super-admin/reports/course-performance', icon: 'BarChart3' },
-  //       { title: 'Aktivitas Instructor', href: '/super-admin/reports/instructors', icon: 'GraduationCap' },
-  //       { title: 'Ekspor Data', href: '/super-admin/reports/export', icon: 'Download' },
-  //     ],
-  //   },
-  //   {
-  //     title: 'Pengaturan LMS',
-  //     icon: 'Settings',
-  //     href: '/super-admin/settings',
-  //     submenu: [
-  //       { title: 'General', href: '/super-admin/settings', icon: 'Settings', exact: true },
-  //       { title: 'Role & Permission', href: '/super-admin/settings/roles', icon: 'Shield' },
-  //       { title: 'Learning Path', href: '/super-admin/settings/learning-paths', icon: 'Route' },
-  //       { title: 'Notifikasi', href: '/super-admin/settings/notifications', icon: 'Bell' },
-  //       { title: 'Integrasi', href: '/super-admin/settings/integrations', icon: 'Plug' },
-  //     ],
-  //   },
-];
-export const adminMenuItems: MenuItem[] = [
-  {
-    title: 'Beranda',
-    icon: 'House',
-    href: '/',
-    exact: true,
-  },
-  {
-    title: 'Dashboard',
-    icon: 'LayoutDashboard',
-    href: '/admin',
-    exact: true,
-  },
-  {
-    title: 'Manajemen User',
-    icon: 'Users',
-    href: '/admin/users',
-    submenu: [
-      { title: 'Semua User', href: '/admin/users', icon: 'Users', exact: true },
-      { title: 'Tambah User', href: '/admin/users/create', icon: 'UserPlus' },
-    ],
-  },
-];
-type DashboardRole = 'SUPER_ADMIN' | 'ADMIN' | 'MENTOR';
+import { getUsersHref } from '../user/HelperUser';
+import { getCoursesHref } from '../courses/lib/course.helper';
+import { Permissions } from '@/lib/helper/permission.helper';
+export function getAdminMenuItems(mitraSlug: string | null): MenuItem[] {
+  const items: MenuItem[] = [
+    {
+      title: 'Beranda',
+      icon: 'House',
+      href: '/',
+      exact: true,
+    },
+    {
+      title: 'Dashboard',
+      icon: 'LayoutDashboard',
+      href: getUsersHref(mitraSlug),
+      exact: true,
+    },
+    {
+      title: 'Manajemen User',
+      icon: 'Users',
+      href: getUsersHref(mitraSlug, 'users'),
+      permissions: [Permissions.userPermissions.viewUserInsidia, Permissions.userPermissions.viewUserMitra],
+      submenu: [
+        {
+          title: 'Semua User',
+          href: getUsersHref(mitraSlug, 'users'),
+          icon: 'Users',
+          exact: true,
+          permissions: [Permissions.userPermissions.viewUserInsidia, Permissions.userPermissions.viewUserMitra],
+        },
+        {
+          title: 'Tambah User',
+          href: getUsersHref(mitraSlug, 'users/create'),
+          icon: 'UserPlus',
+          permissions: [Permissions.userPermissions.createUserInsidia, Permissions.userPermissions.createUserMitra],
+        },
+      ],
+    },
+    {
+      title: 'Manajemen Mitra',
+      icon: 'Building2',
+      href: getUsersHref(mitraSlug, 'mitras'),
+      permissions: [Permissions.mitraPermissionCodes.view],
+      submenu: [
+        {
+          title: 'Semua Mitra',
+          href: getUsersHref(mitraSlug, 'mitras'),
+          icon: 'Building2',
+          exact: true,
+          permissions: [Permissions.mitraPermissionCodes.view],
+        },
+        {
+          title: 'Tambah Mitra',
+          href: getUsersHref(mitraSlug, 'mitras/create'),
+          icon: 'Building2',
+          permissions: [Permissions.mitraPermissionCodes.create],
+        },
+      ],
+    },
+    {
+      title: 'Manajemen Course',
+      icon: 'BookOpen',
+      href: getCoursesHref(mitraSlug),
+      permissions: [Permissions.coursePermissionCodes.viewMitra, Permissions.coursePermissionCodes.view],
+      submenu: [
+        {
+          title: 'Semua Course',
+          href: getCoursesHref(mitraSlug),
+          icon: 'BookOpen',
+          exact: true,
+          permissions: [Permissions.coursePermissionCodes.viewMitra, Permissions.coursePermissionCodes.view],
+        },
+        {
+          title: 'Tambah Course',
+          href: getCoursesHref(mitraSlug, 'create'),
+          icon: 'FolderKanban',
+          permissions: [Permissions.coursePermissionCodes.create, Permissions.coursePermissionCodes.createMitra],
+        },
+      ],
+    },
+    {
+      title: 'Role & Permission',
+      icon: 'Shield',
+      href: getUsersHref(mitraSlug, 'access-control'),
+      exact: true,
+      permissions: [Permissions.permissionCodes.manageMitraPermissions],
+    },
+    ...(mitraSlug
+      ? [
+          {
+            title: `Mitra: ${mitraSlug}`,
+            icon: 'Building2' as const,
+            href: getUsersHref(mitraSlug, 'academic'),
+          },
+        ]
+      : []),
+  ];
 
-function isDashboardRole(role?: string | null): role is DashboardRole {
-  return role === 'SUPER_ADMIN' || role === 'ADMIN' || role === 'MENTOR';
+  return items;
 }
-
-export const getSidebarItemsByRole = (role?: string | null): MenuItem[] => {
-  if (!isDashboardRole(role)) {
-    return [];
+export function getSidebarItemsByPermissions(items: MenuItem[], permissionCodes: string[] = [], role?: string | null): MenuItem[] {
+  if (role === 'SUPER_ADMIN') {
+    return items;
   }
 
-  switch (role) {
-    case 'SUPER_ADMIN':
-      return superAdminMenuItems;
+  const permissionSet = new Set(permissionCodes);
 
-    case 'ADMIN':
-      return adminMenuItems;
+  return items
+    .map((item) => {
+      const hasItemAccess = !item.permissions?.length || item.permissions.some((permission) => permissionSet.has(permission));
 
-    default:
-      return [];
-  }
-};
+      const submenu = item.submenu?.filter((subItem) => {
+        return !subItem.permissions?.length || subItem.permissions.some((permission) => permissionSet.has(permission));
+      });
+
+      if (!hasItemAccess && !submenu?.length) {
+        return null;
+      }
+
+      return {
+        ...item,
+        submenu,
+      };
+    })
+    .filter(Boolean) as MenuItem[];
+}
 
 export const getRoleLabel = (role?: string | null) => {
   switch (role) {

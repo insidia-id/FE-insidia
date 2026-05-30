@@ -13,14 +13,7 @@ type UserDeleteDialogProps = {
   description?: string;
 };
 
-export function UserDeleteDialog({
-  userId,
-  scope = 'PLATFORM',
-  open,
-  onOpenChange,
-  onSuccess,
-  description = 'Apakah Anda yakin ingin menghapus user ini? Tindakan ini tidak dapat dibatalkan.',
-}: UserDeleteDialogProps) {
+export function UserDeleteDialog({ userId, scope = 'INSIDIA', open, onOpenChange, onSuccess, description = 'Apakah Anda yakin ingin menghapus user ini? Tindakan ini tidak dapat dibatalkan.' }: UserDeleteDialogProps) {
   const deleteUserMutation = useDeleteUser();
 
   return (
@@ -34,12 +27,15 @@ export function UserDeleteDialog({
           return;
         }
 
-        deleteUserMutation.mutate({ userId, scope }, {
-          onSuccess: () => {
-            onOpenChange(false);
-            onSuccess?.();
+        deleteUserMutation.mutate(
+          { userId, scope },
+          {
+            onSuccess: () => {
+              onOpenChange(false);
+              onSuccess?.();
+            },
           },
-        });
+        );
       }}
     />
   );

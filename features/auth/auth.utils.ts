@@ -1,6 +1,6 @@
 import type { User } from 'next-auth';
 import type { Account } from 'next-auth';
-import type { AppAuthResponse, AppToken, AppUser, GoogleExchangePayload, SessionError } from './types/auth.types';
+import type { AppAuthResponse, AppToken, AppUser, AuthProfileResponse, GoogleExchangePayload, SessionError } from './types/auth.types';
 const INTERNAL_AUTH_TOKEN = process.env.INTERNAL_AUTH_TOKEN;
 
 export function toAppUser(user: AppAuthResponse['user']): AppUser {
@@ -80,4 +80,28 @@ export function getInternalAuthToken(): string {
   }
 
   return INTERNAL_AUTH_TOKEN;
+}
+export function mitraRoles(profile: AuthProfileResponse) {
+  if (!profile.mitraRoles) {
+    return null;
+  }
+
+  return {
+    roleCode: profile.mitraRoles.roleCode,
+    mitraSlug: profile.mitraRoles.mitraSlug,
+    mitraName: profile.mitraRoles.mitraName,
+    mitraId: profile.mitraRoles.mitraId,
+  };
+}
+export function toUserProfile(profile: AuthProfileResponse): AuthProfileResponse {
+  return {
+    id: profile.id,
+    email: profile.email,
+    name: profile.name,
+    insidiaRole: profile.insidiaRole,
+    mitraRoles: mitraRoles(profile),
+    permissions: profile.permissions,
+    image: profile.image,
+    status: profile.status,
+  };
 }

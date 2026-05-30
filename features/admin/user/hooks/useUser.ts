@@ -8,21 +8,21 @@ import type { User, UserDetail, UserFilter, UserScope } from '../types/user.type
 export const userKeys = {
   all: ['users'] as const,
   lists: () => [...userKeys.all, 'list'] as const,
-  list: (filter: UserFilter = 'available', scope: UserScope = 'PLATFORM') => [...userKeys.lists(), { filter, scope }] as const,
+  list: (filter: UserFilter = 'available', scope: UserScope = 'INSIDIA', mitraId?: string) => [...userKeys.lists(), { filter, scope, mitraId }] as const,
 
   detail: (userId: string) => [...userKeys.all, userId] as const,
 };
-export const useGetUsers = (filter: UserFilter = 'available', scope: UserScope = 'PLATFORM') =>
+export const useGetUsers = (filter: UserFilter = 'available', scope: UserScope = 'INSIDIA', mitraId?: string) =>
   useQuery<User[]>({
-    queryKey: userKeys.list(filter, scope),
-    queryFn: () => getUsers(filter, scope),
+    queryKey: userKeys.list(filter, scope, mitraId),
+    queryFn: () => getUsers(filter, scope, mitraId),
     refetchOnWindowFocus: false,
   });
 
-export const useGetUserById = (userId: string, scope: UserScope = 'PLATFORM') =>
+export const useGetUserById = (userId: string, scope: UserScope = 'INSIDIA', mitraId?: string) =>
   useQuery<UserDetail>({
-    queryKey: [...userKeys.detail(userId), { scope }],
-    queryFn: () => getUserById(userId, scope),
+    queryKey: [...userKeys.detail(userId), { scope, mitraId }],
+    queryFn: () => getUserById(userId, scope, mitraId),
     enabled: Boolean(userId),
     refetchOnWindowFocus: false,
   });
@@ -66,7 +66,7 @@ export function useDeleteUser() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ userId, scope }: { userId: string; scope: UserScope }) => deleteUser(userId, scope),
+    mutationFn: ({ userId, scope, mitraId }: { userId: string; scope: UserScope; mitraId?: string }) => deleteUser(userId, scope, mitraId),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: userKeys.all });
       queryClient.removeQueries({ queryKey: userKeys.detail(variables.userId) });

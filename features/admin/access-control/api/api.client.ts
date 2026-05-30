@@ -2,13 +2,27 @@ import { apiFetchInternal } from '@/lib/api/express.client';
 import type { PermissionFormValues, RoleFormValues } from '../schema/access-control.schema';
 import type { AccessScope, Permission, Role, RolePermission } from '../types/access-control.types';
 
-export async function getRoles(scope: AccessScope, includeDeleted = false): Promise<Role[]> {
+function buildAccessControlParams(scope: AccessScope, includeDeleted?: boolean, mitraId?: string) {
   const params = new URLSearchParams({
     scope,
-    includeDeleted: String(includeDeleted),
   });
 
-  return apiFetchInternal<Role[]>(`/api/admin/roles?${params.toString()}`, {
+  if (includeDeleted !== undefined) {
+    params.set('includeDeleted', String(includeDeleted));
+  }
+
+  if (mitraId) {
+    params.set('mitraId', mitraId);
+  }
+
+  return params;
+}
+
+export async function getRoles(scope: AccessScope, includeDeleted = false, mitraId?: string): Promise<Role[]> {
+  const params = buildAccessControlParams(scope, includeDeleted, mitraId);
+  const path = mitraId ? `/api/mitras/${mitraId}/roles` : '/api/admin/roles';
+
+  return apiFetchInternal<Role[]>(`${path}?${params.toString()}`, {
     method: 'GET',
   });
 }
@@ -33,19 +47,20 @@ export async function deleteRole(roleId: string): Promise<{ message: string }> {
   });
 }
 
-export async function replaceRolePermissions(roleId: string, permissionIds: string[]): Promise<RolePermission[]> {
-  return apiFetchInternal<RolePermission[]>(`/api/admin/roles/${roleId}/permissions`, {
+export async function replaceRolePermissions(roleId: string, permissionIds: string[], mitraId?: string): Promise<RolePermission[]> {
+  const path = mitraId ? `/api/mitras/${mitraId}/roles/${roleId}/permissions` : `/api/admin/roles/${roleId}/permissions`;
+
+  return apiFetchInternal<RolePermission[]>(path, {
     method: 'PUT',
     body: JSON.stringify({ permissionIds }),
   });
 }
 
-export async function getPermissions(scope: AccessScope): Promise<Permission[]> {
-  const params = new URLSearchParams({
-    scope,
-  });
+export async function getPermissions(scope: AccessScope, mitraId?: string): Promise<Permission[]> {
+  const params = buildAccessControlParams(scope, undefined, mitraId);
+  const path = mitraId ? `/api/mitras/${mitraId}/permissions` : '/api/admin/permissions';
 
-  return apiFetchInternal<Permission[]>(`/api/admin/permissions?${params.toString()}`, {
+  return apiFetchInternal<Permission[]>(`${path}?${params.toString()}`, {
     method: 'GET',
   });
 }

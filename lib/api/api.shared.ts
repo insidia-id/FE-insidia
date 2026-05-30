@@ -7,13 +7,22 @@ export type ApiErrorBody = {
     code: string;
     status?: number;
     message: string;
+    errors?: ApiErrorIssue[];
+    details?: unknown;
   };
+};
+
+export type ApiErrorIssue = {
+  path?: string;
+  message?: string;
 };
 
 export type ApiClientError = Error & {
   status: number;
   code: string;
   message: string;
+  errors?: ApiErrorIssue[];
+  details?: unknown;
 };
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
@@ -44,11 +53,16 @@ export function unwrapData<T>(payload: unknown): T {
 
 export function normalizeErrorData(payload: unknown) {
   const error = isRecord(payload) && isRecord(payload.error) ? payload.error : null;
+  const errors = Array.isArray(error?.errors)
+    ? error.errors.filter((item): item is ApiErrorIssue => isRecord(item))
+    : undefined;
 
   return {
     code: typeof error?.code === 'string' ? error.code : 'FETCH_FAILED',
     message: typeof error?.message === 'string' ? error.message : 'Fetch request failed',
     status: typeof error?.status === 'number' ? error.status : 500,
+    errors,
+    details: error?.details,
   };
 }
 
@@ -59,5 +73,7 @@ export function buildClientError(payload: unknown, status: number): ApiClientErr
   error.status = status;
   error.code = data.code;
   error.message = data.message;
+  error.errors = data.errors;
+  error.details = data.details;
   return error;
 }

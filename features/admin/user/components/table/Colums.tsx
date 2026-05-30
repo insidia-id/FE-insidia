@@ -1,15 +1,16 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { RoleUser, StatusUser, User } from '../../types/user.types';
+import { RoleUser, StatusUser, User, UserScope } from '../../types/user.types';
 import { ArrowUpDown, Eye, Pencil, MoreVertical, Trash2 } from 'lucide-react';
 import { useMemo } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useUpdateUser } from '../../hooks/useUser';
-import { canManageRole, formatDateTime, getAssignableRoleOptions, getScopeByRole, getStatusVariant, formatStatus, getUserRole, getUserScope, USER_ROLE_OPTIONS, USER_STATUS_OPTIONS } from '../HelperUser';
+import { canManageRole, formatDateTime, getAssignableRoleOptions, getStatusVariant, formatStatus, getUserRole, USER_ROLE_OPTIONS, USER_STATUS_OPTIONS, getUsersHref } from '../../HelperUser';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-function RoleSelectCell({ currentUserRole, user, onChange, isLoading }: { currentUserRole?: string | null; user: User; onChange: (role: RoleUser) => void; isLoading: boolean }) {
-  const currentRole = getUserRole(user);
+import { AuthProfileResponse } from '@/features/auth/types/auth.types';
+
+function RoleSelectCell({ currentUserRole, scope, user, onChange, isLoading }: { currentUserRole?: string | null; scope: UserScope; user: User; onChange: (role: RoleUser) => void; isLoading: boolean }) {
+  const currentRole = getUserRole(user, scope);
   const currentRoleLabel = USER_ROLE_OPTIONS.find((option) => option.value === currentRole)?.label ?? currentRole;
   const assignableRoleOptions = getAssignableRoleOptions(currentUserRole);
   const canManageCurrentRole = canManageRole(currentUserRole, currentRole);
@@ -18,58 +19,64 @@ function RoleSelectCell({ currentUserRole, user, onChange, isLoading }: { curren
     <div className="flex items-center gap-2">
       <Badge variant="outline">{currentRoleLabel}</Badge>
 
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="size-8" disabled={isLoading || !canManageCurrentRole || assignableRoleOptions.length === 0}>
-            <MoreVertical className="size-4" />
-            <span className="sr-only">Buka menu role</span>
-          </Button>
-        </DropdownMenuTrigger>
+      {(currentUserRole === 'SUPER_ADMIN' || currentUserRole === 'ADMIN') && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="size-8" disabled={isLoading || !canManageCurrentRole || assignableRoleOptions.length === 0}>
+              <MoreVertical className="size-4" />
+              <span className="sr-only">Buka menu role</span>
+            </Button>
+          </DropdownMenuTrigger>
 
-        <DropdownMenuContent align="end" className="w-48">
-          {assignableRoleOptions.map((option) => (
-            <DropdownMenuItem key={option.value} onClick={() => onChange(option.value)} className={option.value === currentRole ? 'font-semibold' : ''}>
-              {option.label}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+          <DropdownMenuContent align="end" className="w-48">
+            {assignableRoleOptions.map((option) => (
+              <DropdownMenuItem key={option.value} onClick={() => onChange(option.value)} className={option.value === currentRole ? 'font-semibold' : ''}>
+                {option.label}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
     </div>
   );
 }
 
-function StatusSelectCell({ user, onChange, isLoading }: { user: User; onChange: (status: StatusUser) => void; isLoading: boolean }) {
+function StatusSelectCell({ currentUserRole, user, onChange, isLoading }: { currentUserRole?: string | null; user: User; onChange: (status: StatusUser) => void; isLoading: boolean }) {
   return (
     <div className="flex items-center gap-2">
       <Badge variant={getStatusVariant(user.status)}>{formatStatus(user.status)}</Badge>
+      {(currentUserRole === 'SUPER_ADMIN' || currentUserRole === 'ADMIN') && (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="size-8" disabled={isLoading}>
+              <MoreVertical className="size-4" />
+              <span className="sr-only">Buka menu status</span>
+            </Button>
+          </DropdownMenuTrigger>
 
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="size-8" disabled={isLoading}>
-            <MoreVertical className="size-4" />
-            <span className="sr-only">Buka menu status</span>
-          </Button>
-        </DropdownMenuTrigger>
-
-        <DropdownMenuContent align="end">
-          {USER_STATUS_OPTIONS.map((option) => (
-            <DropdownMenuItem key={option.value} onClick={() => onChange(option.value)}>
-              {option.label}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
+          <DropdownMenuContent align="end">
+            {USER_STATUS_OPTIONS.map((option) => (
+              <DropdownMenuItem key={option.value} onClick={() => onChange(option.value)}>
+                {option.label}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
     </div>
   );
 }
 type UseUserColumnsProps = {
-  currentUserRole?: string | null;
-  setSelectedUserId: (id: string | null) => void;
-  setSelectedUserScope: (scope: 'PLATFORM' | 'MITRA') => void;
-  setIsDeleteOpen: (open: boolean) => void;
+  currentProfile: AuthProfileResponse;
+  scope: UserScope;
+  isUpdating: boolean;
+  onDeleteRequest: (user: User) => void;
+  onRoleChange: (userId: string, role: RoleUser) => void;
+  onStatusChange: (userId: string, status: StatusUser) => void;
 };
-export const useUserColumns = ({ currentUserRole, setSelectedUserId, setSelectedUserScope, setIsDeleteOpen }: UseUserColumnsProps) => {
-  const updateUserMutation = useUpdateUser();
+export const useUserColumns = ({ currentProfile, scope, isUpdating, onDeleteRequest, onRoleChange, onStatusChange }: UseUserColumnsProps) => {
+  const currentUserRole = currentProfile.mitraRoles?.roleCode ?? currentProfile.insidiaRole ?? null;
+  const mitraSlug = currentProfile.mitraRoles?.mitraSlug ?? null;
 
   return useMemo<ColumnDef<User>[]>(
     () => [
@@ -95,35 +102,12 @@ export const useUserColumns = ({ currentUserRole, setSelectedUserId, setSelected
 
       {
         id: 'role',
-        accessorFn: (user) => getUserRole(user),
-        cell: ({ row }) => (
-          <RoleSelectCell
-            currentUserRole={currentUserRole}
-            user={row.original}
-            onChange={(role) =>
-              updateUserMutation.mutate({
-                userId: row.original.id,
-                data: { role, scope: getScopeByRole(role) },
-              })
-            }
-            isLoading={updateUserMutation.isPending}
-          />
-        ),
+        accessorFn: (user) => getUserRole(user, scope),
+        cell: ({ row }) => <RoleSelectCell currentUserRole={currentUserRole} scope={scope} user={row.original} onChange={(role) => onRoleChange(row.original.id, role)} isLoading={isUpdating} />,
       },
       {
         accessorKey: 'status',
-        cell: ({ row }) => (
-          <StatusSelectCell
-            user={row.original}
-            onChange={(status) =>
-              updateUserMutation.mutate({
-                userId: row.original.id,
-                data: { status },
-              })
-            }
-            isLoading={updateUserMutation.isPending}
-          />
-        ),
+        cell: ({ row }) => <StatusSelectCell currentUserRole={currentUserRole} user={row.original} onChange={(status) => onStatusChange(row.original.id, status)} isLoading={isUpdating} />,
       },
 
       {
@@ -156,27 +140,20 @@ export const useUserColumns = ({ currentUserRole, setSelectedUserId, setSelected
 
                 <DropdownMenuContent align="end" className="w-40">
                   <DropdownMenuItem asChild>
-                    <Link href={`/admin/users/${user.id}?scope=${getUserScope(user)}`} className="flex items-center gap-2">
+                    <Link href={getUsersHref(mitraSlug, `users/${user.id}?scope=${scope}`)} className="flex items-center gap-2">
                       <Eye className="size-4" />
                       Detail
                     </Link>
                   </DropdownMenuItem>
 
                   <DropdownMenuItem asChild>
-                    <Link href={`/admin/users/${user.id}/edit?scope=${getUserScope(user)}`} className="flex items-center gap-2">
+                    <Link href={getUsersHref(mitraSlug, `users/${user.id}/edit?scope=${scope}`)} className="flex items-center gap-2">
                       <Pencil className="size-4" />
                       Edit
                     </Link>
                   </DropdownMenuItem>
                   {user.deletedAt === null && (
-                    <DropdownMenuItem
-                      onClick={() => {
-                        setSelectedUserId(user.id);
-                        setSelectedUserScope(getUserScope(user));
-                        setIsDeleteOpen(true);
-                      }}
-                      className="text-destructive"
-                    >
+                    <DropdownMenuItem onClick={() => onDeleteRequest(user)} className="text-destructive">
                       <Trash2 className="size-4" />
                       Hapus User
                     </DropdownMenuItem>
@@ -188,6 +165,6 @@ export const useUserColumns = ({ currentUserRole, setSelectedUserId, setSelected
         },
       },
     ],
-    [currentUserRole, setIsDeleteOpen, setSelectedUserId, setSelectedUserScope, updateUserMutation],
+    [currentUserRole, mitraSlug, scope, isUpdating, onDeleteRequest, onRoleChange, onStatusChange],
   );
 };
