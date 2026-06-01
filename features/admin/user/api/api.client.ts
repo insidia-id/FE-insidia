@@ -1,7 +1,7 @@
 import { apiFetchInternal } from '@/lib/api/express.client';
 import { CreateUserInput, UpdateUserPayload } from '../schema/user.schema';
-import type { User, UserDetail, UserFilter, UserScope } from '../types/user.types';
-import { normalizeUser, normalizeUserDetail, normalizeUsers } from '../types/user.normalizer';
+import type { BulkUserImportResult, BulkUserPreviewResult, User, UserDetail, UserFilter, UserScope } from '../types/user.types';
+import { normalizeBulkUserImportResult, normalizeBulkUserPreviewResult, normalizeUser, normalizeUserDetail, normalizeUsers } from '../types/user.normalizer';
 
 function buildCreateUserPayload(data: CreateUserInput): CreateUserInput {
   return {
@@ -78,4 +78,24 @@ export async function deleteUser(userId: string, scope: UserScope = 'INSIDIA', m
     method: 'DELETE',
   });
   return res;
+}
+
+export async function previewBulkUsers(file: File): Promise<BulkUserPreviewResult> {
+  const formData = new FormData();
+  formData.set('file', file);
+
+  const res = await apiFetchInternal<unknown>('/api/admin/user/preview', {
+    method: 'POST',
+    body: formData,
+  });
+  console.log('Raw preview result:', res);
+  return normalizeBulkUserPreviewResult(res);
+}
+
+export async function importBulkUsers(jobId: string): Promise<BulkUserImportResult> {
+  const res = await apiFetchInternal<unknown>(`/api/admin/user/import/${jobId}`, {
+    method: 'POST',
+  });
+
+  return normalizeBulkUserImportResult(res);
 }

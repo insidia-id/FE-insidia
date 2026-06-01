@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { LoadingButton } from '@/components/common/ButtonLoading';
 import { ConfirmDeleteDialog } from '@/components/dialog/DialogDelete';
 import { readErrorMessage } from '@/lib/form/form.helper';
+import { cn } from '@/lib/utils';
 import { useAcademicCrudController } from '../controller/AcademicCrudController';
 import type { AcademicColumn, AcademicFieldConfig } from '../types/mitra-academic.types';
 
@@ -26,6 +27,9 @@ type AcademicCrudCardProps<TItem, TFormValues extends FieldValues> = {
   getItemId: (item: TItem) => string;
   getItemLabel: (item: TItem) => string;
   toFormValues: (item: TItem | null) => TFormValues;
+  className?: string;
+  actionLabel?: string;
+  emptyLabel?: string;
   mutations: {
     createMutation: {
       mutate: (data: TFormValues, options?: { onSuccess?: () => void }) => void;
@@ -53,6 +57,9 @@ export function AcademicCrudCard<TItem, TFormValues extends FieldValues>({
   getItemId,
   getItemLabel,
   toFormValues,
+  className,
+  actionLabel = 'Tambah',
+  emptyLabel,
   mutations,
 }: AcademicCrudCardProps<TItem, TFormValues>) {
   const { form, editingItem, itemToDelete, isFormOpen, isSubmitting, isDeleting, onCreate, onEdit, onSubmit, onDelete, onFormOpenChange, onDeleteTargetChange } = useAcademicCrudController({
@@ -66,18 +73,21 @@ export function AcademicCrudCard<TItem, TFormValues extends FieldValues>({
   });
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-start justify-between gap-4">
-        <div>
-          <CardTitle>{title}</CardTitle>
-          <CardDescription>{description}</CardDescription>
+    <Card className={cn('border-border/70 bg-white/90 shadow-sm', className)}>
+      <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="space-y-1">
+          <div className="flex flex-wrap items-center gap-3">
+            <CardTitle className="text-lg font-semibold">{title}</CardTitle>
+            <span className="text-xs uppercase tracking-[0.18em] text-muted-foreground">{items.length} data</span>
+          </div>
+          <CardDescription className="text-sm leading-6">{description}</CardDescription>
         </div>
-        <Button variant="insidia" onClick={onCreate}>
-          Tambah
+        <Button variant="insidia" size="sm" onClick={onCreate}>
+          {actionLabel}
         </Button>
       </CardHeader>
-      <CardContent>
-        <div className="overflow-x-auto">
+      <CardContent className="pt-0">
+        <div className="overflow-x-auto rounded-lg border border-border/60">
           <Table>
             <TableHeader>
               <TableRow>
@@ -90,8 +100,8 @@ export function AcademicCrudCard<TItem, TFormValues extends FieldValues>({
             <TableBody>
               {items.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={columns.length + 1} className="py-8 text-center text-sm text-muted-foreground">
-                    Belum ada data {title.toLowerCase()}.
+                  <TableCell colSpan={columns.length + 1} className="py-10 text-center text-sm text-muted-foreground">
+                    {emptyLabel ?? `Belum ada data ${title.toLowerCase()}.`}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -157,7 +167,7 @@ export function AcademicCrudCard<TItem, TFormValues extends FieldValues>({
   );
 }
 
-function FieldRenderer<TFormValues extends FieldValues>({ field, form }: { field: AcademicFieldConfig<TFormValues>; form: UseFormReturn<TFormValues, unknown, TFormValues>; }) {
+function FieldRenderer<TFormValues extends FieldValues>({ field, form }: { field: AcademicFieldConfig<TFormValues>; form: UseFormReturn<TFormValues, unknown, TFormValues> }) {
   const fieldName = field.name as Path<TFormValues>;
   const error = readErrorMessage(form.formState.errors, field.name);
 
@@ -173,9 +183,9 @@ function FieldRenderer<TFormValues extends FieldValues>({ field, form }: { field
 
   if (field.type === 'select') {
     return (
-        <Controller
-          control={form.control}
-          name={fieldName}
+      <Controller
+        control={form.control}
+        name={fieldName}
         render={({ field: controllerField }) => (
           <div className="space-y-2">
             <label className="text-sm font-medium">{field.label}</label>

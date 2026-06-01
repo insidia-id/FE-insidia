@@ -4,9 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import type { AccessScope, Role } from '../../types/access-control.types';
+import type { AccessScope } from '../../types/access-control.types';
 import { getRoleStatus } from '../../lib/access-control.helper';
-
+import type { Role } from '../types/role.types';
 type RoleListCardProps = {
   userRole: string;
   roles: Role[];

@@ -1,7 +1,9 @@
 import { UpdateUserPage } from '@/features/admin/user/components/UpdateUserPage';
 import { getProfileUser } from '@/features/auth/api/api.server';
 import { toUserProfile } from '@/features/auth/auth.utils';
-import { forbidden, redirect } from 'next/navigation';
+import { redirect } from 'next/navigation';
+import { PagePermission } from '@/app/middleware';
+import { Permissions } from '@/lib/helper/permission.helper';
 
 type AdminUserEditPageProps = {
   params: Promise<{
@@ -17,6 +19,12 @@ export default async function AdminUserEditPage({ params, searchParams }: AdminU
   if (!profile) {
     redirect('/login?callbackUrl=/admin/users');
   }
+
+  PagePermission(profile, [
+    Permissions.userPermissions.updateUserInsidia,
+    Permissions.userPermissions.updateUserMitra,
+  ]);
+
   const userProfile = toUserProfile(profile);
   const { id } = await params;
   const query = await searchParams;

@@ -7,7 +7,6 @@ import { HeaderTable } from './HeaderTable';
 import { UserDeleteDialog } from '../UserDeleteDialog';
 import { UserTableController } from '../../controller/UserTableController';
 import { AuthProfileResponse } from '@/features/auth/types/auth.types';
-import { getUserRole } from '../../HelperUser';
 
 type UserTableProps = {
   currentProfile: AuthProfileResponse;
@@ -24,7 +23,6 @@ export function UserTable({ currentProfile, users, filter, onFilterChange, scope
     users,
     scope,
   });
-  console.log(getUserRole(users[0], scope), users[0]);
   return (
     <>
       <div className="space-y-4">

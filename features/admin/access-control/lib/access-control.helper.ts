@@ -1,6 +1,21 @@
-import type { PermissionFormValues, RoleFormValues } from '../schema/access-control.schema';
-import type { AccessScope, Permission, Role } from '../types/access-control.types';
+import type { AccessScope } from '../types/access-control.types';
+import { Role } from '../roles/types/role.types';
+import { Permission } from '../permission/types/permission.types';
+export function buildAccessControlParams(scope: AccessScope, includeDeleted?: boolean, mitraId?: string) {
+  const params = new URLSearchParams({
+    scope,
+  });
 
+  if (includeDeleted !== undefined) {
+    params.set('includeDeleted', String(includeDeleted));
+  }
+
+  if (mitraId) {
+    params.set('mitraId', mitraId);
+  }
+
+  return params;
+}
 export const ACCESS_SCOPE_OPTIONS: Array<{
   label: string;
   value: AccessScope;
@@ -14,43 +29,6 @@ export function getAssignableRoleOptions(userRole: string) {
   }
 
   return ACCESS_SCOPE_OPTIONS.filter((option) => option.value === 'MITRA');
-}
-export function buildRoleDefaultValues(scope: AccessScope, role?: Role | null): RoleFormValues {
-  if (!role) {
-    return {
-      name: '',
-      code: '',
-      scope,
-      description: '',
-      isSystem: false,
-    };
-  }
-
-  return {
-    name: role.name,
-    code: role.code,
-    scope: role.scope,
-    description: role.description ?? '',
-    isSystem: role.isSystem,
-  };
-}
-
-export function buildPermissionDefaultValues(scope: AccessScope, permission?: Permission | null): PermissionFormValues {
-  if (!permission) {
-    return {
-      name: '',
-      scope,
-      code: '',
-      description: '',
-    };
-  }
-
-  return {
-    name: permission.name,
-    scope: permission.scope,
-    code: permission.code,
-    description: permission.description ?? '',
-  };
 }
 
 export function getRoleStatus(role: Role) {

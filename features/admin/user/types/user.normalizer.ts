@@ -1,5 +1,5 @@
-import { asBoolean, asNullableString, asRecord, asString, unwrapDataPayload, normalizeEnum } from '@/lib/helper/normalizer.helper';
-import type { RoleUser, SocialLinks, StatusUser, User, UserDetail, UserMitraRoleRelation, UserRoleRelation, UserScope } from './user.types';
+import { asBoolean, asNullableString, asNumberOrDefault, asRecord, asString, unwrapDataPayload, normalizeEnum } from '@/lib/helper/normalizer.helper';
+import type { BulkUserImportResult, BulkUserPreviewResult, RoleUser, SocialLinks, StatusUser, User, UserDetail, UserMitraRoleRelation, UserRoleRelation, UserScope } from './user.types';
 
 const USER_ROLE_VALUES = ['SUPER_ADMIN', 'ADMIN', 'MENTOR', 'USER', 'AKADEMIK', 'MURID', 'GURU', 'WALI_MURID'] as const;
 const USER_SCOPE_VALUES = ['INSIDIA', 'MITRA'] as const;
@@ -129,5 +129,34 @@ export function normalizeUserDetail(value: unknown): UserDetail {
     websiteUrl: asNullableString(record.websiteUrl),
     socialLinks: normalizeSocialLinks(record.socialLinks),
     createdById: asNullableString(record.createdById),
+  };
+}
+
+export function normalizeBulkUserPreviewResult(value: unknown): BulkUserPreviewResult {
+  const record = asRecord(unwrapDataPayload(value));
+
+  if (!record) {
+    throw new Error('Invalid bulk user preview data');
+  }
+
+  return {
+    jobId: asString(record.jobId),
+    totalRows: asNumberOrDefault(record.totalRows),
+    validRows: asNumberOrDefault(record.validRows),
+    invalidRows: asNumberOrDefault(record.invalidRows),
+    canImport: asBoolean(record.canImport),
+  };
+}
+
+export function normalizeBulkUserImportResult(value: unknown): BulkUserImportResult {
+  const record = asRecord(unwrapDataPayload(value));
+
+  if (!record) {
+    throw new Error('Invalid bulk user import data');
+  }
+
+  return {
+    jobId: asString(record.jobId),
+    status: asString(record.status),
   };
 }

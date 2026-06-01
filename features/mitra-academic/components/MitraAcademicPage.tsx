@@ -1,5 +1,6 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -31,9 +32,10 @@ export function MitraAcademicPage({ mitraId, mitraName }: { mitraId: string; mit
 
   if (controller.isLoading) {
     return (
-      <main className="min-h-screen bg-muted/30 px-4 py-10">
-        <section className="mx-auto w-full max-w-6xl space-y-4">
-          <Skeleton className="h-12 w-full" />
+      <main className="min-h-screen bg-[linear-gradient(180deg,rgba(15,23,42,0.04),rgba(15,23,42,0)_40%),radial-gradient(120%_80%_at_0%_0%,rgba(14,165,233,0.08),transparent)] px-4 py-8">
+        <section className="mx-auto w-full max-w-6xl space-y-6">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-28 w-full" />
           <Skeleton className="h-64 w-full" />
           <Skeleton className="h-64 w-full" />
         </section>
@@ -43,9 +45,9 @@ export function MitraAcademicPage({ mitraId, mitraName }: { mitraId: string; mit
 
   if (controller.error) {
     return (
-      <main className="min-h-screen bg-muted/30 px-4 py-10">
+      <main className="min-h-screen bg-[linear-gradient(180deg,rgba(15,23,42,0.04),rgba(15,23,42,0)_40%),radial-gradient(120%_80%_at_0%_0%,rgba(14,165,233,0.08),transparent)] px-4 py-8">
         <section className="mx-auto w-full max-w-6xl">
-          <Card>
+          <Card className="border-border/70 bg-white/90 shadow-sm">
             <CardContent className="p-6">
               <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{controller.error instanceof Error ? controller.error.message : 'Gagal memuat data akademik mitra.'}</div>
             </CardContent>
@@ -56,22 +58,38 @@ export function MitraAcademicPage({ mitraId, mitraName }: { mitraId: string; mit
   }
 
   return (
-    <main className="min-h-screen bg-muted/30 px-4 py-10">
-      <section className="mx-auto w-full max-w-6xl space-y-6">
-        <div className="space-y-2">
-          <p className="text-sm font-medium uppercase tracking-[0.14em] text-muted-foreground">Mitra Academic</p>
-          <h1 className="text-3xl font-semibold text-foreground">Manajemen Akademik {mitraName}</h1>
-          <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
-            Kelola struktur akademik mitra dari tahun ajaran sampai relasi rombel dan mapel. Semua resource dipisah per card agar state form dan tampilan tidak bercampur dalam satu file besar.
-          </p>
+    <main className="min-h-screen bg-[linear-gradient(180deg,rgba(15,23,42,0.04),rgba(15,23,42,0)_40%),radial-gradient(120%_80%_at_0%_0%,rgba(14,165,233,0.08),transparent)] px-4 py-8">
+      <section className="mx-auto w-full max-w-6xl space-y-8">
+        <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+          <div className="space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Mitra Academic</p>
+            <h1 className="text-3xl font-semibold text-foreground">Manajemen Akademik {mitraName}</h1>
+            <p className="max-w-3xl text-sm leading-6 text-muted-foreground">Kelola struktur akademik mitra dari tahun ajaran sampai relasi rombel dan mapel. Form disusun per modul agar proses input tetap terkontrol dan konsisten.</p>
+          </div>
+          <Card className="border-border/70 bg-white/90 shadow-sm">
+            <CardContent className="space-y-4 p-5">
+              <div className="space-y-1">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Ringkasan Data</p>
+                <p className="text-sm text-muted-foreground">Snapshot jumlah data akademik yang sudah aktif di mitra ini.</p>
+              </div>
+              <div className="divide-y divide-border/60 rounded-lg border border-border/60">
+                <SummaryRow label="Tahun Ajaran" value={controller.academicYears.length} />
+                <SummaryRow label="Semester" value={controller.semesters.length} />
+                <SummaryRow label="Mapel" value={controller.subjects.length} />
+                <SummaryRow label="Rombel" value={controller.classGroups.length} />
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-        <div className="grid gap-6">
+        <SectionGroup title="Periode Akademik" description="Mulai dari tahun ajaran sampai semester aktif." meta="Prioritas awal">
           <AcademicCrudCard
             title="Tahun Ajaran"
             description="Atur periode akademik utama yang akan dipakai semester dan kelas."
             items={controller.academicYears}
             schema={academicYearFormSchema}
+            actionLabel="Tambah Tahun"
+            className="bg-white"
             defaultValues={
               {
                 name: '',
@@ -115,6 +133,8 @@ export function MitraAcademicPage({ mitraId, mitraName }: { mitraId: string; mit
             description="Hubungkan semester ke tahun ajaran yang aktif."
             items={controller.semesters}
             schema={semesterFormSchema}
+            actionLabel="Tambah Semester"
+            className="bg-white"
             defaultValues={
               {
                 academicYearId: controller.academicYearOptions[0]?.value ?? '',
@@ -156,12 +176,16 @@ export function MitraAcademicPage({ mitraId, mitraName }: { mitraId: string; mit
             })}
             mutations={controller.semesterMutations}
           />
+        </SectionGroup>
 
+        <SectionGroup title="Kurikulum & Mapel" description="Kurikulum dan mapel menjadi fondasi penyusunan kelas akademik.">
           <AcademicCrudCard
             title="Kurikulum"
             description="Data kurikulum akan dipakai saat membuat mapel dan kelas akademik."
             items={controller.curricula}
             schema={curriculumFormSchema}
+            actionLabel="Tambah Kurikulum"
+            className="bg-white"
             defaultValues={
               {
                 name: '',
@@ -205,6 +229,8 @@ export function MitraAcademicPage({ mitraId, mitraName }: { mitraId: string; mit
             description="Mapel mitra memakai entitas course scope MITRA yang terhubung ke kurikulum."
             items={controller.subjects}
             schema={subjectFormSchema}
+            actionLabel="Tambah Mapel"
+            className="bg-white"
             defaultValues={
               {
                 curriculumId: controller.curriculumOptions[0]?.value ?? '',
@@ -245,12 +271,16 @@ export function MitraAcademicPage({ mitraId, mitraName }: { mitraId: string; mit
             })}
             mutations={controller.subjectMutations}
           />
+        </SectionGroup>
 
+        <SectionGroup title="Struktur Kelas" description="Bangun kelas akademik dan rombel yang menjadi rumah siswa.">
           <AcademicCrudCard
             title="Kelas Angkatan"
-            description="kelas Angkatan atau kelas akademik, sebagai pengelompokan utama siswa selama periode tertentu. Kelas ini yang akan dipakai untuk membuat rombel."
+            description="Kelas angkatan atau kelas akademik sebagai pengelompokan utama siswa pada periode tertentu."
             items={controller.academicClasses}
             schema={academicClassFormSchema}
+            actionLabel="Tambah Kelas"
+            className="bg-white"
             defaultValues={
               {
                 academicYearId: controller.academicYearOptions[0]?.value ?? '',
@@ -278,7 +308,7 @@ export function MitraAcademicPage({ mitraId, mitraName }: { mitraId: string; mit
               },
             ]}
             columns={[
-              { header: 'Angakatan', render: (item) => `${item.name} • ${item.level}` },
+              { header: 'Angkatan', render: (item) => `${item.name} - ${item.level}` },
               { header: 'Semester', render: (item) => item.semester.name },
               { header: 'Kurikulum', render: (item) => item.curriculum.name },
               { header: 'Status', render: (item) => <Badge variant={getAcademicStatusVariant(item.status)}>{item.status}</Badge> },
@@ -301,6 +331,8 @@ export function MitraAcademicPage({ mitraId, mitraName }: { mitraId: string; mit
             description="Rombel mengelompokkan siswa di dalam kelas akademik dan dapat memiliki wali kelas."
             items={controller.classGroups}
             schema={classGroupFormSchema}
+            actionLabel="Tambah Rombel"
+            className="bg-white"
             defaultValues={
               {
                 classId: controller.academicClassOptions[0]?.value ?? '',
@@ -339,12 +371,16 @@ export function MitraAcademicPage({ mitraId, mitraName }: { mitraId: string; mit
             })}
             mutations={controller.classGroupMutations}
           />
+        </SectionGroup>
 
+        <SectionGroup title="Relasi Akademik" description="Hubungkan rombel, mapel, guru, dan murid ke periode aktif.">
           <AcademicCrudCard
             title="Rombel Mapel"
             description="Relasi antara rombel, mapel, guru, tahun ajaran, dan semester."
             items={controller.classGroupCourses}
             schema={classGroupCourseFormSchema}
+            actionLabel="Tambah Relasi"
+            className="bg-white"
             defaultValues={
               {
                 classGroupId: controller.classGroupOptions[0]?.value ?? '',
@@ -375,7 +411,7 @@ export function MitraAcademicPage({ mitraId, mitraName }: { mitraId: string; mit
               { header: 'Rombel', render: (item) => item.classGroup.name },
               { header: 'Mapel', render: (item) => item.subject.name },
               { header: 'Guru', render: (item) => item.teacher.name ?? item.teacher.email },
-              { header: 'Semester', render: (item) => `${item.academicYear.name} • ${item.semester.name}` },
+              { header: 'Semester', render: (item) => `${item.academicYear.name} - ${item.semester.name}` },
               { header: 'Status', render: (item) => <Badge variant={getAcademicStatusVariant(item.status)}>{item.status}</Badge> },
             ]}
             getItemId={(item) => item.id}
@@ -396,6 +432,8 @@ export function MitraAcademicPage({ mitraId, mitraName }: { mitraId: string; mit
             description="Relasi antara murid, rombel, tahun ajaran, dan semester aktif."
             items={controller.classGroupStudents}
             schema={classGroupStudentFormSchema}
+            actionLabel="Tambah Relasi"
+            className="bg-white"
             defaultValues={
               {
                 classGroupId: controller.classGroupOptions[0]?.value ?? '',
@@ -424,7 +462,7 @@ export function MitraAcademicPage({ mitraId, mitraName }: { mitraId: string; mit
               { header: 'Rombel', render: (item) => item.classGroup.name },
               { header: 'Murid', render: (item) => item.student.name ?? item.student.email },
               { header: 'Kelas', render: (item) => item.classGroup.academicClass.name },
-              { header: 'Semester', render: (item) => `${item.academicYear.name} â€¢ ${item.semester.name}` },
+              { header: 'Semester', render: (item) => `${item.academicYear.name} - ${item.semester.name}` },
               { header: 'Status', render: (item) => <Badge variant={getAcademicStatusVariant(item.status)}>{item.status}</Badge> },
             ]}
             getItemId={(item) => item.id}
@@ -438,7 +476,7 @@ export function MitraAcademicPage({ mitraId, mitraName }: { mitraId: string; mit
             })}
             mutations={controller.classGroupStudentMutations}
           />
-        </div>
+        </SectionGroup>
       </section>
     </main>
   );
@@ -446,4 +484,28 @@ export function MitraAcademicPage({ mitraId, mitraName }: { mitraId: string; mit
 
 function getAcademicStatusVariant(status: AcademicStatus): 'success' | 'outline' {
   return status === 'ACTIVE' ? 'success' : 'outline';
+}
+
+function SectionGroup({ title, description, meta, children }: { title: string; description: string; meta?: string; children: ReactNode }) {
+  return (
+    <section className="rounded-2xl border border-border/70 bg-white/80 p-6 shadow-sm">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-1">
+          <h2 className="text-xl font-semibold text-foreground">{title}</h2>
+          <p className="text-sm text-muted-foreground">{description}</p>
+        </div>
+        {meta ? <span className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">{meta}</span> : null}
+      </div>
+      <div className="mt-6 grid gap-4 lg:grid-cols-2">{children}</div>
+    </section>
+  );
+}
+
+function SummaryRow({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="flex items-center justify-between px-4 py-3 text-sm">
+      <span className="text-muted-foreground">{label}</span>
+      <span className="text-lg font-semibold text-foreground">{value}</span>
+    </div>
+  );
 }

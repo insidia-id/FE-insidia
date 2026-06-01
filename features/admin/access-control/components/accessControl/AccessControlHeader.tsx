@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { ACCESS_SCOPE_OPTIONS, getAssignableRoleOptions } from '../../lib/access-control.helper';
+import { getAssignableRoleOptions } from '../../lib/access-control.helper';
 import type { AccessScope } from '../../types/access-control.types';
 
 type AccessControlHeaderProps = {

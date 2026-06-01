@@ -1,7 +1,9 @@
 import { UserDetailPage } from '@/features/admin/user/components/UserDetailPage';
 import { getProfileUser } from '@/features/auth/api/api.server';
-import { forbidden } from 'next/navigation';
+import { redirect } from 'next/navigation';
 import { toUserProfile } from '@/features/auth/auth.utils';
+import { PagePermission } from '@/app/middleware';
+import { Permissions } from '@/lib/helper/permission.helper';
 
 type AdminUserDetailPageProps = {
   params: Promise<{
@@ -14,11 +16,15 @@ type AdminUserDetailPageProps = {
 
 export default async function AdminUserDetailPage({ params, searchParams }: AdminUserDetailPageProps) {
   const profile = await getProfileUser();
-  const role = profile ? profile.insidiaRole : null;
 
-  if (!role || !['SUPER_ADMIN', 'ADMIN'].includes(role)) {
-    forbidden();
+  if (!profile) {
+    redirect('/login?callbackUrl=/admin/users');
   }
+
+  PagePermission(profile, [
+    Permissions.userPermissions.viewUserInsidia,
+    Permissions.userPermissions.viewUserMitra,
+  ]);
 
   const { id } = await params;
   const query = await searchParams;

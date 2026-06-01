@@ -43,9 +43,9 @@ export const Permissions = {
   },
 
   permissionCodes: {
-    viewMitraPermissions: 'mitra.view.permissions',
-    manageMitraPermissions: 'mitra.manage.permissions',
-    viewInsidiaPermissions: 'insidia.view.permissions',
-    manageInsidiaPermissions: 'insidia.manage.permissions',
+    viewMitraPermissions: 'permissions.view.mitra',
+    manageMitraPermissions: 'permissions.manage.mitra',
+    viewInsidiaPermissions: 'permissions.view.insidia',
+    manageInsidiaPermissions: 'permissions.manage.insidia',
   },
 } as const;

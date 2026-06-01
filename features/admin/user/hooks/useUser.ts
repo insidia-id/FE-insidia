@@ -1,9 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { createUser, deleteUser, getUserById, getUsers, updateUser } from '../api/api.client';
+import { createUser, deleteUser, getUserById, getUsers, importBulkUsers, previewBulkUsers, updateUser } from '../api/api.client';
 import { CreateUserInput, UpdateUserPayload } from '../schema/user.schema';
 import { toast } from 'sonner';
 import { getMutationErrorMessage } from '@/lib/error/error.message';
-import type { User, UserDetail, UserFilter, UserScope } from '../types/user.types';
+import type { BulkUserImportResult, BulkUserPreviewResult, User, UserDetail, UserFilter, UserScope } from '../types/user.types';
 
 export const userKeys = {
   all: ['users'] as const,
@@ -74,6 +74,38 @@ export function useDeleteUser() {
     },
     onError: (error: unknown) => {
       toast.error(getMutationErrorMessage(error, 'Gagal menghapus user'));
+    },
+  });
+}
+
+export function usePreviewBulkUsers() {
+  return useMutation<BulkUserPreviewResult, unknown, File>({
+    mutationFn: (file: File) => previewBulkUsers(file),
+    onSuccess: (result) => {
+      if (result.canImport) {
+        toast.success('Preview bulk upload berhasil');
+        return;
+      }
+
+      toast.error('Masih ada data CSV yang tidak valid');
+    },
+    onError: (error: unknown) => {
+      toast.error(getMutationErrorMessage(error, 'Gagal memproses preview bulk upload'));
+    },
+  });
+}
+
+export function useImportBulkUsers() {
+  const queryClient = useQueryClient();
+
+  return useMutation<BulkUserImportResult, unknown, string>({
+    mutationFn: (jobId: string) => importBulkUsers(jobId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+      toast.success('Import bulk user berhasil diantrikan');
+    },
+    onError: (error: unknown) => {
+      toast.error(getMutationErrorMessage(error, 'Gagal memulai import bulk user'));
     },
   });
 }

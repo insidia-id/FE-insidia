@@ -8,25 +8,30 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { readErrorMessage } from '@/lib/form/form.helper';
-import { createPermissionSchema, type PermissionFormValues } from '../../schema/access-control.schema';
-import type { AccessScope, Permission } from '../../types/access-control.types';
-import { ACCESS_SCOPE_OPTIONS, buildPermissionDefaultValues } from '../../lib/access-control.helper';
+import type { AccessScope } from '../../types/access-control.types';
+import { ACCESS_SCOPE_OPTIONS } from '../../lib/access-control.helper';
+import { Permission, PermissionFormValues } from '../types/permission.types';
+import type { ModulePermission } from '../../module-permission/types/module-permission.types';
+import { createPermissionSchema } from '../schema/permission.schema';
+import { buildPermissionDefaultValues } from '../helper/permission.helper';
 
 type PermissionDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   scope: AccessScope;
   permission?: Permission | null;
+  modulePermissions: ModulePermission[];
+  isModulePermissionsLoading: boolean;
   isLoading: boolean;
   onSubmit: (values: PermissionFormValues) => void;
 };
 
-export function PermissionDialog({ open, onOpenChange, scope, permission, isLoading, onSubmit }: PermissionDialogProps) {
+export function PermissionDialog({ open, onOpenChange, scope, permission, modulePermissions, isModulePermissionsLoading, isLoading, onSubmit }: PermissionDialogProps) {
   const form = useForm<PermissionFormValues>({
-    resolver: zodResolver(createPermissionSchema) as Resolver<PermissionFormValues>,
+    resolver: zodResolver(createPermissionSchema({ requireModule: !permission })) as Resolver<PermissionFormValues>,
     defaultValues: buildPermissionDefaultValues(scope, permission),
   });
-
+  console.log('PermissionDialog render with permission:', permission, 'and modulePermissions:', modulePermissions);
   useEffect(() => {
     form.reset(buildPermissionDefaultValues(scope, permission));
   }, [form, permission, scope, open]);
@@ -43,6 +48,31 @@ export function PermissionDialog({ open, onOpenChange, scope, permission, isLoad
           <div className="grid gap-4">
             <TextField id="permission-name" label="Nama Permission" placeholder="User Create Insidia All" error={readErrorMessage(form.formState.errors, 'name')} disabled={isLoading} {...form.register('name')} />
             <TextField id="permission-code" label="Kode Permission" placeholder="user.update.insidia" error={readErrorMessage(form.formState.errors, 'code')} disabled={isLoading} {...form.register('code')} />
+
+            {!permission && (
+              <div className="space-y-2">
+                <Label htmlFor="permission-module">Module Permission</Label>
+                <Controller
+                  control={form.control}
+                  name="moduleId"
+                  render={({ field }) => (
+                    <Select disabled={isLoading || isModulePermissionsLoading} onValueChange={field.onChange} value={field.value ?? ''}>
+                      <SelectTrigger id="permission-module">
+                        <SelectValue placeholder={isModulePermissionsLoading ? 'Memuat module...' : 'Pilih module permission'} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {modulePermissions.map((modulePermission) => (
+                          <SelectItem key={modulePermission.id} value={modulePermission.id}>
+                            {modulePermission.module}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {readErrorMessage(form.formState.errors, 'moduleId') && <p className="text-sm text-destructive">{readErrorMessage(form.formState.errors, 'moduleId')}</p>}
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="permission-scope">Scope</Label>

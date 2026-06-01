@@ -21,7 +21,9 @@ export default async function MitraLayout({ children, params }: { children: Reac
   if (profile.status === 'BANNED') {
     redirect('/force-logout');
   }
-
+  if (profile.mitraRoles?.roleCode !== 'AKADEMIK') {
+    redirect(getRoleLandingPath(profile.insidiaRole, profile.mitraRoles));
+  }
   if (!activeMitraRole) {
     redirect(getRoleLandingPath(profile.insidiaRole, profile.mitraRoles));
   }

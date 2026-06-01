@@ -1,6 +1,6 @@
 import { KeyRound, Shield, Users } from 'lucide-react';
-import type { Permission, Role } from '../../types/access-control.types';
-
+import type { Permission } from '../../permission/types/permission.types';
+import type { Role } from '../../roles/types/role.types';
 type AccessControlStatsProps = {
   roles: Role[];
   permissions: Permission[];
