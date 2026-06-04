@@ -7,6 +7,7 @@ import { UserFormFields } from '../form/UserForm';
 import { CreateUserInput } from '../schema/user.schema';
 import { AuthProfileResponse } from '@/features/auth/types/auth.types';
 import { getUsersHref } from '../HelperUser';
+import { BulkUploadUserDialog } from './BulkUploadUserDialog';
 
 type CreateUserPageProps = {
   currentProfile: AuthProfileResponse;
@@ -19,6 +20,7 @@ export function CreateUserPage({ currentProfile }: CreateUserPageProps) {
   const contextMitraSlug = activeMitraRole?.mitraSlug ?? null;
   const { form, isSubmitting, onSubmit } = CreateUserController(contextMitraId);
   const userRole = activeMitraRole?.roleCode ?? currentProfile?.insidiaRole;
+  BulkUploadUserDialog;
   return (
     <main className="min-h-screen bg-muted/30 px-4 py-10">
       <section className="mx-auto w-full max-w-4xl space-y-6">

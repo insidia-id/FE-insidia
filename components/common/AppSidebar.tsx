@@ -73,7 +73,7 @@ export function AppSidebar({ menuItems, user }: AppSidebarProps) {
                       return (
                         <Tooltip key={item.href}>
                           <TooltipTrigger asChild>
-                            <Link href={item.href} className={`flex items-center justify-center rounded-lg p-2 transition-colors ${isMenuItemActive ? 'bg-[#835DE3] text-white' : 'hover:bg-accent'}`}>
+                            <Link prefetch href={item.href} className={`flex items-center justify-center rounded-lg p-2 transition-colors ${isMenuItemActive ? 'bg-[#835DE3] text-white' : 'hover:bg-accent'}`}>
                               <Icon className="h-4 w-4 shrink-0" />
                             </Link>
                           </TooltipTrigger>
@@ -118,7 +118,7 @@ export function AppSidebar({ menuItems, user }: AppSidebarProps) {
                                     asChild
                                     className="h-auto justify-start rounded-lg p-2 text-sm font-normal data-[state=active]:bg-[#835DE3] data-[state=active]:text-white data-[state=active]:shadow-none"
                                   >
-                                    <Link href={subItem.href}>
+                                    <Link prefetch href={subItem.href}>
                                       <div className="flex min-w-0 flex-1 items-center gap-3">
                                         <SubIcon className="h-3.5 w-3.5 shrink-0" />
                                         <span className="truncate">{subItem.title}</span>
@@ -143,7 +143,11 @@ export function AppSidebar({ menuItems, user }: AppSidebarProps) {
                   return (
                     <Tooltip key={item.href}>
                       <TooltipTrigger asChild>
-                        <Link href={item.href} className={`flex items-center rounded-lg p-2 transition-colors ${isCollapsed ? 'justify-center' : 'justify-between'} ${isMenuItemActive ? 'bg-[#835DE3] text-white' : 'hover:bg-accent'}`}>
+                        <Link
+                          prefetch
+                          href={item.href}
+                          className={`flex items-center rounded-lg p-2 transition-colors ${isCollapsed ? 'justify-center' : 'justify-between'} ${isMenuItemActive ? 'bg-[#835DE3] text-white' : 'hover:bg-accent'}`}
+                        >
                           <div className="flex min-w-0 items-center gap-3">
                             <Icon className="h-4 w-4 shrink-0" />
 

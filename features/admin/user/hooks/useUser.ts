@@ -1,10 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { createUser, deleteUser, getUserById, getUsers, importBulkUsers, previewBulkUsers, updateUser } from '../api/api.client';
+import { createUser, deleteUser, deleteUserMitraRole, getUserById, getUsers, importBulkUsers, previewBulkUsers, updateUser } from '../api/api.client';
 import { CreateUserInput, UpdateUserPayload } from '../schema/user.schema';
 import { toast } from 'sonner';
 import { getMutationErrorMessage } from '@/lib/error/error.message';
-import type { BulkUserImportResult, BulkUserPreviewResult, User, UserDetail, UserFilter, UserScope } from '../types/user.types';
-
+import type { User, UserDetail, UserFilter, UserScope } from '../types/user.types';
+import type { BulkImportResult, BulkPreviewResult } from '@/features/bulk/types/bulk.types';
 export const userKeys = {
   all: ['users'] as const,
   lists: () => [...userKeys.all, 'list'] as const,
@@ -78,8 +78,24 @@ export function useDeleteUser() {
   });
 }
 
+export function useDeleteUserMitraRole() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ userId, mitraId }: { userId: string; mitraId?: string }) => deleteUserMitraRole(userId, mitraId),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+      queryClient.invalidateQueries({ queryKey: userKeys.detail(variables.userId) });
+      toast.success('Peran Mitra berhasil dihapus dari user');
+    },
+    onError: (error: unknown) => {
+      toast.error(getMutationErrorMessage(error, 'Gagal menghapus peran Mitra dari user'));
+    },
+  });
+}
+
 export function usePreviewBulkUsers() {
-  return useMutation<BulkUserPreviewResult, unknown, File>({
+  return useMutation<BulkPreviewResult, unknown, File>({
     mutationFn: (file: File) => previewBulkUsers(file),
     onSuccess: (result) => {
       if (result.canImport) {
@@ -98,7 +114,7 @@ export function usePreviewBulkUsers() {
 export function useImportBulkUsers() {
   const queryClient = useQueryClient();
 
-  return useMutation<BulkUserImportResult, unknown, string>({
+  return useMutation<BulkImportResult, unknown, string>({
     mutationFn: (jobId: string) => importBulkUsers(jobId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.all });

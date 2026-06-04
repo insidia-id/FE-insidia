@@ -15,7 +15,6 @@ export const createPermissionSchema = (options: PermissionSchemaOptions = {}) =>
   z.object({
     moduleId: options.requireModule ? z.string().trim().min(1, 'Module permission wajib dipilih') : z.string().trim().optional(),
     name: z.string().trim().min(1, 'Nama permission wajib diisi'),
-    scope: z.enum(['INSIDIA', 'MITRA']),
     code: permissionCodeSchema,
     description: nullableTrimmedStringSchema.default(null),
   });

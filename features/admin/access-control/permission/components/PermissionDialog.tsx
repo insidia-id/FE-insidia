@@ -31,7 +31,6 @@ export function PermissionDialog({ open, onOpenChange, scope, permission, module
     resolver: zodResolver(createPermissionSchema({ requireModule: !permission })) as Resolver<PermissionFormValues>,
     defaultValues: buildPermissionDefaultValues(scope, permission),
   });
-  console.log('PermissionDialog render with permission:', permission, 'and modulePermissions:', modulePermissions);
   useEffect(() => {
     form.reset(buildPermissionDefaultValues(scope, permission));
   }, [form, permission, scope, open]);
@@ -73,29 +72,6 @@ export function PermissionDialog({ open, onOpenChange, scope, permission, module
                 {readErrorMessage(form.formState.errors, 'moduleId') && <p className="text-sm text-destructive">{readErrorMessage(form.formState.errors, 'moduleId')}</p>}
               </div>
             )}
-
-            <div className="space-y-2">
-              <Label htmlFor="permission-scope">Scope</Label>
-              <Controller
-                control={form.control}
-                name="scope"
-                render={({ field }) => (
-                  <Select disabled={isLoading} onValueChange={(value) => field.onChange(value as AccessScope)} value={field.value}>
-                    <SelectTrigger id="permission-scope">
-                      <SelectValue placeholder="Pilih scope" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {ACCESS_SCOPE_OPTIONS.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-              {readErrorMessage(form.formState.errors, 'scope') && <p className="text-sm text-destructive">{readErrorMessage(form.formState.errors, 'scope')}</p>}
-            </div>
 
             <TextAreaField
               id="permission-description"

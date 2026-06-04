@@ -1,4 +1,4 @@
-import type { AccessScope } from '../types/access-control.types';
+import type { AccessScope } from '@/lib/types/types';
 import { Role } from '../roles/types/role.types';
 import { Permission } from '../permission/types/permission.types';
 export function buildAccessControlParams(scope: AccessScope, includeDeleted?: boolean, mitraId?: string) {
@@ -70,8 +70,4 @@ export function resolveSelectedPermissionIds(params: {
   }
 
   return selectedRole?.permissions.map((item) => item.permissionId) ?? [];
-}
-
-export function filterPermissionsByScope(permissions: Permission[], scope: AccessScope) {
-  return permissions.filter((permission) => permission.scope === scope);
 }

@@ -16,14 +16,12 @@ type AdminUserEditPageProps = {
 
 export default async function AdminUserEditPage({ params, searchParams }: AdminUserEditPageProps) {
   const profile = await getProfileUser();
+
   if (!profile) {
     redirect('/login?callbackUrl=/admin/users');
   }
 
-  PagePermission(profile, [
-    Permissions.userPermissions.updateUserInsidia,
-    Permissions.userPermissions.updateUserMitra,
-  ]);
+  PagePermission(profile, [Permissions.userPermissions.updateUserInsidia, Permissions.userPermissions.updateUserMitra]);
 
   const userProfile = toUserProfile(profile);
   const { id } = await params;

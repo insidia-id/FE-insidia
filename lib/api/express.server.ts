@@ -34,7 +34,6 @@ export async function apiFetchWithAuth<T = unknown>(path: string, init?: Request
     cache: 'no-store',
   });
   const payload = await getJson(response);
-  console.log('API Response:', payload);
   if (!response.ok) {
     throw buildClientError(payload, response.status);
   }

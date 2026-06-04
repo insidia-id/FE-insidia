@@ -4,12 +4,14 @@ export function buildModulePermissionDefaultValues(modulePermission?: ModulePerm
   if (!modulePermission) {
     return {
       module: '',
+      scope: 'INSIDIA',
       description: '',
     };
   }
 
   return {
     module: modulePermission.module,
+    scope: modulePermission.scope,
     description: modulePermission.description ?? '',
   };
 }

@@ -54,16 +54,3 @@ export type UserDetail = User & {
   socialLinks?: SocialLinks | null;
   createdById: string | null;
 };
-
-export type BulkUserPreviewResult = {
-  jobId: string;
-  totalRows: number;
-  validRows: number;
-  invalidRows: number;
-  canImport: boolean;
-};
-
-export type BulkUserImportResult = {
-  jobId: string;
-  status: string;
-};

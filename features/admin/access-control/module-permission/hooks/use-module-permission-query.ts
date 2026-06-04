@@ -1,13 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { getMutationErrorMessage } from '@/lib/error/error.message';
-import { createModulePermission, deleteModulePermission, getModulePermissions, updateModulePermission } from '../api/api.client';
+import { createModulePermission, deleteModulePermission, getModulePermissions, importBulkModulesPermission, previewBulkModulesPermission, updateModulePermission } from '../api/api.client';
 import type { ModulePermission, ModulePermissionFormValues } from '../types/module-permission.types';
-import type { AccessScope } from '../../types/access-control.types';
-
+import { BulkImportResult, BulkPreviewResult } from '@/features/bulk/types/bulk.types';
+import { AccessScope } from '@/lib/types/types';
 export const modulePermissionKeys = {
   all: ['module-permissions'] as const,
-  lists: (scope: AccessScope, mitraId?: string) => [...modulePermissionKeys.all, 'list', scope, mitraId ?? 'global'] as const,
+  lists: (scope: AccessScope, mitraId?: string) => [...modulePermissionKeys.all, 'list', scope, mitraId ?? 'INSIDIA'] as const,
 };
 
 export function useGetModulePermissions(scope: AccessScope, mitraId?: string) {
@@ -73,6 +73,37 @@ export function useDeleteModulePermission(scope: AccessScope, mitraId?: string) 
     },
     onError: (error) => {
       toast.error(getMutationErrorMessage(error, 'Gagal menghapus module permission'));
+    },
+  });
+}
+export function usePreviewBulkModulesPermission() {
+  return useMutation<BulkPreviewResult, unknown, File>({
+    mutationFn: (file: File) => previewBulkModulesPermission(file),
+    onSuccess: (result) => {
+      if (result.canImport) {
+        toast.success('Preview bulk upload berhasil');
+        return;
+      }
+
+      toast.error('Masih ada data CSV yang tidak valid');
+    },
+    onError: (error: unknown) => {
+      toast.error(getMutationErrorMessage(error, 'Gagal memproses preview bulk upload'));
+    },
+  });
+}
+
+export function useImportBulkModulesPermission() {
+  const queryClient = useQueryClient();
+
+  return useMutation<BulkImportResult, unknown, string>({
+    mutationFn: (jobId: string) => importBulkModulesPermission(jobId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: modulePermissionKeys.all });
+      toast.success('Import bulk module permission berhasil diantrikan');
+    },
+    onError: (error: unknown) => {
+      toast.error(getMutationErrorMessage(error, 'Gagal memulai import bulk module permission'));
     },
   });
 }

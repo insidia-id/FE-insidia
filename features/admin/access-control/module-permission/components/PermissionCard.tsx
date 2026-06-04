@@ -79,9 +79,7 @@ export function PermissionsCard({
                   <div className="min-w-0 space-y-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <p className="font-medium text-foreground">{permission.name}</p>
-                      <Badge variant="outline">{permission.scope}</Badge>
                     </div>
-                    <p className="text-xs uppercase tracking-[0.12em] text-muted-foreground">{permission.code}</p>
                     <div className="flex gap-2">
                       <Button type="button" variant="outline" size="icon-sm" onClick={() => onViewPermission(permission)}>
                         <Eye className="size-4" />

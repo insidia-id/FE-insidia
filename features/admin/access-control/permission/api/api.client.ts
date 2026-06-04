@@ -19,7 +19,6 @@ export async function createPermission(data: PermissionFormValues): Promise<Perm
 }
 
 export async function updatePermission(permissionId: string, data: PermissionFormValues): Promise<Permission> {
-  console.log('Updating permission with ID:', permissionId, 'and data:', data);
   return apiFetchInternal<Permission>(`/api/admin/permissions/${permissionId}`, {
     method: 'PATCH',
     body: JSON.stringify(data),

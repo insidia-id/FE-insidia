@@ -108,7 +108,6 @@ export function usePermissions({ scope, mitraId, selectedRole, selectedRoleId }:
     deletePermissionMutation.mutate(
       {
         permissionId: permissionToDelete.id,
-        scope: permissionToDelete.scope,
       },
       {
         onSuccess: () => {

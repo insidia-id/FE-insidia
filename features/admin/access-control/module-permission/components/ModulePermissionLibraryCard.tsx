@@ -11,6 +11,7 @@ import { PermissionsCard } from './PermissionCard';
 import { AccessScope } from '../../types/access-control.types';
 import { PermissionDetailDialog } from './PermissionDetailDialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { BulkUploadModulePermissionDialog } from './BulkUploadModulePermissionDialog';
 type ModulePermissionLibraryCardProps = {
   userRole: string;
   modulePermissions: ModulePermission[];
@@ -51,16 +52,15 @@ export function ModulePermissionLibraryCard({
   onDeletePermission,
 }: ModulePermissionLibraryCardProps) {
   const [viewingPermission, setViewingPermission] = useState<Permission | null>(null);
-  console.log('Rendering ModulePermissionLibraryCard with modulePermissions:', modulePermissions);
   return (
     <Card>
-      <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <CardHeader className="flex flex-col gap-4  ">
         <div>
           <CardTitle>Module Permission</CardTitle>
           <CardDescription>{isLoading ? 'Memuat module permission...' : `${modulePermissions?.length ?? 0} module permission tersedia`}</CardDescription>
         </div>
         {(userRole === 'SUPER_ADMIN' || userRole === 'ADMIN') && (
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <Button type="button" variant="insidia" onClick={onCreateModulePermission}>
               <Plus className="size-4" />
               Tambah Module
@@ -69,6 +69,7 @@ export function ModulePermissionLibraryCard({
               <Plus className="size-4" />
               Tambah Permission
             </Button>
+            <BulkUploadModulePermissionDialog />
           </div>
         )}
       </CardHeader>

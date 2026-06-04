@@ -48,7 +48,7 @@ export function useDeletePermission() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ permissionId }: { permissionId: string; scope: AccessScope }) => deletePermission(permissionId),
+    mutationFn: ({ permissionId }: { permissionId: string }) => deletePermission(permissionId),
     onSuccess: () => {
       invalidateModulePermissions(queryClient);
       queryClient.invalidateQueries({ queryKey: ['roles'] });

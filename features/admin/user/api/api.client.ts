@@ -1,8 +1,9 @@
 import { apiFetchInternal } from '@/lib/api/express.client';
 import { CreateUserInput, UpdateUserPayload } from '../schema/user.schema';
-import type { BulkUserImportResult, BulkUserPreviewResult, User, UserDetail, UserFilter, UserScope } from '../types/user.types';
-import { normalizeBulkUserImportResult, normalizeBulkUserPreviewResult, normalizeUser, normalizeUserDetail, normalizeUsers } from '../types/user.normalizer';
-
+import type { User, UserDetail, UserFilter, UserScope } from '../types/user.types';
+import { normalizeUser, normalizeUserDetail, normalizeUsers } from '../types/user.normalizer';
+import { normalizeBulkPreviewResult, normalizeBulkImportResult } from '@/features/bulk/utils/normalize.bulk';
+import { BulkPreviewResult, BulkImportResult } from '@/features/bulk/types/bulk.types';
 function buildCreateUserPayload(data: CreateUserInput): CreateUserInput {
   return {
     email: data.email,
@@ -80,7 +81,18 @@ export async function deleteUser(userId: string, scope: UserScope = 'INSIDIA', m
   return res;
 }
 
-export async function previewBulkUsers(file: File): Promise<BulkUserPreviewResult> {
+export function deleteUserMitraRole(userId: string, mitraId?: string): Promise<null> {
+  const params = new URLSearchParams();
+  if (mitraId) {
+    params.set('mitraId', mitraId);
+  }
+
+  return apiFetchInternal<null>(`/api/admin/user/${userId}/mitra-roles?${params.toString()}`, {
+    method: 'DELETE',
+  });
+}
+
+export async function previewBulkUsers(file: File): Promise<BulkPreviewResult> {
   const formData = new FormData();
   formData.set('file', file);
 
@@ -88,14 +100,13 @@ export async function previewBulkUsers(file: File): Promise<BulkUserPreviewResul
     method: 'POST',
     body: formData,
   });
-  console.log('Raw preview result:', res);
-  return normalizeBulkUserPreviewResult(res);
+  return normalizeBulkPreviewResult(res);
 }
 
-export async function importBulkUsers(jobId: string): Promise<BulkUserImportResult> {
+export async function importBulkUsers(jobId: string): Promise<BulkImportResult> {
   const res = await apiFetchInternal<unknown>(`/api/admin/user/import/${jobId}`, {
     method: 'POST',
   });
 
-  return normalizeBulkUserImportResult(res);
+  return normalizeBulkImportResult(res);
 }

@@ -46,7 +46,6 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
       method: 'PATCH',
       body: JSON.stringify(body),
     });
-
     return toRouteResponse({ data });
   } catch (error) {
     const apiError = error as ApiRouteError;
@@ -67,6 +66,7 @@ export async function DELETE(_: NextRequest, context: RouteContext) {
     const data = await apiFetchWithAuth(`/admin/permissions/modules/${id}`, {
       method: 'DELETE',
     });
+    console.log('API Response:', data); // Log the API response for debugging
 
     return toRouteResponse({ data });
   } catch (error) {

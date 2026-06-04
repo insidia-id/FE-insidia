@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 import { AuthProfileResponse } from '@/features/auth/types/auth.types';
-
+import Link from 'next/link';
 const navItems = [
   { href: '/profile', label: 'Profil Saya', icon: User },
   { href: '/notifications', label: 'Notifikasi', icon: Bell },
@@ -23,9 +23,9 @@ const NavbarAdmin = ({ userProfile }: { userProfile: AuthProfileResponse | null 
       <div className="h-[70px] px-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="flex items-center  justify-center p-3">
-            <div className="flex  w-full items-center overflow-hidden justify-center gap-2">
-              <Image src="/logo.png" alt="Ummang Food Logo" width={100} height={100} className="h-auto w-[100px] object-contain" />
-            </div>
+            <Link href="/" className="flex  w-full items-center overflow-hidden justify-center gap-2">
+              <Image src="/logo.png" alt="Logo" width={100} height={100} className="h-auto w-[100px]" />
+            </Link>
           </div>
 
           <SidebarTrigger className="hover:bg-primary/10" />

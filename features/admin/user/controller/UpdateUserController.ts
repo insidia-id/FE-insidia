@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Resolver, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { useGetUserById, useUpdateUser } from '../hooks/useUser';
+import { useDeleteUserMitraRole, useGetUserById, useUpdateUser } from '../hooks/useUser';
 import { UpdateUserInput, updateUserSchema } from '../schema/user.schema';
 import type { UserDetail, UserScope } from '../types/user.types';
 import { getUserScope } from '../HelperUser';
@@ -56,11 +56,25 @@ export function UpdateUserController(userId: string, scope: UserScope = 'INSIDIA
 
   const { data: user, isLoading, isError, error } = useGetUserById(userId, scope);
   const updateUserMutation = useUpdateUser();
+  const deleteUserMitraRoleMutation = useDeleteUserMitraRole();
+
   useEffect(() => {
     if (!user) return;
 
     form.reset(toUpdateUserFormValues(user, scope));
   }, [form, user, scope]);
+
+  const onDeleteMitraRole = () => {
+    deleteUserMitraRoleMutation.mutate(
+      { userId, mitraId: user?.mitraRoles?.mitraId },
+      {
+        onSuccess: () => {
+          form.setValue('mitraRole', undefined);
+          form.setValue('mitraId', undefined);
+        },
+      },
+    );
+  };
 
   const onSubmit = (values: UpdateUserInput, onSuccess?: (updatedUserId: string) => void) => {
     const { id, ...payload } = values;
@@ -88,5 +102,7 @@ export function UpdateUserController(userId: string, scope: UserScope = 'INSIDIA
     error,
     isSubmitting: updateUserMutation.isPending,
     onSubmit,
+    onDeleteMitraRole,
+    isDeletingMitraRole: deleteUserMitraRoleMutation.isPending,
   };
 }

@@ -57,7 +57,7 @@ const Navbar = ({ userProfile }: { userProfile: AuthProfileResponse | null }) =>
                   {navLinks.map((link) => {
                     const Icon = link.icon;
                     return (
-                      <Link key={link.href} href={link.href} className="flex items-center space-x-3 rounded-lg px-2 py-3 hover:bg-gray-100">
+                      <Link prefetch key={link.href} href={link.href} className="flex items-center space-x-3 rounded-lg px-2 py-3 hover:bg-gray-100">
                         <Icon className="h-5 w-5" />
                         <span className="font-bold">{link.label}</span>
                       </Link>
@@ -75,7 +75,7 @@ const Navbar = ({ userProfile }: { userProfile: AuthProfileResponse | null }) =>
               {navLinks.map((link) => {
                 const Icon = link.icon;
                 return (
-                  <Link key={link.href} href={link.href} className="flex items-center hover:text-[#8458E4] transition-colors space-x-1 rounded-full px-3 py-2 text-sm hover:bg-gray-100">
+                  <Link prefetch key={link.href} href={link.href} className="flex items-center hover:text-[#8458E4] transition-colors space-x-1 rounded-full px-3 py-2 text-sm hover:bg-gray-100">
                     <Icon className="h-4 w-4" />
                     <span className="font-semibold">{link.label}</span>
                   </Link>

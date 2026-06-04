@@ -17,7 +17,6 @@ export default async function PublicLayout({ children }: { children: React.React
   if (profile?.status === 'BANNED') {
     redirect('/force-logout');
   }
-  console.log('profile', profile);
   return (
     <>
       <Navbar userProfile={profile} />

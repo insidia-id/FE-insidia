@@ -33,7 +33,7 @@ export const NavbarUser = ({ userProfile, navItems, navActions }: NavbarUserProp
 
   if (!userProfile) {
     return (
-      <Link href="/login">
+      <Link prefetch href="/login">
         <Button variant="insidia" size={'lg'}>
           <LogIn className="h-4 w-4" />
           Masuk

@@ -47,7 +47,6 @@ export async function POST(req: NextRequest) {
       method: 'POST',
       body: JSON.stringify(body),
     });
-    console.log('Created permission:', data);
     return toRouteResponse({ data }, 201);
   } catch (error) {
     const apiError = error as ApiRouteError;
