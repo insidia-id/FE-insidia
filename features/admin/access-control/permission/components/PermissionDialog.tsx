@@ -18,7 +18,6 @@ import { buildPermissionDefaultValues } from '../helper/permission.helper';
 type PermissionDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  scope: AccessScope;
   permission?: Permission | null;
   modulePermissions: ModulePermission[];
   isModulePermissionsLoading: boolean;
@@ -26,14 +25,14 @@ type PermissionDialogProps = {
   onSubmit: (values: PermissionFormValues) => void;
 };
 
-export function PermissionDialog({ open, onOpenChange, scope, permission, modulePermissions, isModulePermissionsLoading, isLoading, onSubmit }: PermissionDialogProps) {
+export function PermissionDialog({ open, onOpenChange, permission, modulePermissions, isModulePermissionsLoading, isLoading, onSubmit }: PermissionDialogProps) {
   const form = useForm<PermissionFormValues>({
     resolver: zodResolver(createPermissionSchema({ requireModule: !permission })) as Resolver<PermissionFormValues>,
-    defaultValues: buildPermissionDefaultValues(scope, permission),
+    defaultValues: buildPermissionDefaultValues(permission),
   });
   useEffect(() => {
-    form.reset(buildPermissionDefaultValues(scope, permission));
-  }, [form, permission, scope, open]);
+    form.reset(buildPermissionDefaultValues(permission));
+  }, [form, permission, open]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

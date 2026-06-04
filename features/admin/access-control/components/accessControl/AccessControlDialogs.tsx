@@ -78,7 +78,6 @@ export function AccessControlDialogs({
       <PermissionDialog
         open={permissionDialogOpen}
         onOpenChange={onPermissionDialogOpenChange}
-        scope={scope}
         permission={editingPermission}
         modulePermissions={modulePermissions}
         isModulePermissionsLoading={isModulePermissionsLoading}
