@@ -22,7 +22,7 @@ type HeaderTableProps = {
 };
 export const HeaderTable = ({ currentProfile, table, onGlobalFilterChange, globalFilter, filter, onFilterChange, scope, onScopeChange }: HeaderTableProps) => {
   const currentUserRole = currentProfile.mitraRoles?.roleCode ?? currentProfile.insidiaRole ?? null;
-  const roleFilterOptions = getRoleFilterOptions(currentUserRole);
+  const roleFilterOptions = getRoleFilterOptions(currentUserRole, scope);
   const getCurrentScope = getAssignableScopeOptions(currentUserRole);
   const createPermission = scope === 'MITRA' ? Permissions.userPermissions.createUserMitra : Permissions.userPermissions.createUserInsidia;
   const canCreateUser = currentProfile.insidiaRole === 'SUPER_ADMIN' || currentProfile.permissions.includes(createPermission);
@@ -34,7 +34,14 @@ export const HeaderTable = ({ currentProfile, table, onGlobalFilterChange, globa
             <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input className="bg-white pl-9" onChange={(event) => onGlobalFilterChange(event.target.value)} placeholder="Cari nama, email, role, status..." value={globalFilter} />
           </div>
-          <Select onValueChange={(value) => onScopeChange(value as UserScope)} value={scope}>
+          <Select
+            onValueChange={(value) => {
+              onScopeChange(value as UserScope);
+
+              table.getColumn('role')?.setFilterValue(undefined);
+            }}
+            value={scope}
+          >
             <SelectTrigger className="w-full bg-white">
               <SelectValue placeholder="Filter scope" />
             </SelectTrigger>

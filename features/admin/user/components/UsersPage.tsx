@@ -12,6 +12,7 @@ type UsersPageProps = {
 
 export function UsersPage({ currentProfile }: UsersPageProps) {
   const { filter, scope, visibleUsers, isLoading, isError, error, onFilterChange, onScopeChange } = UsersController(currentProfile);
+  console.log(` visibleUsers: ${visibleUsers}`);
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,rgba(15,23,42,0.04),rgba(15,23,42,0)_40%)] px-4 py-8">
       <section className="mx-auto w-full max-w-6xl space-y-6">

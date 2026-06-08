@@ -12,8 +12,8 @@ import { AuthProfileResponse } from '@/features/auth/types/auth.types';
 function RoleSelectCell({ currentUserRole, scope, user, onChange, isLoading }: { currentUserRole?: string | null; scope: UserScope; user: User; onChange: (role: RoleUser) => void; isLoading: boolean }) {
   const currentRole = getUserRole(user, scope);
   const currentRoleLabel = USER_ROLE_OPTIONS.find((option) => option.value === currentRole)?.label ?? currentRole;
-  const assignableRoleOptions = getAssignableRoleOptions(currentUserRole);
-  const canManageCurrentRole = canManageRole(currentUserRole, currentRole);
+  const assignableRoleOptions = getAssignableRoleOptions(currentUserRole, scope);
+  const canManageCurrentRole = canManageRole(currentUserRole, currentRole, scope);
 
   return (
     <div className="flex items-center gap-2">

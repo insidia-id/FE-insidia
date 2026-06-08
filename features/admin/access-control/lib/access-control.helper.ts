@@ -1,6 +1,5 @@
 import type { AccessScope } from '@/lib/types/types';
 import { Role } from '../roles/types/role.types';
-import { Permission } from '../permission/types/permission.types';
 export function buildAccessControlParams(scope: AccessScope, includeDeleted?: boolean, mitraId?: string) {
   const params = new URLSearchParams({
     scope,

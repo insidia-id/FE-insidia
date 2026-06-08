@@ -36,7 +36,8 @@ export async function getUsers(filter: UserFilter = 'available', scope: UserScop
   const res = await apiFetchInternal<unknown>(`/api/admin/user?${params.toString()}`, {
     method: 'GET',
   });
-  return normalizeUsers(res);
+  const normalizedRes = normalizeUsers(res);
+  return normalizedRes;
 }
 
 export async function getUserById(userId: string, scope: UserScope = 'INSIDIA', mitraId?: string): Promise<UserDetail> {

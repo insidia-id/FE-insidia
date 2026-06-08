@@ -32,9 +32,10 @@ type UserFormFieldsProps<TFieldValues extends FieldValues & BaseUserFormShape> =
   scope?: 'INSIDIA' | 'MITRA';
 };
 export function UserFormFields<TFieldValues extends FieldValues & BaseUserFormShape>({ form, currentUserRole, isLoading, onCancel, onSubmit, submitLabel, mode, children, scope }: UserFormFieldsProps<TFieldValues>) {
-  const assignableRoleOptions = getAssignableRoleOptions(currentUserRole);
-  const { mitraOptions, setMitraQuery, isLoading: isLoadingMitras } = MitrasController();
   const isUpdateMode = mode === 'update';
+  const assignableRoleOptions = getAssignableRoleOptions(currentUserRole, isUpdateMode ? undefined : scope);
+  console.log(`assignableRoleOptions: ${JSON.stringify(assignableRoleOptions)}`);
+  const { mitraOptions, setMitraQuery, isLoading: isLoadingMitras } = MitrasController();
   return (
     <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
       <div className="grid gap-4 md:grid-cols-2">

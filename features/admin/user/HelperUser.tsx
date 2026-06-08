@@ -76,16 +76,20 @@ export function getUserScope(activeScope: UserScope): UserScope {
   return activeScope;
 }
 
-export function getAssignableRoleOptions(role?: string | null) {
-  switch (normalizeRole(role)) {
+export function getAssignableRoleOptions(role?: string | null, scope?: UserScope) {
+  const normalizedRole = normalizeRole(role);
+
+  let optionsByScope = scope ? USER_ROLE_OPTIONS.filter((option) => option.scope === scope) : USER_ROLE_OPTIONS;
+  switch (normalizedRole) {
     case 'SUPER_ADMIN':
-      return USER_ROLE_OPTIONS;
+      return optionsByScope;
 
     case 'ADMIN':
-      return USER_ROLE_OPTIONS.filter((option) => option.value !== 'SUPER_ADMIN' && option.value !== 'ADMIN');
+      return optionsByScope.filter((option) => option.value !== 'SUPER_ADMIN' && option.value !== 'ADMIN');
 
     case 'AKADEMIK':
-      return USER_ROLE_OPTIONS.filter((option) => ['GURU', 'MURID', 'WALI_MURID', 'USER', 'AKADEMIK'].includes(option.value));
+      return optionsByScope.filter((option) => ['GURU', 'MURID', 'WALI_MURID', 'USER', 'AKADEMIK'].includes(option.value));
+
     default:
       return [];
   }
@@ -94,13 +98,13 @@ export function getAssignableRoleOptions(role?: string | null) {
 export const getScopeByRole = (role?: string | null) => {
   return USER_ROLE_OPTIONS.find((item) => item.value === normalizeRole(role))?.scope ?? 'MITRA';
 };
-export function getRoleFilterOptions(role?: string | null) {
-  return [ROLE_FILTER_ALL_OPTION, ...getAssignableRoleOptions(role)] as const;
+export function getRoleFilterOptions(role?: string | null, scope?: UserScope) {
+  return [ROLE_FILTER_ALL_OPTION, ...getAssignableRoleOptions(role, scope)] as const;
 }
-export function canManageRole(currentUserRole?: string | null, targetRole?: RoleUser | null) {
+export function canManageRole(currentUserRole?: string | null, targetRole?: RoleUser | null, scope?: UserScope) {
   if (!targetRole) return false;
 
-  return getAssignableRoleOptions(currentUserRole).some((option) => option.value === targetRole);
+  return getAssignableRoleOptions(currentUserRole, scope).some((option) => option.value === targetRole);
 }
 const TWO_SCOPE_ROLES = ['SUPER_ADMIN', 'ADMIN'] as const;
 
@@ -152,7 +156,7 @@ export function canManageScope(currentProfile: AuthProfileResponse, targetScope:
   return false;
 }
 export function filterUsersByManageableRoles<T extends Pick<User, 'insidiaRole' | 'mitraRoles'>>(users: T[], currentUserRole?: string | null, activeScope: UserScope = 'INSIDIA') {
-  return users.filter((user) => canManageRole(currentUserRole, getUserRole(user as Pick<User, 'insidiaRole' | 'mitraRoles'>, activeScope)));
+  return users.filter((user) => canManageRole(currentUserRole, getUserRole(user as Pick<User, 'insidiaRole' | 'mitraRoles'>, activeScope), activeScope));
 }
 export function filterUsersByManageableScopes<T>(users: T[], currentProfile: AuthProfileResponse, scope: UserScope) {
   if (!canManageScope(currentProfile, scope)) {
