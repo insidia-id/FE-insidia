@@ -20,13 +20,13 @@ export default async function MitraAdminAccessControlPage({ params }: MitraAdmin
     redirect(`/login?callbackUrl=/mitra/admin/${slug}/access-control`);
   }
 
-  const usersProfile = toUserProfile(profile);
-  const activeMitraRole = getAuthorizedMitraRole(usersProfile.mitraRoles, slug);
+  const userProfile = toUserProfile(profile);
+  const authorizedMitraRole = getAuthorizedMitraRole(userProfile.mitraRoles, slug);
 
-  if (!activeMitraRole) {
+  if (!authorizedMitraRole) {
     redirect('/admin');
   }
 
   PagePermission(profile, [Permissions.permissionCodes.manageMitraPermissions]);
-  return <AccessControlPage currentProfile={usersProfile} mitraId={activeMitraRole.mitraId} />;
+  return <AccessControlPage currentProfile={userProfile} />;
 }

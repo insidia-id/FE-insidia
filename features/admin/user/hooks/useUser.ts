@@ -1,28 +1,28 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { createUser, deleteUser, deleteUserMitraRole, getUserById, getUsers, importBulkUsers, previewBulkUsers, updateUser } from '../api/api.client';
+import { createUser, deleteUser, deleteUserMitraRole, getUserById, getUsers, importBulkUsers, previewBulkUsers, switchUserMitra, updateUser } from '../api/api.client';
 import { CreateUserInput, UpdateUserPayload } from '../schema/user.schema';
 import { toast } from 'sonner';
 import { getMutationErrorMessage } from '@/lib/error/error.message';
-import type { User, UserDetail, UserFilter, UserScope } from '../types/user.types';
+import type { UserDetail, UserQueryParams, UserScope, UsersResponse } from '../types/user.types';
 import type { BulkImportResult, BulkPreviewResult } from '@/features/bulk/types/bulk.types';
 export const userKeys = {
   all: ['users'] as const,
   lists: () => [...userKeys.all, 'list'] as const,
-  list: (filter: UserFilter = 'available', scope: UserScope = 'INSIDIA', mitraId?: string) => [...userKeys.lists(), { filter, scope, mitraId }] as const,
+  list: (params: UserQueryParams) => [...userKeys.lists(), { params }] as const,
 
   detail: (userId: string) => [...userKeys.all, userId] as const,
 };
-export const useGetUsers = (filter: UserFilter = 'available', scope: UserScope = 'INSIDIA', mitraId?: string) =>
-  useQuery<User[]>({
-    queryKey: userKeys.list(filter, scope, mitraId),
-    queryFn: () => getUsers(filter, scope, mitraId),
+export const useGetUsers = (params: UserQueryParams = {}) =>
+  useQuery<UsersResponse>({
+    queryKey: userKeys.list(params),
+    queryFn: () => getUsers(params),
     refetchOnWindowFocus: false,
   });
 
-export const useGetUserById = (userId: string, scope: UserScope = 'INSIDIA', mitraId?: string) =>
+export const useGetUserById = (userId: string, scope: UserScope = 'INSIDIA') =>
   useQuery<UserDetail>({
-    queryKey: [...userKeys.detail(userId), { scope, mitraId }],
-    queryFn: () => getUserById(userId, scope, mitraId),
+    queryKey: [...userKeys.detail(userId), { scope }],
+    queryFn: () => getUserById(userId, scope),
     enabled: Boolean(userId),
     refetchOnWindowFocus: false,
   });
@@ -30,7 +30,10 @@ export function useCreateUser() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: CreateUserInput) => createUser(data),
+    mutationFn: (data: CreateUserInput) => {
+      console.log('useCreateUser mutationFn data:', data);
+      return createUser(data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.all });
       toast.success('User berhasil dibuat');
@@ -66,7 +69,7 @@ export function useDeleteUser() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ userId, scope, mitraId }: { userId: string; scope: UserScope; mitraId?: string }) => deleteUser(userId, scope, mitraId),
+    mutationFn: ({ userId, scope }: { userId: string; scope: UserScope }) => deleteUser(userId, scope),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: userKeys.all });
       queryClient.removeQueries({ queryKey: userKeys.detail(variables.userId) });
@@ -94,6 +97,21 @@ export function useDeleteUserMitraRole() {
   });
 }
 
+export function useSwitchUserMitra() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ userId, data }: { userId: string; data: { mitraId: string } }) => switchUserMitra(userId, data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
+      queryClient.invalidateQueries({ queryKey: userKeys.detail(variables.userId) });
+      toast.success('Berhasil switch Mitra user');
+    },
+    onError: (error: unknown) => {
+      toast.error(getMutationErrorMessage(error, 'Gagal switch Mitra user'));
+    },
+  });
+}
 export function usePreviewBulkUsers() {
   return useMutation<BulkPreviewResult, unknown, File>({
     mutationFn: (file: File) => previewBulkUsers(file),

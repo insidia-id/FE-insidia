@@ -10,7 +10,7 @@ type RouteContext = {
 
 export async function GET(req: NextRequest, context: RouteContext) {
   try {
-    const { mitraId } = await context.params;
+    await context.params;
     const { searchParams } = new URL(req.url);
     const scope = searchParams.get('scope');
     const includeDeleted = searchParams.get('includeDeleted');
@@ -23,8 +23,6 @@ export async function GET(req: NextRequest, context: RouteContext) {
     if (includeDeleted) {
       params.set('includeDeleted', includeDeleted);
     }
-
-    params.set('mitraId', mitraId);
 
     const queryString = `?${params.toString()}`;
     const data = await apiFetchWithAuth(`/admin/roles${queryString}`, {

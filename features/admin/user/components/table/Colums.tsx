@@ -1,15 +1,16 @@
 import { ColumnDef } from '@tanstack/react-table';
-import { RoleUser, StatusUser, User, UserScope } from '../../types/user.types';
+import { StatusUser, User, UserRoleCode, UserScope } from '../../types/user.types';
 import { ArrowUpDown, Eye, Pencil, MoreVertical, Trash2 } from 'lucide-react';
 import { useMemo } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { canManageRole, formatDateTime, getAssignableRoleOptions, getStatusVariant, formatStatus, getUserRole, USER_ROLE_OPTIONS, USER_STATUS_OPTIONS, getUsersHref } from '../../HelperUser';
+import { canManageRole, formatDateTime, formatStatus, getActiveMitraContext, getAssignableRoleOptions, getStatusVariant, getUserRole, getUsersHref, USER_ROLE_OPTIONS, USER_STATUS_OPTIONS } from '../../HelperUser';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AuthProfileResponse } from '@/features/auth/types/auth.types';
+import type { UserTableColumnId } from '../../config/user-page.config';
 
-function RoleSelectCell({ currentUserRole, scope, user, onChange, isLoading }: { currentUserRole?: string | null; scope: UserScope; user: User; onChange: (role: RoleUser) => void; isLoading: boolean }) {
+function RoleSelectCell({ currentUserRole, scope, user, onChange, isLoading }: { currentUserRole?: string | null; scope: UserScope; user: User; onChange: (role: UserRoleCode) => void; isLoading: boolean }) {
   const currentRole = getUserRole(user, scope);
   const currentRoleLabel = USER_ROLE_OPTIONS.find((option) => option.value === currentRole)?.label ?? currentRole;
   const assignableRoleOptions = getAssignableRoleOptions(currentUserRole, scope);
@@ -69,18 +70,19 @@ function StatusSelectCell({ currentUserRole, user, onChange, isLoading }: { curr
 type UseUserColumnsProps = {
   currentProfile: AuthProfileResponse;
   scope: UserScope;
+  columnIds: UserTableColumnId[];
   isUpdating: boolean;
   onDeleteRequest: (user: User) => void;
-  onRoleChange: (userId: string, role: RoleUser) => void;
+  onRoleChange: (userId: string, role: UserRoleCode) => void;
   onStatusChange: (userId: string, status: StatusUser) => void;
 };
-export const useUserColumns = ({ currentProfile, scope, isUpdating, onDeleteRequest, onRoleChange, onStatusChange }: UseUserColumnsProps) => {
-  const currentUserRole = currentProfile.mitraRoles?.roleCode ?? currentProfile.insidiaRole ?? null;
-  const mitraSlug = currentProfile.mitraRoles?.mitraSlug ?? null;
+export const useUserColumns = ({ currentProfile, scope, columnIds, isUpdating, onDeleteRequest, onRoleChange, onStatusChange }: UseUserColumnsProps) => {
+  const { activeMitraRole, activeMitraSlug, activeInsidiaRole } = getActiveMitraContext(currentProfile);
+  const currentUserRole = activeMitraRole ?? activeInsidiaRole;
 
-  return useMemo<ColumnDef<User>[]>(
-    () => [
-      {
+  return useMemo<ColumnDef<User>[]>(() => {
+    const columnsById: Record<UserTableColumnId, ColumnDef<User>> = {
+      name: {
         accessorKey: 'name',
         header: ({ column }) => (
           <Button className="px-0" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
@@ -99,18 +101,18 @@ export const useUserColumns = ({ currentProfile, scope, isUpdating, onDeleteRequ
           );
         },
       },
-
-      {
+      role: {
         id: 'role',
+        header: 'Role',
         accessorFn: (user) => getUserRole(user, scope),
         cell: ({ row }) => <RoleSelectCell currentUserRole={currentUserRole} scope={scope} user={row.original} onChange={(role) => onRoleChange(row.original.id, role)} isLoading={isUpdating} />,
       },
-      {
+      status: {
         accessorKey: 'status',
+        header: 'Status',
         cell: ({ row }) => <StatusSelectCell currentUserRole={currentUserRole} user={row.original} onChange={(status) => onStatusChange(row.original.id, status)} isLoading={isUpdating} />,
       },
-
-      {
+      createdAt: {
         accessorKey: 'createdAt',
         header: ({ column }) => (
           <Button className="px-0" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
@@ -120,7 +122,103 @@ export const useUserColumns = ({ currentProfile, scope, isUpdating, onDeleteRequ
         ),
         cell: ({ row }) => formatDateTime(row.original.createdAt),
       },
-      {
+      nip: {
+        id: 'nip',
+        header: 'NIP',
+        accessorFn: (user) => {
+          const mitraRole = user.mitraRoles?.find((mr) => mr.roleCode === 'GURU');
+          return mitraRole?.profile?.nip || '-';
+        },
+        cell: ({ row }) => {
+          const mitraRole = row.original.mitraRoles?.find((mr) => mr.roleCode === 'GURU');
+          return <span className="text-sm">{mitraRole?.profile?.nip || '-'}</span>;
+        },
+      },
+      subject: {
+        id: 'subject',
+        header: 'Mata Pelajaran',
+        accessorFn: (user) => {
+          const mitraRole = user.mitraRoles?.find((mr) => mr.roleCode === 'GURU');
+          return mitraRole?.profile?.subject || '-';
+        },
+        cell: ({ row }) => {
+          const mitraRole = row.original.mitraRoles?.find((mr) => mr.roleCode === 'GURU');
+          return <span className="text-sm">{mitraRole?.profile?.subject || '-'}</span>;
+        },
+      },
+      nis: {
+        id: 'nis',
+        header: 'NIS',
+        accessorFn: (user) => {
+          const mitraRole = user.mitraRoles?.find((mr) => mr.roleCode === 'MURID');
+          return mitraRole?.profile?.nis || '-';
+        },
+        cell: ({ row }) => {
+          const mitraRole = row.original.mitraRoles?.find((mr) => mr.roleCode === 'MURID');
+          return <span className="text-sm">{mitraRole?.profile?.nis || '-'}</span>;
+        },
+      },
+      kelas: {
+        id: 'kelas',
+        header: 'Kelas',
+        accessorFn: (user) => {
+          const mitraRole = user.mitraRoles?.find((mr) => mr.roleCode === 'MURID');
+          return mitraRole?.profile?.kelas || '-';
+        },
+        cell: ({ row }) => {
+          const mitraRole = row.original.mitraRoles?.find((mr) => mr.roleCode === 'MURID');
+          return <span className="text-sm">{mitraRole?.profile?.kelas || '-'}</span>;
+        },
+      },
+      jurusan: {
+        id: 'jurusan',
+        header: 'Jurusan',
+        accessorFn: (user) => {
+          const mitraRole = user.mitraRoles?.find((mr) => mr.roleCode === 'MURID');
+          return mitraRole?.profile?.jurusan || '-';
+        },
+        cell: ({ row }) => {
+          const mitraRole = row.original.mitraRoles?.find((mr) => mr.roleCode === 'MURID');
+          return <span className="text-sm">{mitraRole?.profile?.jurusan || '-'}</span>;
+        },
+      },
+      pekerjaan: {
+        id: 'pekerjaan',
+        header: 'Pekerjaan',
+        accessorFn: (user) => {
+          const mitraRole = user.mitraRoles?.find((mr) => mr.roleCode === 'WALI_MURID');
+          return mitraRole?.profile?.pekerjaan || '-';
+        },
+        cell: ({ row }) => {
+          const mitraRole = row.original.mitraRoles?.find((mr) => mr.roleCode === 'WALI_MURID');
+          return <span className="text-sm">{mitraRole?.profile?.pekerjaan || '-'}</span>;
+        },
+      },
+      position: {
+        id: 'position',
+        header: 'Jabatan',
+        accessorFn: (user) => {
+          const mitraRole = user.mitraRoles?.find((mr) => mr.roleCode === 'AKADEMIK');
+          return mitraRole?.profile?.position || '-';
+        },
+        cell: ({ row }) => {
+          const mitraRole = row.original.mitraRoles?.find((mr) => mr.roleCode === 'AKADEMIK');
+          return <span className="text-sm">{mitraRole?.profile?.position || '-'}</span>;
+        },
+      },
+      division: {
+        id: 'division',
+        header: 'Divisi',
+        accessorFn: (user) => {
+          const mitraRole = user.mitraRoles?.find((mr) => mr.roleCode === 'AKADEMIK');
+          return mitraRole?.profile?.division || '-';
+        },
+        cell: ({ row }) => {
+          const mitraRole = row.original.mitraRoles?.find((mr) => mr.roleCode === 'AKADEMIK');
+          return <span className="text-sm">{mitraRole?.profile?.division || '-'}</span>;
+        },
+      },
+      actions: {
         id: 'actions',
         header: '',
         enableSorting: false,
@@ -140,14 +238,14 @@ export const useUserColumns = ({ currentProfile, scope, isUpdating, onDeleteRequ
 
                 <DropdownMenuContent align="end" className="w-40">
                   <DropdownMenuItem asChild>
-                    <Link href={getUsersHref(mitraSlug, `users/${user.id}?scope=${scope}`)} className="flex items-center gap-2">
+                    <Link href={getUsersHref(activeMitraSlug, `users/${user.id}?scope=${scope}`)} className="flex items-center gap-2">
                       <Eye className="size-4" />
                       Detail
                     </Link>
                   </DropdownMenuItem>
 
                   <DropdownMenuItem asChild>
-                    <Link href={getUsersHref(mitraSlug, `users/${user.id}/edit?scope=${scope}`)} className="flex items-center gap-2">
+                    <Link href={getUsersHref(activeMitraSlug, `users/${user.id}/edit?scope=${scope}`)} className="flex items-center gap-2">
                       <Pencil className="size-4" />
                       Edit
                     </Link>
@@ -164,7 +262,8 @@ export const useUserColumns = ({ currentProfile, scope, isUpdating, onDeleteRequ
           );
         },
       },
-    ],
-    [currentUserRole, mitraSlug, scope, isUpdating, onDeleteRequest, onRoleChange, onStatusChange],
-  );
+    };
+
+    return columnIds.map((columnId) => columnsById[columnId]);
+  }, [columnIds, currentUserRole, activeMitraSlug, scope, isUpdating, onDeleteRequest, onRoleChange, onStatusChange]);
 };

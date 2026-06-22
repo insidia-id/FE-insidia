@@ -1,19 +1,21 @@
 import { useState } from 'react';
 import { useUpdateUser } from '../hooks/useUser';
-import { getScopeByRole, getUserScope } from '../HelperUser';
 import { useUserColumns } from '../components/table/Colums';
 import { useUserDataTable } from '../components/table/DataTable';
 import type { User, UserScope } from '../types/user.types';
 import { AuthProfileResponse } from '@/features/auth/types/auth.types';
+import type { UserTableColumnId } from '../config/user-page.config';
 
 type UserTableControllerProps = {
   currentProfile: AuthProfileResponse;
   users: User[];
   scope: UserScope;
+  columnIds: UserTableColumnId[];
+  globalFilter: string;
+  onGlobalFilterChange: (value: string) => void;
 };
 
-export function UserTableController({ currentProfile, users, scope }: UserTableControllerProps) {
-  const [globalFilter, setGlobalFilter] = useState('');
+export function UserTableController({ currentProfile, users, scope, columnIds, globalFilter, onGlobalFilterChange }: UserTableControllerProps) {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [selectedUserScope, setSelectedUserScope] = useState<UserScope>('INSIDIA');
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -22,6 +24,7 @@ export function UserTableController({ currentProfile, users, scope }: UserTableC
   const columns = useUserColumns({
     currentProfile,
     scope,
+    columnIds,
     isUpdating: updateUserMutation.isPending,
     onDeleteRequest: (user) => {
       setSelectedUserId(user.id);
@@ -50,12 +53,11 @@ export function UserTableController({ currentProfile, users, scope }: UserTableC
     columns,
     scope,
     globalFilter,
-    onGlobalFilterChange: setGlobalFilter,
+    onGlobalFilterChange,
   });
 
   return {
     columns,
-    globalFilter,
     isDeleteOpen,
     selectedUserId,
     selectedUserScope,
@@ -75,6 +77,5 @@ export function UserTableController({ currentProfile, users, scope }: UserTableC
       setSelectedUserScope('INSIDIA');
       setIsDeleteOpen(false);
     },
-    onGlobalFilterChange: setGlobalFilter,
   };
 }

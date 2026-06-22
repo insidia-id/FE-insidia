@@ -1,7 +1,7 @@
 import { PermissionCode } from '@/features/admin/types/Admin';
 import { InsidiaRole, StatusUser } from '@/features/admin/user/types/user.types';
+import { MitraRole as RoleMitra } from '@/features/admin/user/types/user.types';
 import type { JWT } from 'next-auth/jwt';
-
 export type AppUser = {
   id: string;
   email: string;
@@ -99,12 +99,16 @@ export type AcademicProfile = {
 };
 
 export type UserRoleProfile = MentorProfile | GuruProfile | MuridProfile | WaliMuridProfile | AcademicProfile | null;
+
 export type MitraRole = {
-  roleCode: string;
+  roleCode: RoleMitra;
   mitraId: string;
-  mitraName: string;
-  mitraSlug: string;
+  mitraName?: string;
+  mitraSlug?: string;
 };
+
+export type MitraRoleList = MitraRole[];
+
 export type AuthProfileResponse = {
   id: string;
   email: string;
@@ -113,8 +117,10 @@ export type AuthProfileResponse = {
   image: string | null;
 
   insidiaRole: InsidiaRole;
-  mitraRoles: MitraRole | null;
+  mitraRoles: MitraRoleList | null;
   permissions: PermissionCode[];
+  activeMitraId: string | null;
+  activeRole: string | null;
 };
 
 export type sessionResponse = {
@@ -124,16 +130,7 @@ export type sessionResponse = {
       code: string;
     };
   };
-  mitraRoles: {
-    role: {
-      code: string;
-    };
-    mitra: {
-      id: string;
-      name: string;
-      slug: string;
-    };
-  } | null;
+  mitraRoles: MitraRoleList | null;
 };
 export type MiddlewareSessionRequest = {
   auth: {
@@ -152,7 +149,7 @@ export type ResolvedSessionState =
   | {
       status: 'ACTIVE';
       insidiaRole: string;
-      mitraRoles: MitraRole | null;
+      mitraRoles: MitraRoleList | null;
     }
   | 'UNAUTHORIZED'
   | 'BANNED'

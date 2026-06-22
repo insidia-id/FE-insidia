@@ -37,6 +37,11 @@ export function asNullableString(value: unknown) {
 
   return normalized || null;
 }
+export function asOptionalString(value: unknown) {
+  const normalized = asString(value);
+
+  return normalized || undefined;
+}
 
 export function asNumber(value: unknown) {
   if (typeof value === 'number' && Number.isFinite(value)) {

@@ -5,7 +5,7 @@ import type { ModulePermission, ModulePermissionFormValues } from '../types/modu
 
 type UseModulePermissionsProps = {
   scope: AccessScope;
-  mitraId?: string;
+  mitraId?: string | null;
 };
 
 export function useModulePermissions({ scope, mitraId }: UseModulePermissionsProps) {

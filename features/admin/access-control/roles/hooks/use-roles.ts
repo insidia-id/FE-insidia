@@ -5,7 +5,7 @@ import { resolveSelectedRole, resolveSelectedRoleId } from '../../lib/access-con
 import { Role, RoleFormValues } from '../types/role.types';
 type UseRolesProps = {
   scope: AccessScope;
-  mitraId?: string;
+  mitraId?: string | null;
 };
 export function useRoles({ scope, mitraId }: UseRolesProps) {
   const [includeDeleted, setIncludeDeleted] = useState(false);

@@ -6,17 +6,15 @@ import { toUserProfile } from '@/features/auth/auth.utils';
 import { PagePermission } from '@/app/middleware';
 import { Permissions } from '@/lib/helper/permission.helper';
 
-export default async function AdminCreateUserPage() {
+export default async function AdminCreateUserPage({ searchParams }: { searchParams: Promise<{ role?: string; scope?: 'INSIDIA' | 'MITRA' }> }) {
   const profile = await getProfileUser();
+  const params = await searchParams;
 
   if (!profile) {
     redirect('/login?callbackUrl=/admin/users');
   }
 
-  PagePermission(profile, [
-    Permissions.userPermissions.createUserInsidia,
-    Permissions.userPermissions.createUserMitra,
-  ]);
+  PagePermission(profile, [Permissions.userPermissions.createUserInsidia, Permissions.userPermissions.createUserMitra]);
 
   const userProfile = toUserProfile(profile);
 

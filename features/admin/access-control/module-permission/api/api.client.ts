@@ -4,8 +4,8 @@ import { buildAccessControlParams } from '../../lib/access-control.helper';
 import type { ModulePermission, ModulePermissionFormValues } from '../types/module-permission.types';
 import { normalizeBulkImportResult, normalizeBulkPreviewResult } from '@/features/bulk/utils/normalize.bulk';
 import { BulkPreviewResult, BulkImportResult } from '@/features/bulk/types/bulk.types';
-export async function getModulePermissions(scope: AccessScope, mitraId?: string): Promise<ModulePermission[]> {
-  const params = buildAccessControlParams(scope, undefined, mitraId);
+export async function getModulePermissions(scope: AccessScope): Promise<ModulePermission[]> {
+  const params = buildAccessControlParams(scope, undefined);
   const path = '/api/admin/permissions/modules';
   const response = await apiFetchInternal<ModulePermission[]>(`${path}?${params.toString()}`, {
     method: 'GET',

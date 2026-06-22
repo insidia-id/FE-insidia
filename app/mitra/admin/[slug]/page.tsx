@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { getAuthorizedMitraRole, getRoleLandingPath } from '@/auth/redirect';
 import { getProfileUser } from '@/features/auth/api/api.server';
+import { getActiveMitraContext } from '@/features/admin/user/HelperUser';
+import { toUserProfile } from '@/features/auth/auth.utils';
 
 interface MitraPageProps {
   params: Promise<{
@@ -15,21 +17,23 @@ interface MitraPageProps {
 export default async function MitraPage({ params }: MitraPageProps) {
   const profile = await getProfileUser();
   const { slug } = await params;
-  const activeMitraRole = profile ? getAuthorizedMitraRole(profile.mitraRoles, slug) : null;
   if (!profile) {
     redirect(`/login?callbackUrl=/mitra/${slug}`);
   }
+  const userProfile = toUserProfile(profile);
+  const { activeMitraSlug } = getActiveMitraContext(userProfile);
+  const authorizedMitraRole = getAuthorizedMitraRole(userProfile.mitraRoles, slug);
 
   if (profile.status === 'BANNED') {
     redirect('/force-logout');
   }
 
-  if (!activeMitraRole) {
-    redirect(getRoleLandingPath(profile.insidiaRole, profile.mitraRoles));
+  if (!authorizedMitraRole) {
+    redirect(getRoleLandingPath(profile.insidiaRole, userProfile.mitraRoles, activeMitraSlug));
   }
 
-  if (activeMitraRole.mitraSlug !== slug) {
-    redirect(`/mitra/${activeMitraRole.mitraSlug}`);
+  if (authorizedMitraRole.mitraSlug !== slug) {
+    redirect(`/mitra/${authorizedMitraRole.mitraSlug}`);
   }
 
   return (
@@ -39,10 +43,10 @@ export default async function MitraPage({ params }: MitraPageProps) {
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-3">
               <Badge variant="outline" className="border-border/60 bg-white text-slate-800">
-                {activeMitraRole.mitraName}
+                {authorizedMitraRole.mitraSlug}
               </Badge>
               <Badge variant="secondary" className="bg-slate-900 text-white">
-                {activeMitraRole.roleCode}
+                {authorizedMitraRole.roleCode}
               </Badge>
             </div>
             <div className="space-y-2">
@@ -67,9 +71,8 @@ export default async function MitraPage({ params }: MitraPageProps) {
               <CardDescription>Informasi user dan mitra aktif.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              <SummaryRow label="Slug Mitra" value={activeMitraRole.mitraSlug} />
-              <SummaryRow label="Nama Mitra" value={activeMitraRole.mitraName} />
-              <SummaryRow label="Role" value={activeMitraRole.roleCode} />
+              <SummaryRow label="Slug Mitra" value={authorizedMitraRole.mitraSlug} />
+              <SummaryRow label="Role" value={authorizedMitraRole.roleCode} />
               <SummaryRow label="User" value={profile.name ?? profile.email} />
             </CardContent>
           </Card>

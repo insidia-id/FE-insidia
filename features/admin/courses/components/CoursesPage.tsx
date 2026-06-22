@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { CoursesController } from '../controller/CoursesController';
 import { COURSE_SCOPE_OPTIONS, COURSE_STATUS_FILTER_OPTIONS, formatCourseScope, formatCourseStatus, getCourseStatusVariant, getCoursesHref } from '../lib/course.helper';
 import type { CourseScope } from '../types/course.types';
-import { formatDate } from '@/features/admin/user/HelperUser';
+import { formatDate, getActiveMitraContext } from '@/features/admin/user/HelperUser';
 import { AuthProfileResponse } from '@/features/auth/types/auth.types';
 
 type CoursesPageProps = {
@@ -21,10 +21,11 @@ type CoursesPageProps = {
 };
 
 export function CoursesPage({ mitraSlug, initialScope, canChangeScope, currentProfile }: CoursesPageProps) {
+  const { activeMitraId } = getActiveMitraContext(currentProfile);
   const { scope, statusFilter, courses, isLoading, isError, error, onScopeChange, onStatusFilterChange } = CoursesController({
     initialScope,
     canChangeScope,
-    mitraId: currentProfile.mitraRoles?.mitraId,
+    mitraId: activeMitraId,
   });
   const isMitraView = scope === 'MITRA';
   const entityLabel = isMitraView ? 'Mapel Mitra' : 'Course';
@@ -37,7 +38,11 @@ export function CoursesPage({ mitraSlug, initialScope, canChangeScope, currentPr
           <div className="space-y-2">
             <p className="text-sm font-medium uppercase tracking-[0.14em] text-muted-foreground">{isMitraView ? 'Manajemen Mapel Mitra' : 'Manajemen Course'}</p>
             <h1 className="text-3xl font-semibold text-foreground">{`Daftar ${entityLabel}`}</h1>
-            <p className="max-w-2xl text-sm leading-6 text-muted-foreground">{isMitraView ? 'Mapel mitra memakai entitas course scope MITRA yang terhubung ke kurikulum. Di sini kita bisa melihat data mapel sekaligus atribut course yang menyertainya.' : 'Kelola daftar course, pantau status publikasinya, lalu buka detail untuk mengatur modul dan media.'}</p>
+            <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
+              {isMitraView
+                ? 'Mapel mitra memakai entitas course scope MITRA yang terhubung ke kurikulum. Di sini kita bisa melihat data mapel sekaligus atribut course yang menyertainya.'
+                : 'Kelola daftar course, pantau status publikasinya, lalu buka detail untuk mengatur modul dan media.'}
+            </p>
           </div>
 
           <Button asChild variant="insidia">

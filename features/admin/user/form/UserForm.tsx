@@ -5,17 +5,20 @@ import { TextAreaField, TextField } from '@/components/common/form';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { readErrorMessage } from '@/lib/form/form.helper';
-import { SocialLinks, StatusUser } from '../types/user.types';
-import { RoleUser } from '../types/user.types';
+import { MitraRole, RoleUser, SocialLinks, StatusUser, UserMitraAssignment } from '../types/user.types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { getAssignableRoleOptions, USER_STATUS_OPTIONS, getScopeByRole } from '../HelperUser';
-import { MitrasController } from '../../mitras/controller/MitrasController';
-import { Combobox } from '@/components/common/Combobox';
+import { getAssignableRoleOptions, USER_STATUS_OPTIONS } from '../HelperUser';
+import { MitraCardForm } from './MitraCardForm';
+import { useSearchParams } from 'next/navigation';
+import { CreateUserInput } from '../schema/user.schema';
+
 type BaseUserFormShape = {
   email?: string;
   name?: string | null;
   phone?: string | null;
   role?: RoleUser;
+  mitraRoles?: UserMitraAssignment[];
+  scope?: 'INSIDIA' | 'MITRA';
   status?: StatusUser;
   socialLinks?: SocialLinks;
 };
@@ -28,14 +31,35 @@ type UserFormFieldsProps<TFieldValues extends FieldValues & BaseUserFormShape> =
   onSubmit: SubmitHandler<TFieldValues>;
   submitLabel: string;
   mode: 'create' | 'update';
+  onDeleteMitraRole?: (mitraId?: string) => void;
+  isDeletingMitraRole?: boolean;
+  deletingMitraId?: string | null;
   children?: ReactNode;
   scope?: 'INSIDIA' | 'MITRA';
 };
-export function UserFormFields<TFieldValues extends FieldValues & BaseUserFormShape>({ form, currentUserRole, isLoading, onCancel, onSubmit, submitLabel, mode, children, scope }: UserFormFieldsProps<TFieldValues>) {
+export function UserFormFields<TFieldValues extends FieldValues & BaseUserFormShape>({
+  form,
+  currentUserRole,
+  isLoading,
+  onCancel,
+  onSubmit,
+  submitLabel,
+  mode,
+  onDeleteMitraRole,
+  isDeletingMitraRole,
+  deletingMitraId,
+  children,
+  scope,
+}: UserFormFieldsProps<TFieldValues>) {
+  const searchParams = useSearchParams();
   const isUpdateMode = mode === 'update';
-  const assignableRoleOptions = getAssignableRoleOptions(currentUserRole, isUpdateMode ? undefined : scope);
-  console.log(`assignableRoleOptions: ${JSON.stringify(assignableRoleOptions)}`);
-  const { mitraOptions, setMitraQuery, isLoading: isLoadingMitras } = MitrasController();
+  const assignableRoleOptions = getAssignableRoleOptions(currentUserRole, scope);
+  const mitraRoleOptions = assignableRoleOptions.filter((option) => ['AKADEMIK', 'MURID', 'GURU', 'WALI_MURID'].includes(option.value)) as Array<{
+    label: string;
+    value: MitraRole;
+  }>;
+
+  const role = searchParams.get('role') as MitraRole | undefined;
   return (
     <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
       <div className="grid gap-4 md:grid-cols-2">
@@ -114,72 +138,20 @@ export function UserFormFields<TFieldValues extends FieldValues & BaseUserFormSh
           />
           {readErrorMessage(form.formState.errors, 'status') && <p className="text-sm text-destructive">{readErrorMessage(form.formState.errors, 'status')}</p>}
         </div>
-
-        <div className="space-y-2">
-          <Label>Role Mitra</Label>
-          <Controller
-            control={form.control}
-            name={'mitraRole' as Path<TFieldValues>}
-            render={({ field }) => {
-              const value = field.value as string | undefined;
-              return (
-                <Select
-                  disabled={isLoading}
-                  onValueChange={(nextValue) => {
-                    if (!nextValue) return;
-                    field.onChange(nextValue);
-                    form.setValue('scope' as Path<TFieldValues>, getScopeByRole(nextValue) as TFieldValues[Path<TFieldValues>], { shouldDirty: true, shouldTouch: true });
-                  }}
-                  value={value || undefined}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Pilih role mitra" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {assignableRoleOptions
-                      .filter((option) => option.scope === 'MITRA')
-                      .map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
-              );
-            }}
-          />
-          {readErrorMessage(form.formState.errors, 'mitraRole') && <p className="text-sm text-destructive">{readErrorMessage(form.formState.errors, 'mitraRole')}</p>}
-        </div>
-        {currentUserRole === 'SUPER_ADMIN' && (
-          <div className="space-y-2">
-            <Label>Mitra</Label>
-
-            <Controller
-              control={form.control}
-              name={'mitraId' as Path<TFieldValues>}
-              render={({ field }) => (
-                <Combobox
-                  data={mitraOptions}
-                  value={field.value as string | undefined}
-                  onChange={(value) => {
-                    field.onChange(value);
-                  }}
-                  placeholder="Pilih mitra"
-                  disabled={isLoading || isLoadingMitras}
-                  onSearch={setMitraQuery}
-                />
-              )}
-            />
-
-            {readErrorMessage(form.formState.errors, 'mitraId') && <p className="text-sm text-destructive">{readErrorMessage(form.formState.errors, 'mitraId')}</p>}
-          </div>
-        )}
       </div>
+
+      <MitraCardForm
+        form={form as UseFormReturn<CreateUserInput>}
+        roleOptions={mitraRoleOptions}
+        currentUserRole={currentUserRole}
+        onDeleteMitraRole={onDeleteMitraRole}
+        isDeletingMitraRole={isDeletingMitraRole}
+        deletingMitraId={deletingMitraId}
+        role={role}
+      />
 
       {isUpdateMode && (
         <div className="grid gap-4 md:grid-cols-2">
-          {scope === 'MITRA' && <></>}
-
           <TextField
             id="user-website-url"
             label="Website URL"

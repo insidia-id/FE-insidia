@@ -11,10 +11,10 @@ type RouteContext = {
 
 export async function PUT(req: NextRequest, context: RouteContext) {
   try {
-    const { mitraId, roleId } = await context.params;
+    const { roleId } = await context.params;
     const body = await req.json();
     const data = await apiFetchWithAuth(
-      `/admin/roles/${roleId}/permissions/mitras/${mitraId}`,
+      `/admin/roles/${roleId}/permissions/mitras/active`,
       {
         method: 'PUT',
         body: JSON.stringify(body),

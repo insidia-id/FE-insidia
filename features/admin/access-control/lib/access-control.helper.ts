@@ -1,16 +1,12 @@
 import type { AccessScope } from '@/lib/types/types';
 import { Role } from '../roles/types/role.types';
-export function buildAccessControlParams(scope: AccessScope, includeDeleted?: boolean, mitraId?: string) {
+export function buildAccessControlParams(scope: AccessScope, includeDeleted?: boolean) {
   const params = new URLSearchParams({
     scope,
   });
 
   if (includeDeleted !== undefined) {
     params.set('includeDeleted', String(includeDeleted));
-  }
-
-  if (mitraId) {
-    params.set('mitraId', mitraId);
   }
 
   return params;
@@ -22,7 +18,7 @@ export const ACCESS_SCOPE_OPTIONS: Array<{
   { label: 'Insidia', value: 'INSIDIA' },
   { label: 'Mitra', value: 'MITRA' },
 ];
-export function getAssignableRoleOptions(userRole: string) {
+export function getAssignableRoleOptions(userRole: string | null) {
   if (userRole === 'ADMIN' || userRole === 'SUPER_ADMIN') {
     return ACCESS_SCOPE_OPTIONS;
   }

@@ -13,6 +13,7 @@ import { UserDeleteDialog } from './UserDeleteDialog';
 import { UserDetailController } from '../controller/UserDetailController';
 import type { UserScope } from '../types/user.types';
 import { AuthProfileResponse } from '@/features/auth/types/auth.types';
+import { getActiveMitraContext } from '../HelperUser';
 
 type UserDetailPageProps = {
   userId: string;
@@ -22,9 +23,8 @@ type UserDetailPageProps = {
 
 export function UserDetailPage({ userId, scope = 'INSIDIA', currentUserProfile }: UserDetailPageProps) {
   const router = useRouter();
-  const mitraId = currentUserProfile?.mitraRoles?.mitraId;
-  const mitraSlug = currentUserProfile?.mitraRoles?.mitraSlug ?? null;
-  const { user, isLoading, isError, error, isDeleteOpen, socialLinks, onDeleteDialogChange } = UserDetailController(userId, scope, mitraId);
+  const { activeMitraSlug } = getActiveMitraContext(currentUserProfile);
+  const { user, isLoading, isError, error, isDeleteOpen, socialLinks, mitraRoles, onDeleteDialogChange } = UserDetailController(userId, scope);
 
   return (
     <>
@@ -39,7 +39,7 @@ export function UserDetailPage({ userId, scope = 'INSIDIA', currentUserProfile }
 
             <div className="flex flex-wrap gap-2">
               <Button asChild variant="outline">
-                <Link href={getUsersHref(currentUserProfile?.mitraRoles?.mitraSlug ?? null, `users?scope=${scope}`)} className="flex items-center gap-2">
+                <Link href={getUsersHref(activeMitraSlug, `users?scope=${scope}`)} className="flex items-center gap-2">
                   <ArrowLeft className="size-4" />
                   Kembali ke daftar
                 </Link>
@@ -65,7 +65,7 @@ export function UserDetailPage({ userId, scope = 'INSIDIA', currentUserProfile }
 
                   <DropdownMenuContent align="end" className="w-48">
                     <DropdownMenuItem asChild>
-                      <Link href={getUsersHref(mitraSlug, `users/${userId}/edit?scope=${scope}`)} className="flex items-center gap-2">
+                      <Link href={getUsersHref(activeMitraSlug, `users/${userId}/edit?scope=${scope}`)} className="flex items-center gap-2">
                         <Pencil className="size-4" />
                         Edit User
                       </Link>
@@ -209,6 +209,28 @@ export function UserDetailPage({ userId, scope = 'INSIDIA', currentUserProfile }
                       <p className="text-sm text-muted-foreground">Belum ada social link.</p>
                     )}
                   </div>
+
+                  <div className="rounded-xl border p-5">
+                    <p className="mb-3 font-medium text-foreground">Penugasan Mitra</p>
+                    {mitraRoles.length ? (
+                      <div className="space-y-3">
+                        {mitraRoles.map((mitraRole) => (
+                          <div key={mitraRole.id} className="rounded-lg border bg-muted/30 p-4">
+                            <div className="flex flex-wrap items-center justify-between gap-2">
+                              <p className="font-medium text-foreground">{mitraRole.mitraName || mitraRole.mitraSlug || mitraRole.mitraId}</p>
+                              <Badge variant="outline">{formatRole(mitraRole.roleCode)}</Badge>
+                            </div>
+                            <div className="mt-2 text-sm text-muted-foreground">
+                              <p>Mitra ID: {mitraRole.mitraId}</p>
+                              <p>Slug: {mitraRole.mitraSlug || '-'}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">User ini belum memiliki penugasan mitra.</p>
+                    )}
+                  </div>
                 </div>
               ) : (
                 <div className="rounded-lg border p-4 text-sm text-muted-foreground">Data user tidak ditemukan.</div>
@@ -224,7 +246,7 @@ export function UserDetailPage({ userId, scope = 'INSIDIA', currentUserProfile }
         open={isDeleteOpen}
         onOpenChange={onDeleteDialogChange}
         onSuccess={() => {
-          router.push(getUsersHref(mitraSlug, 'users'));
+          router.push(getUsersHref(activeMitraSlug, 'users'));
         }}
       />
     </>

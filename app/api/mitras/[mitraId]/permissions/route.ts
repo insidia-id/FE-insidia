@@ -10,7 +10,7 @@ type RouteContext = {
 
 export async function GET(req: NextRequest, context: RouteContext) {
   try {
-    const { mitraId } = await context.params;
+    await context.params;
     const { searchParams } = new URL(req.url);
     const scope = searchParams.get('scope');
     const params = new URLSearchParams();
@@ -18,8 +18,6 @@ export async function GET(req: NextRequest, context: RouteContext) {
     if (scope) {
       params.set('scope', scope);
     }
-
-    params.set('mitraId', mitraId);
 
     const queryString = `?${params.toString()}`;
     const data = await apiFetchWithAuth(`/admin/permissions${queryString}`, {

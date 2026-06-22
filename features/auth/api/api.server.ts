@@ -10,7 +10,9 @@ export const getProfileUser = cache(async (): Promise<AuthProfileResponse | null
     const res = await apiFetchWithAuth<AuthProfileResponse>('/auth/profile', {
       method: 'GET',
     });
-    return mapAuthProfileResponse(res);
+    const result = mapAuthProfileResponse(res);
+    console.log('Fetched user profile:', result);
+    return result;
   } catch (error) {
     if ((error as { status?: number }).status === 401) {
       return null;

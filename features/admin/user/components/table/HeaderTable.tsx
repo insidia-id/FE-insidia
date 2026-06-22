@@ -1,17 +1,18 @@
-import { Search, Plus } from 'lucide-react';
+import { Search, Plus, Upload } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { getAssignableScopeOptions, getRoleFilterOptions, getUsersHref, statusFilterOptions, UserFilterOptions } from '../../HelperUser';
+import { getActiveMitraContext, getAssignableScopeOptions, getRoleFilterOptions, statusFilterOptions, UserFilterOptions } from '../../HelperUser';
 import { Table } from '@tanstack/react-table';
-import type { User, UserFilter, UserScope } from '../../types/user.types';
+import type { RoleUser, User, UserFilter, UserScope } from '../../types/user.types';
 import { AuthProfileResponse } from '@/features/auth/types/auth.types';
 import { Permissions } from '@/lib/helper/permission.helper';
-import { BulkUploadUserDialog } from '../BulkUploadUserDialog';
+import type { UserManagementPageConfig } from '../../config/user-page.config';
 
 type HeaderTableProps = {
   currentProfile: AuthProfileResponse;
+  pageConfig: UserManagementPageConfig;
   table: Table<User>;
   onGlobalFilterChange: (value: string) => void;
   globalFilter: string;
@@ -19,11 +20,15 @@ type HeaderTableProps = {
   onFilterChange: (filter: UserFilter) => void;
   scope: UserScope;
   onScopeChange: (scope: UserScope) => void;
+  roleCode: RoleUser;
+  onRoleCodeChange: (roleCode: RoleUser) => void;
+  createHref: string;
+  bulkUploadHref: string;
 };
-export const HeaderTable = ({ currentProfile, table, onGlobalFilterChange, globalFilter, filter, onFilterChange, scope, onScopeChange }: HeaderTableProps) => {
-  const currentUserRole = currentProfile.mitraRoles?.roleCode ?? currentProfile.insidiaRole ?? null;
-  const roleFilterOptions = getRoleFilterOptions(currentUserRole, scope);
-  const getCurrentScope = getAssignableScopeOptions(currentUserRole);
+export const HeaderTable = ({ currentProfile, pageConfig, table, onGlobalFilterChange, globalFilter, filter, onFilterChange, scope, onScopeChange, roleCode, onRoleCodeChange, createHref, bulkUploadHref }: HeaderTableProps) => {
+  const { activeInsidiaRole, activeMitraRole } = getActiveMitraContext(currentProfile);
+  const roleFilterOptions = getRoleFilterOptions(activeMitraRole ?? activeInsidiaRole, scope);
+  const getCurrentScope = getAssignableScopeOptions(activeMitraRole ?? activeInsidiaRole);
   const createPermission = scope === 'MITRA' ? Permissions.userPermissions.createUserMitra : Permissions.userPermissions.createUserInsidia;
   const canCreateUser = currentProfile.insidiaRole === 'SUPER_ADMIN' || currentProfile.permissions.includes(createPermission);
   return (
@@ -34,25 +39,27 @@ export const HeaderTable = ({ currentProfile, table, onGlobalFilterChange, globa
             <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input className="bg-white pl-9" onChange={(event) => onGlobalFilterChange(event.target.value)} placeholder="Cari nama, email, role, status..." value={globalFilter} />
           </div>
-          <Select
-            onValueChange={(value) => {
-              onScopeChange(value as UserScope);
+          {pageConfig.allowScopeFilter ? (
+            <Select
+              onValueChange={(value) => {
+                onScopeChange(value as UserScope);
 
-              table.getColumn('role')?.setFilterValue(undefined);
-            }}
-            value={scope}
-          >
-            <SelectTrigger className="w-full bg-white">
-              <SelectValue placeholder="Filter scope" />
-            </SelectTrigger>
-            <SelectContent>
-              {getCurrentScope.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+                table.getColumn('role')?.setFilterValue(undefined);
+              }}
+              value={scope}
+            >
+              <SelectTrigger className="w-full bg-white">
+                <SelectValue placeholder="Filter scope" />
+              </SelectTrigger>
+              <SelectContent>
+                {getCurrentScope.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : null}
           <Select
             onValueChange={(value) => {
               table.getColumn('status')?.setFilterValue(value === 'all' ? undefined : value);
@@ -71,23 +78,20 @@ export const HeaderTable = ({ currentProfile, table, onGlobalFilterChange, globa
             </SelectContent>
           </Select>
 
-          <Select
-            onValueChange={(value) => {
-              table.getColumn('role')?.setFilterValue(value === 'all' ? undefined : value);
-            }}
-            value={(table.getColumn('role')?.getFilterValue() as string | undefined) ?? 'all'}
-          >
-            <SelectTrigger className="w-full bg-white">
-              <SelectValue placeholder="Filter role" />
-            </SelectTrigger>
-            <SelectContent>
-              {roleFilterOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {pageConfig.allowRoleFilter ? (
+            <Select onValueChange={(value) => onRoleCodeChange(value as RoleUser)} value={roleCode}>
+              <SelectTrigger className="w-full bg-white">
+                <SelectValue placeholder="Filter role" />
+              </SelectTrigger>
+              <SelectContent>
+                {roleFilterOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : null}
           <Select onValueChange={(value) => onFilterChange(value as UserFilter)} value={filter}>
             <SelectTrigger className="w-full bg-white">
               <SelectValue placeholder="Filter user" />
@@ -105,11 +109,16 @@ export const HeaderTable = ({ currentProfile, table, onGlobalFilterChange, globa
 
       {canCreateUser ? (
         <div className="flex flex-col gap-2 sm:flex-row">
-          <BulkUploadUserDialog currentProfile={currentProfile} scope={scope} />
+          <Button asChild variant="outline">
+            <Link href={bulkUploadHref}>
+              <Upload className="size-4" />
+              {pageConfig.bulkUploadLabel}
+            </Link>
+          </Button>
           <Button asChild variant="insidia">
-            <Link href={getUsersHref(currentProfile.mitraRoles?.mitraSlug ?? null, 'users/create')}>
+            <Link href={createHref}>
               <Plus className="size-4" />
-              Tambah User
+              {pageConfig.createLabel}
             </Link>
           </Button>
         </div>

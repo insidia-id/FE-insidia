@@ -1,4 +1,4 @@
-import { RoleUser, User, UserScope } from './types/user.types';
+import { MitraRole, RoleUser, User, UserMitraAssignment, UserMitraRoleRelation, UserProfileForm, UserScope } from './types/user.types';
 import { AuthProfileResponse } from '@/features/auth/types/auth.types';
 export const USER_STATUS_OPTIONS = [
   { label: 'Aktif', value: 'ACTIVE' },
@@ -34,6 +34,8 @@ export const UserScopeOptions = [
   { label: 'Insidia', value: 'INSIDIA' },
   { label: 'Mitra', value: 'MITRA' },
 ] as const;
+export const USER_ROLE_VALUES = USER_ROLE_OPTIONS.map((option) => option.value);
+export const USER_MITRA_ROLE_VALUES = USER_ROLE_OPTIONS.filter((option) => option.scope === 'MITRA').map((option) => option.value as MitraRole);
 
 export type UserRoleFormValue = (typeof USER_ROLE_OPTIONS)[number]['value'];
 
@@ -57,16 +59,51 @@ export function normalizeUserRolePayload(role: string) {
     scope: option?.scope ?? 'INSIDIA',
   };
 }
-const ROLE_FILTER_ALL_OPTION = { label: 'Semua role', value: 'all' } as const;
+const ROLE_FILTER_ALL_OPTION = { label: 'Semua role', value: 'ALL' } as const;
 
 function normalizeRole(role?: string | null) {
-  return role?.toUpperCase() as RoleUser | undefined;
+  return role?.toUpperCase() as RoleUser | null;
 }
+
+export function isRoleUser(value: unknown): value is RoleUser {
+  return typeof value === 'string' && USER_ROLE_VALUES.includes(value as UserRoleFormValue);
+}
+
+export function isMitraRole(value: unknown): value is MitraRole {
+  return typeof value === 'string' && USER_MITRA_ROLE_VALUES.includes(value as MitraRole);
+}
+
+export function normalizeRoleQueryParam(role?: string | null): RoleUser | undefined {
+  if (!role) {
+    return undefined;
+  }
+
+  const normalizedRole = normalizeRole(role);
+
+  if (!normalizedRole || normalizedRole === 'ALL') {
+    return undefined;
+  }
+
+  return isRoleUser(normalizedRole) ? normalizedRole : undefined;
+}
+
+export function normalizeScopeQueryParam(scope?: string | null): UserScope | undefined {
+  if (scope === 'INSIDIA' || scope === 'MITRA') {
+    return scope;
+  }
+
+  return undefined;
+}
+
+export function getPrimaryUserMitraRole(user?: Pick<User, 'mitraRoles'> | null) {
+  return user?.mitraRoles?.[0] ?? null;
+}
+
 export function getUserRole(user?: Pick<User, 'insidiaRole' | 'mitraRoles'> | null, activeScope?: string): RoleUser {
   if (!user) return 'USER';
 
   if (activeScope === 'MITRA') {
-    return (user.mitraRoles?.role?.code as RoleUser) ?? 'USER';
+    return (getPrimaryUserMitraRole(user)?.roleCode as RoleUser) ?? 'USER';
   }
 
   return (user.insidiaRole?.role?.code as RoleUser) ?? 'USER';
@@ -76,10 +113,44 @@ export function getUserScope(activeScope: UserScope): UserScope {
   return activeScope;
 }
 
+export const createProfileByRole = (role: MitraRole): UserProfileForm => {
+  switch (role) {
+    case 'MURID':
+      return {
+        nis: '',
+        kelas: '',
+        jurusan: '',
+        waliId: '',
+      };
+
+    case 'GURU':
+      return {
+        nip: '',
+        subject: '',
+      };
+
+    case 'AKADEMIK':
+      return {
+        position: '',
+        division: '',
+        note: '',
+      };
+
+    case 'WALI_MURID':
+      return {
+        pekerjaan: '',
+        alamat: '',
+      };
+
+    default:
+      return {};
+  }
+};
+
 export function getAssignableRoleOptions(role?: string | null, scope?: UserScope) {
   const normalizedRole = normalizeRole(role);
 
-  let optionsByScope = scope ? USER_ROLE_OPTIONS.filter((option) => option.scope === scope) : USER_ROLE_OPTIONS;
+  const optionsByScope = scope ? USER_ROLE_OPTIONS.filter((option) => option.scope === scope) : USER_ROLE_OPTIONS;
   switch (normalizedRole) {
     case 'SUPER_ADMIN':
       return optionsByScope;
@@ -145,7 +216,7 @@ export function canManageScope(currentProfile: AuthProfileResponse, targetScope:
     return true;
   }
 
-  if (currentProfile.mitraRoles) {
+  if (currentProfile.mitraRoles?.length) {
     return targetScope === 'MITRA';
   }
 
@@ -229,4 +300,53 @@ export function formatDate(value: DateInput) {
 
 export function formatBooleanLabel(value: boolean) {
   return value ? 'Ya' : 'Tidak';
+}
+
+export function toUserMitraAssignments(mitraRoles?: UserMitraRoleRelation[] | null): UserMitraAssignment[] {
+  if (!mitraRoles?.length) {
+    return [];
+  }
+
+  return mitraRoles.map((mitraRole) => ({
+    mitraId: mitraRole.mitraId,
+    mitraName: mitraRole.mitraName ?? '',
+    mitraSlug: mitraRole.mitraSlug ?? '',
+    roleCode: mitraRole.roleCode,
+    profile: {
+      nip: mitraRole.profile?.nip ?? '',
+      subject: mitraRole.profile?.subject ?? '',
+      bio: mitraRole.profile?.bio ?? '',
+      nis: mitraRole.profile?.nis ?? '',
+      kelas: mitraRole.profile?.kelas ?? '',
+      jurusan: mitraRole.profile?.jurusan ?? '',
+      waliId: mitraRole.profile?.waliId ?? '',
+      pekerjaan: mitraRole.profile?.pekerjaan ?? '',
+      alamat: mitraRole.profile?.alamat ?? '',
+      position: mitraRole.profile?.position ?? '',
+      division: mitraRole.profile?.division ?? '',
+      note: mitraRole.profile?.note ?? '',
+    },
+  }));
+}
+
+export function getActiveMitraContext(currentProfile: AuthProfileResponse) {
+  const activeMitraId = currentProfile.activeMitraId ?? null;
+
+  const activeMitra = activeMitraId ? (currentProfile.mitraRoles?.find((mitraRole) => mitraRole.mitraId === activeMitraId) ?? null) : null;
+
+  const activeMitraRole: MitraRole | null = activeMitra?.roleCode ?? null;
+  const activeMitraSlug: string | null = activeMitra?.mitraSlug ?? null;
+
+  const activeInsidiaRole: RoleUser | null = !activeMitraId && currentProfile.insidiaRole ? normalizeRole(currentProfile.insidiaRole) : null;
+
+  const activeRole: RoleUser | MitraRole | null = activeMitraRole ?? activeInsidiaRole;
+
+  return {
+    activeMitraId,
+    activeMitraRole,
+    activeMitraSlug,
+    activeInsidiaRole,
+    activeRole,
+    isMitraContext: Boolean(activeMitraId),
+  };
 }

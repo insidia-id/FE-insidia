@@ -30,6 +30,30 @@ export function getAdminMenuItems(mitraSlug: string | null): MenuItem[] {
           permissions: [Permissions.userPermissions.viewUserInsidia, Permissions.userPermissions.viewUserMitra],
         },
         {
+          title: 'Akademik',
+          href: getUsersHref(mitraSlug, 'users/academic'),
+          icon: 'GraduationCap',
+          permissions: [Permissions.userPermissions.viewUserInsidia, Permissions.userPermissions.viewUserMitra],
+        },
+        {
+          title: 'Guru',
+          href: getUsersHref(mitraSlug, 'users/teachers'),
+          icon: 'GraduationCap',
+          permissions: [Permissions.userPermissions.viewUserInsidia, Permissions.userPermissions.viewUserMitra],
+        },
+        {
+          title: 'Murid',
+          href: getUsersHref(mitraSlug, 'users/students'),
+          icon: 'GraduationCap',
+          permissions: [Permissions.userPermissions.viewUserInsidia, Permissions.userPermissions.viewUserMitra],
+        },
+        {
+          title: 'Wali Murid',
+          href: getUsersHref(mitraSlug, 'users/guardians'),
+          icon: 'GraduationCap',
+          permissions: [Permissions.userPermissions.viewUserInsidia, Permissions.userPermissions.viewUserMitra],
+        },
+        {
           title: 'Tambah User',
           href: getUsersHref(mitraSlug, 'users/create'),
           icon: 'UserPlus',

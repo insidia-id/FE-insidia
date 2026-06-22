@@ -2,7 +2,7 @@ import { apiFetchInternal } from '@/lib/api/express.client';
 import type { CourseDetail, CourseListItem, CourseMedia, CourseModule, CourseScope, CourseStatus } from '../types/course.types';
 import type { CourseFormValues, CourseModuleFormValues, MediaMetadataFormValues, MediaUploadFormValues } from '../schema/course.schema';
 
-export async function getCourses(scope: CourseScope, status?: CourseStatus, mitraId?: string): Promise<CourseListItem[]> {
+export async function getCourses(scope: CourseScope, status?: CourseStatus, mitraId?: string | null): Promise<CourseListItem[]> {
   const params = new URLSearchParams();
   params.set('scope', scope);
 

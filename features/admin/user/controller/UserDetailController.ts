@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { useGetUserById } from '../hooks/useUser';
 import type { UserScope } from '../types/user.types';
 
-export function UserDetailController(userId: string, scope: UserScope = 'INSIDIA', mitraId?: string) {
+export function UserDetailController(userId: string, scope: UserScope = 'INSIDIA') {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const { data: user, isLoading, isError, error } = useGetUserById(userId, scope, mitraId);
+  const { data: user, isLoading, isError, error } = useGetUserById(userId, scope);
+  const mitraRoles = user?.mitraRoles ?? [];
 
   const socialLinks = user?.socialLinks
     ? [
@@ -21,6 +22,7 @@ export function UserDetailController(userId: string, scope: UserScope = 'INSIDIA
     error,
     isDeleteOpen,
     socialLinks,
+    mitraRoles,
     onDeleteDialogChange: setIsDeleteOpen,
   };
 }

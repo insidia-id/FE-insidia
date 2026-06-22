@@ -8,7 +8,7 @@ import type { Permission } from '../../permission/types/permission.types';
 import type { Role } from '../../roles/types/role.types';
 import { Button } from '@/components/ui/button';
 type PermissionsCardProps = {
-  userRole: string;
+  userRole: string | null;
   scope: AccessScope;
   selectedRole: Role | null;
   selectedPermissionIds: string[];

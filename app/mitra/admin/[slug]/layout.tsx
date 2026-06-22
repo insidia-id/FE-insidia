@@ -5,6 +5,8 @@ import { AuthSessionProvider } from '@/auth/AuthSessionProvider';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebarAdmin } from '@/features/admin/components/AppsidebarAdmin';
 import NavbarAdmin from '@/features/admin/components/NavbarAdmin';
+import { toUserProfile } from '@/features/auth/auth.utils';
+import { getActiveMitraContext } from '@/features/admin/user/HelperUser';
 
 export const metadata = {
   title: 'Insidia - Marketplace untuk kebutuhan gaming kamu',
@@ -13,23 +15,21 @@ export const metadata = {
 export default async function MitraLayout({ children, params }: { children: React.ReactNode; params: Promise<{ slug: string }> }) {
   const profile = await getProfileUser();
   const { slug } = await params;
-  const activeMitraRole = profile ? getAuthorizedMitraRole(profile.mitraRoles, slug) : null;
   if (!profile) {
     redirect(`/login?callbackUrl=/mitra/${slug}`);
   }
-
+  const userProfile = toUserProfile(profile);
+  const { activeMitraSlug } = getActiveMitraContext(userProfile);
+  const authorizedMitraRole = getAuthorizedMitraRole(userProfile.mitraRoles, slug);
   if (profile.status === 'BANNED') {
     redirect('/force-logout');
   }
-  if (profile.mitraRoles?.roleCode !== 'AKADEMIK') {
-    redirect(getRoleLandingPath(profile.insidiaRole, profile.mitraRoles));
-  }
-  if (!activeMitraRole) {
-    redirect(getRoleLandingPath(profile.insidiaRole, profile.mitraRoles));
+  if (authorizedMitraRole?.roleCode !== 'AKADEMIK') {
+    redirect(getRoleLandingPath(profile.insidiaRole, userProfile.mitraRoles, activeMitraSlug));
   }
 
-  if (activeMitraRole.mitraSlug !== slug) {
-    redirect(`/mitra/${activeMitraRole.mitraSlug}`);
+  if (authorizedMitraRole.mitraSlug !== slug) {
+    redirect(`/mitra/${authorizedMitraRole.mitraSlug}`);
   }
 
   return (

@@ -13,7 +13,7 @@ import { PermissionDetailDialog } from './PermissionDetailDialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { BulkUploadModulePermissionDialog } from './BulkUploadModulePermissionDialog';
 type ModulePermissionLibraryCardProps = {
-  userRole: string;
+  userRole: string | null;
   modulePermissions: ModulePermission[];
   isLoading: boolean;
   isError: boolean;

@@ -1,52 +1,64 @@
 import { apiFetchInternal } from '@/lib/api/express.client';
 import { CreateUserInput, UpdateUserPayload } from '../schema/user.schema';
-import type { User, UserDetail, UserFilter, UserScope } from '../types/user.types';
-import { normalizeUser, normalizeUserDetail, normalizeUsers } from '../types/user.normalizer';
+import type { User, UserDetail, UserQueryParams, UserScope, UsersResponse } from '../types/user.types';
+import { normalizeUser, normalizeUserDetail, normalizeUsersResponse } from '../types/user.normalizer';
 import { normalizeBulkPreviewResult, normalizeBulkImportResult } from '@/features/bulk/utils/normalize.bulk';
 import { BulkPreviewResult, BulkImportResult } from '@/features/bulk/types/bulk.types';
-function buildCreateUserPayload(data: CreateUserInput): CreateUserInput {
-  return {
-    email: data.email,
-    name: data.name ?? null,
-    phone: data.phone ?? null,
-    role: data.role,
-    scope: data.scope,
-    status: data.status,
-    mitraRole: data.mitraRole,
-    mitraId: data.mitraId,
-  };
-}
+import { normalizeRoleQueryParam } from '../HelperUser';
 
 export async function createUser(data: CreateUserInput): Promise<User> {
   const res = await apiFetchInternal<unknown>('/api/admin/user', {
     method: 'POST',
-    body: JSON.stringify(buildCreateUserPayload(data)),
+    body: JSON.stringify(data),
   });
   return normalizeUser(res);
 }
 
-export async function getUsers(filter: UserFilter = 'available', scope: UserScope = 'INSIDIA', mitraId?: string): Promise<User[]> {
-  const params = new URLSearchParams();
-  params.set('filter', filter);
-  params.set('scope', scope);
-  if (mitraId) {
-    params.set('mitraId', mitraId);
+export async function getUsers(params: UserQueryParams = {}): Promise<UsersResponse> {
+  const urlParams = new URLSearchParams();
+
+  if (params.filter) {
+    urlParams.set('filter', params.filter);
   }
 
-  const res = await apiFetchInternal<unknown>(`/api/admin/user?${params.toString()}`, {
+  if (params.scope) {
+    urlParams.set('scope', params.scope);
+  }
+
+  const normalizedRoleCode = normalizeRoleQueryParam(params.roleCode);
+  if (normalizedRoleCode) {
+    urlParams.set('roleCode', normalizedRoleCode);
+  }
+
+  if (params.search) {
+    urlParams.set('search', params.search);
+  }
+
+  if (typeof params.page === 'number') {
+    urlParams.set('page', String(params.page));
+  }
+
+  if (typeof params.limit === 'number') {
+    urlParams.set('limit', String(params.limit));
+  }
+
+  if (params.sort) {
+    urlParams.set('sort', params.sort);
+  }
+
+  const res = await apiFetchInternal<unknown>(`/api/admin/user?${urlParams.toString()}`, {
     method: 'GET',
   });
-  const normalizedRes = normalizeUsers(res);
-  return normalizedRes;
+  console.log('getUsers response:', res);
+  const result = normalizeUsersResponse(res);
+  console.log('getUsers normalized result:', result);
+  return result;
 }
 
-export async function getUserById(userId: string, scope: UserScope = 'INSIDIA', mitraId?: string): Promise<UserDetail> {
+export async function getUserById(userId: string, scope: UserScope = 'INSIDIA'): Promise<UserDetail> {
   const params = new URLSearchParams({
     scope,
   });
-  if (mitraId) {
-    params.set('mitraId', mitraId);
-  }
 
   const res = await apiFetchInternal<unknown>(`/api/admin/user/${userId}?${params.toString()}`, {
     method: 'GET',
@@ -68,13 +80,10 @@ export async function updateUser(userId: string, data: UpdateUserPayload): Promi
   return normalizeUserDetail(res);
 }
 
-export async function deleteUser(userId: string, scope: UserScope = 'INSIDIA', mitraId?: string): Promise<null> {
+export async function deleteUser(userId: string, scope: UserScope = 'INSIDIA'): Promise<null> {
   const params = new URLSearchParams({
     scope,
   });
-  if (mitraId) {
-    params.set('mitraId', mitraId);
-  }
 
   const res = await apiFetchInternal<null>(`/api/admin/user/${userId}?${params.toString()}`, {
     method: 'DELETE',
@@ -84,13 +93,24 @@ export async function deleteUser(userId: string, scope: UserScope = 'INSIDIA', m
 
 export function deleteUserMitraRole(userId: string, mitraId?: string): Promise<null> {
   const params = new URLSearchParams();
+
   if (mitraId) {
     params.set('mitraId', mitraId);
   }
 
-  return apiFetchInternal<null>(`/api/admin/user/${userId}/mitra-roles?${params.toString()}`, {
+  const queryString = params.toString() ? `?${params.toString()}` : '';
+
+  return apiFetchInternal<null>(`/api/admin/user/${userId}/mitra-roles${queryString}`, {
     method: 'DELETE',
   });
+}
+
+export async function switchUserMitra(userId: string, data: { mitraId: string }): Promise<UserDetail> {
+  const res = await apiFetchInternal<unknown>(`/api/admin/user/${userId}/switch-mitra`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+  return normalizeUserDetail(res);
 }
 
 export async function previewBulkUsers(file: File): Promise<BulkPreviewResult> {

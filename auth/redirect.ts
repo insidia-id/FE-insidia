@@ -1,5 +1,5 @@
-import { getAllowedMitraRole, normalizeRole, normalizeSlug, dashboardAllowedRoles } from '@/features/auth/lib/auth.helper';
-import { MitraRole } from '@/features/auth/types/auth.types';
+import { dashboardAllowedRoles, getAllowedMitraRoles, normalizeRole, normalizeSlug } from '@/features/auth/lib/auth.helper';
+import type { MitraRole } from '@/features/auth/types/auth.types';
 
 export const DEFAULT_AUTH_CALLBACK_URL = '/auth-redirect';
 export const DEFAULT_LOGIN_CALLBACK_URL = DEFAULT_AUTH_CALLBACK_URL;
@@ -21,25 +21,30 @@ export function getSafeCallbackPath(callbackUrl?: string | null) {
   }
 }
 
-export function getDefaultMitraRole(mitraRoles?: MitraRole | null) {
-  return getAllowedMitraRole(mitraRoles);
+export function getDefaultMitraRole(mitraRoles?: MitraRole[] | null, mitraSlug?: string | null) {
+  const authorizedMitraRole = getAuthorizedMitraRole(mitraRoles, mitraSlug);
+
+  if (authorizedMitraRole) {
+    return authorizedMitraRole;
+  }
+
+  return getAllowedMitraRoles(mitraRoles)[0] ?? null;
 }
 
-export function getAuthorizedMitraRole(mitraRoles?: MitraRole | null, slug?: string | null) {
-  const normalizedSlug = normalizeSlug(slug);
-  const allowedMitraRole = getAllowedMitraRole(mitraRoles);
+export function getAuthorizedMitraRole(mitraRoles?: MitraRole[] | null, mitraSlug?: string | null) {
+  const normalizedSlug = normalizeSlug(mitraSlug);
 
-  if (!normalizedSlug || !allowedMitraRole) {
+  if (!normalizedSlug) {
     return null;
   }
 
-  return normalizeSlug(allowedMitraRole.mitraSlug) === normalizedSlug ? allowedMitraRole : null;
+  return getAllowedMitraRoles(mitraRoles).find((mitraRole) => normalizeSlug(mitraRole.mitraSlug) === normalizedSlug) ?? null;
 }
 
-export function getRoleLandingPath(role?: string | null, mitraRoles?: MitraRole | null) {
+export function getRoleLandingPath(role?: string | null, mitraRoles?: MitraRole[] | null, mitraSlug?: string | null) {
   const normalizedRole = normalizeRole(role);
 
-  const firstAllowedMitraRole = getDefaultMitraRole(mitraRoles);
+  const firstAllowedMitraRole = getDefaultMitraRole(mitraRoles, mitraSlug);
 
   if (firstAllowedMitraRole?.roleCode === 'AKADEMIK') {
     return `/mitra/admin/${firstAllowedMitraRole.mitraSlug}`;

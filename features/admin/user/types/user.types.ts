@@ -1,9 +1,22 @@
 export type InsidiaRole = 'SUPER_ADMIN' | 'ADMIN' | 'MENTOR' | 'USER';
+import type { MitraRole as AuthMitraRole } from '@/features/auth/types/auth.types';
 export type MitraRole = 'AKADEMIK' | 'MURID' | 'GURU' | 'WALI_MURID';
-export type RoleUser = InsidiaRole | MitraRole;
+export type RoleUser = InsidiaRole | MitraRole | 'ALL';
+export type UserRoleCode = Exclude<RoleUser, 'ALL'>;
 export type UserScope = 'INSIDIA' | 'MITRA';
 export type StatusUser = 'ACTIVE' | 'SUSPENDED' | 'BANNED';
 export type UserFilter = 'all' | 'available' | 'deleted';
+
+export type UserQueryParams = {
+  filter?: UserFilter;
+  scope?: UserScope;
+  roleCode?: RoleUser;
+  search?: string;
+  page?: number;
+  limit?: number;
+  sort?: string;
+};
+
 export type SocialLinks = {
   instagram?: string;
   linkedin?: string;
@@ -15,19 +28,30 @@ export type UserRoleRelation = {
   role: {
     id: string;
     scope: UserScope;
-    code: RoleUser;
+    code: UserRoleCode;
   };
 };
 
-export type UserMitraRoleRelation = {
-  id: string;
-  roleId: string;
+export type MitraProfile = {
+  nip?: string | null;
+  subject?: string | null;
+  bio?: string | null;
+  nis?: string | null;
+  kelas?: string | null;
+  jurusan?: string | null;
+  waliId?: string | null;
+  position?: string | null;
+  division?: string | null;
+  note?: string | null;
+  pekerjaan?: string | null;
+  alamat?: string | null;
+};
+export type UserMitraRoleRelation = UserRoleRelation & {
   mitraId: string;
-  role: {
-    id: string;
-    scope: UserScope;
-    code: RoleUser;
-  };
+  mitraName: string | null;
+  mitraSlug: string | null;
+  roleCode: MitraRole;
+  profile?: MitraProfile | null;
 };
 
 export type User = {
@@ -41,7 +65,11 @@ export type User = {
   deletedAt: string | null;
 
   insidiaRole: UserRoleRelation | null;
-  mitraRoles: UserMitraRoleRelation | null;
+  mitraRoles: UserMitraRoleRelation[] | null;
+};
+export type UsersResponse = {
+  users: User[];
+  total: number;
 };
 export type UserDetail = User & {
   normalizedEmail: string;
@@ -53,4 +81,28 @@ export type UserDetail = User & {
   websiteUrl: string | null;
   socialLinks?: SocialLinks | null;
   createdById: string | null;
+};
+export type UserProfileForm = {
+  id?: string | null;
+
+  nis?: string | null;
+  kelas?: string | null;
+  jurusan?: string | null;
+  waliId?: string | null;
+
+  nip?: string | null;
+  subject?: string | null;
+
+  position?: string | null;
+  division?: string | null;
+  note?: string | null;
+
+  expertise?: string | null;
+  portfolio?: string | null;
+
+  pekerjaan?: string | null;
+  alamat?: string | null;
+};
+export type UserMitraAssignment = AuthMitraRole & {
+  profile?: UserProfileForm;
 };

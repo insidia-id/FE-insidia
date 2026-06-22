@@ -12,7 +12,7 @@ import { useDebounce } from '@/lib/hooks/use-debounce';
 interface ComboboxItem {
   label: string;
   value: string;
-  meta?: any;
+  meta?: unknown;
 }
 
 interface ComboboxProps {
@@ -35,7 +35,7 @@ export function Combobox({ data, value, onChange, placeholder, disabled, onSearc
     if (!debouncedSearch || debouncedSearch.length < 3) return;
 
     onSearch?.(debouncedSearch);
-  }, [debouncedSearch, open]);
+  }, [debouncedSearch, onSearch, open]);
   const selected = data.find((item) => item.value === value);
 
   return (

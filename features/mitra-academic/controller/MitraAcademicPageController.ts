@@ -30,28 +30,28 @@ export function MitraAcademicPageController(mitraId: string) {
   const classGroupsQuery = useClassGroups(mitraId);
   const classGroupCoursesQuery = useClassGroupCourses(mitraId);
   const classGroupStudentsQuery = useClassGroupStudents(mitraId);
-  const usersQuery = useGetUsers('available', 'MITRA', mitraId);
+  const usersQuery = useGetUsers({ filter: 'available', scope: 'MITRA' });
 
   const teacherOptions = useMemo<SelectOption[]>(
     () =>
-      (usersQuery.data ?? [])
+      (usersQuery.data?.users ?? [])
         .filter((user) => getUserRole(user, 'MITRA') === 'GURU')
         .map((user) => ({
           label: user.name ?? user.email,
           value: user.id,
         })),
-    [usersQuery.data],
+    [usersQuery.data?.users],
   );
 
   const studentOptions = useMemo<SelectOption[]>(
     () =>
-      (usersQuery.data ?? [])
+      (usersQuery.data?.users ?? [])
         .filter((user) => getUserRole(user, 'MITRA') === 'MURID')
         .map((user) => ({
           label: user.name ?? user.email,
           value: user.id,
         })),
-    [usersQuery.data],
+    [usersQuery.data?.users],
   );
 
   const academicYearOptions = useMemo<SelectOption[]>(() => (academicYearsQuery.data ?? []).map((item) => ({ label: item.name, value: item.id })), [academicYearsQuery.data]);

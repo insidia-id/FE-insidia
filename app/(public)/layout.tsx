@@ -1,6 +1,8 @@
 import { redirect } from 'next/navigation';
 import Navbar from '@/components/common/navbar/Navbar';
 import { getProfileUser } from '@/features/auth/api/api.server';
+import { getActiveMitraContext } from '@/features/admin/user/HelperUser';
+import { toUserProfile } from '@/features/auth/auth.utils';
 
 export const metadata = {
   title: 'Insidia - Marketplace untuk kebutuhan gaming kamu',
@@ -11,6 +13,11 @@ export default async function PublicLayout({ children }: { children: React.React
 
   try {
     profile = await getProfileUser();
+    const userProfile = toUserProfile(profile!);
+    console.log('User Profile:', userProfile);
+    const { activeMitraRole, activeMitraSlug } = getActiveMitraContext(userProfile);
+    console.log('Active Mitra Role:', activeMitraRole);
+    console.log('Active Mitra Slug:', activeMitraSlug);
   } catch {
     profile = null;
   }

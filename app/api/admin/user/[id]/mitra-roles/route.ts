@@ -17,9 +17,8 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
     if (mitraId) {
       params.set('mitraId', mitraId);
     }
-    const queryString = params.toString() ? `?${params.toString()}` : '';
 
-    await apiFetchWithAuth(`/admin/user/${id}/mitra-roles${queryString}`, {
+    await apiFetchWithAuth(`/admin/user/${id}/mitra-roles/${mitraId}`, {
       method: 'DELETE',
     });
 

@@ -7,6 +7,7 @@ import { CreateCourseController } from '../controller/CreateCourseController';
 import { getCoursesHref } from '../lib/course.helper';
 import type { CourseScope } from '../types/course.types';
 import { AuthProfileResponse } from '@/features/auth/types/auth.types';
+import { getActiveMitraContext } from '@/features/admin/user/HelperUser';
 
 type CreateCoursePageProps = {
   scope: CourseScope;
@@ -16,9 +17,8 @@ type CreateCoursePageProps = {
 
 export function CreateCoursePage({ scope, disableScopeField = false, currentProfile }: CreateCoursePageProps) {
   const router = useRouter();
-  const mitraSlug = currentProfile.mitraRoles?.mitraSlug ?? null;
-  const mitraId = currentProfile.mitraRoles?.mitraId ?? undefined;
-  const { form, curriculumOptions, isSubmitting, onSubmit } = CreateCourseController(scope, mitraId);
+  const { activeMitraId, activeMitraSlug } = getActiveMitraContext(currentProfile);
+  const { form, curriculumOptions, isSubmitting, onSubmit } = CreateCourseController(scope, activeMitraId ?? undefined);
   const isMitraCourse = scope === 'MITRA';
 
   return (
@@ -42,10 +42,10 @@ export function CreateCoursePage({ scope, disableScopeField = false, currentProf
               isSubmitting={isSubmitting}
               showScopeField
               disableScopeField={disableScopeField}
-              onCancel={() => router.push(getCoursesHref(mitraSlug))}
+              onCancel={() => router.push(getCoursesHref(activeMitraSlug))}
               onSubmit={(data) => {
                 onSubmit(data, (courseId) => {
-                  router.push(getCoursesHref(mitraSlug, courseId));
+                  router.push(getCoursesHref(activeMitraSlug, courseId));
                 });
               }}
               submitLabel={isMitraCourse ? 'Simpan Mapel' : 'Simpan Course'}

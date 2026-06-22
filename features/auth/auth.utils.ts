@@ -82,16 +82,14 @@ export function getInternalAuthToken(): string {
   return INTERNAL_AUTH_TOKEN;
 }
 export function mitraRoles(profile: AuthProfileResponse) {
-  if (!profile.mitraRoles) {
-    return null;
-  }
+  if (!profile.mitraRoles) return null;
 
-  return {
-    roleCode: profile.mitraRoles.roleCode,
-    mitraSlug: profile.mitraRoles.mitraSlug,
-    mitraName: profile.mitraRoles.mitraName,
-    mitraId: profile.mitraRoles.mitraId,
-  };
+  return profile.mitraRoles.map((item) => ({
+    roleCode: item.roleCode,
+    mitraId: item.mitraId,
+    mitraName: item.mitraName,
+    mitraSlug: item.mitraSlug,
+  }));
 }
 export function toUserProfile(profile: AuthProfileResponse): AuthProfileResponse {
   return {
@@ -103,5 +101,7 @@ export function toUserProfile(profile: AuthProfileResponse): AuthProfileResponse
     permissions: profile.permissions,
     image: profile.image,
     status: profile.status,
+    activeMitraId: profile.activeMitraId,
+    activeRole: profile.activeRole,
   };
 }

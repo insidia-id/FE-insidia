@@ -15,12 +15,8 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const scope = searchParams.get('scope');
-    const mitraId = searchParams.get('mitraId');
     const params = new URLSearchParams();
 
-    if (mitraId) {
-      params.set('mitraId', mitraId);
-    }
     if (scope) {
       params.set('scope', scope);
     }

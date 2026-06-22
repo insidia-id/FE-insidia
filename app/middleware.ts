@@ -6,11 +6,14 @@ import { resolveSessionState } from '@/features/auth/api/api';
 import { redirect } from 'next/navigation';
 import { PermissionCode } from '@/features/admin/types/Admin';
 import { AuthProfileResponse } from '@/features/auth/types/auth.types';
+import { toUserProfile } from '@/features/auth/auth.utils';
+import { getActiveMitraContext } from '@/features/admin/user/HelperUser';
 export const PagePermission = (profile: AuthProfileResponse | null, permissions: PermissionCode[]) => {
   if (!profile) {
     redirect('/login');
   }
-
+  const userProfile = toUserProfile(profile);
+  const { activeMitraSlug } = getActiveMitraContext(userProfile);
   const isSuperAdmin = profile.insidiaRole === 'SUPER_ADMIN';
 
   if (isSuperAdmin) {
@@ -20,7 +23,7 @@ export const PagePermission = (profile: AuthProfileResponse | null, permissions:
   const hasPermission = permissions.some((permission) => profile.permissions.includes(permission));
 
   if (!hasPermission) {
-    redirect(getRoleLandingPath(profile.insidiaRole, profile.mitraRoles));
+    redirect(getRoleLandingPath(profile.insidiaRole, userProfile.mitraRoles, activeMitraSlug));
   }
 };
 export default auth(async (req) => {
@@ -35,11 +38,11 @@ export default auth(async (req) => {
   const isMitraArea = path.startsWith('/mitra');
 
   const sessionState = isLoggedIn ? await resolveSessionState(req) : null;
-  const dbRole = sessionState && typeof sessionState === 'object' ? sessionState.insidiaRole?.toUpperCase() : null;
-  const dbMitraRoles = sessionState && typeof sessionState === 'object' ? sessionState.mitraRoles : null;
+  const activeInsidiaRole = sessionState && sessionState !== 'BANNED' && sessionState !== 'UNAUTHORIZED' ? sessionState.insidiaRole : null;
+  const availableMitraRoles = sessionState && sessionState !== 'BANNED' && sessionState !== 'UNAUTHORIZED' ? sessionState.mitraRoles : null;
+  const activeMitraSlug = pathSegments[2] ?? null;
 
-  const mitraSlug = pathSegments[2];
-  const matchedMitraRole = isMitraArea ? getAuthorizedMitraRole(dbMitraRoles, mitraSlug) : null;
+  const matchedMitraRole = isMitraArea ? getAuthorizedMitraRole(availableMitraRoles, activeMitraSlug) : null;
   const canonicalMitraPath = matchedMitraRole ? ['/mitra', matchedMitraRole.mitraSlug, ...pathSegments.slice(3)].join('/') : null;
 
   if (sessionState === 'BANNED' || sessionState === 'UNAUTHORIZED') {
@@ -47,7 +50,7 @@ export default auth(async (req) => {
   }
 
   if (isAuthPage && isLoggedIn) {
-    return NextResponse.redirect(new URL(getRoleLandingPath(dbRole, dbMitraRoles), nextUrl));
+    return NextResponse.redirect(new URL(getRoleLandingPath(activeInsidiaRole, availableMitraRoles), nextUrl));
   }
 
   if (isAdminArea && !isLoggedIn) {
@@ -57,7 +60,7 @@ export default auth(async (req) => {
     return NextResponse.redirect(url);
   }
 
-  if (isAdminArea && (!dbRole || !dashboardAllowedRoles.has(dbRole))) {
+  if (isAdminArea && (!activeInsidiaRole || !dashboardAllowedRoles.has(activeInsidiaRole))) {
     const url = new URL('/403', nextUrl);
 
     url.searchParams.set('from', nextUrl.pathname + nextUrl.search);
@@ -79,10 +82,10 @@ export default auth(async (req) => {
   }
 
   if (isMitraArea && !matchedMitraRole) {
-    const fallbackMitraRole = getDefaultMitraRole(dbMitraRoles);
+    const fallbackMitraRole = getDefaultMitraRole(availableMitraRoles, activeMitraSlug);
 
     if (fallbackMitraRole) {
-      return NextResponse.redirect(new URL(getRoleLandingPath(dbRole, dbMitraRoles), nextUrl));
+      return NextResponse.redirect(new URL(getRoleLandingPath(activeInsidiaRole, availableMitraRoles, activeMitraSlug), nextUrl));
     }
 
     const url = new URL('/403', nextUrl);

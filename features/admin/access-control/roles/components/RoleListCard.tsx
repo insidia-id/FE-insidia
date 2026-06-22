@@ -8,7 +8,7 @@ import type { AccessScope } from '../../types/access-control.types';
 import { getRoleStatus } from '../../lib/access-control.helper';
 import type { Role } from '../types/role.types';
 type RoleListCardProps = {
-  userRole: string;
+  userRole: string | null;
   roles: Role[];
   scope: AccessScope;
   isLoading: boolean;

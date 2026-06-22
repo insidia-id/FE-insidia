@@ -63,7 +63,7 @@ export function useReplaceRolePermissions() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ roleId, permissionIds, mitraId }: { roleId: string; permissionIds: string[]; scope: AccessScope; mitraId?: string }) => replaceRolePermissions(roleId, permissionIds, mitraId),
+    mutationFn: (variables: { roleId: string; permissionIds: string[]; scope: AccessScope; mitraId?: string | null }) => replaceRolePermissions(variables.roleId, variables.permissionIds, variables.scope),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: rolesKeys.byScope(variables.scope, variables.mitraId) });
       toast.success('Permission role berhasil diperbarui');

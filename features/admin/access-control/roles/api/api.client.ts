@@ -2,9 +2,9 @@ import { apiFetchInternal } from '@/lib/api/express.client';
 import type { AccessScope } from '../../types/access-control.types';
 import { buildAccessControlParams } from '../../lib/access-control.helper';
 import { Role, RoleFormValues } from '../types/role.types';
-export async function getRoles(scope: AccessScope, includeDeleted = false, mitraId?: string): Promise<Role[]> {
-  const params = buildAccessControlParams(scope, includeDeleted, mitraId);
-  const path = mitraId ? `/api/mitras/${mitraId}/roles` : '/api/admin/roles';
+export async function getRoles(scope: AccessScope, includeDeleted = false): Promise<Role[]> {
+  const params = buildAccessControlParams(scope, includeDeleted);
+  const path = '/api/admin/roles';
 
   return apiFetchInternal<Role[]>(`${path}?${params.toString()}`, {
     method: 'GET',

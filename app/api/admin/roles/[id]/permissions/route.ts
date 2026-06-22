@@ -30,8 +30,14 @@ export async function GET(_: NextRequest, context: RouteContext) {
 export async function PUT(req: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params;
+    const { searchParams } = new URL(req.url);
+    const scope = searchParams.get('scope');
     const body = await req.json();
-    const data = await apiFetchWithAuth(`/admin/roles/${id}/permissions`, {
+    const targetPath =
+      scope === 'MITRA'
+        ? `/admin/roles/${id}/permissions/mitras/active`
+        : `/admin/roles/${id}/permissions`;
+    const data = await apiFetchWithAuth(targetPath, {
       method: 'PUT',
       body: JSON.stringify(body),
     });

@@ -1,9 +1,11 @@
-import { asBoolean, asNullableString, asNumberOrDefault, asRecord, asString, unwrapDataPayload, normalizeEnum } from '@/lib/helper/normalizer.helper';
-import type { RoleUser, SocialLinks, StatusUser, User, UserDetail, UserMitraRoleRelation, UserRoleRelation, UserScope } from './user.types';
+import { asBoolean, asNullableString, asRecord, asString, unwrapDataPayload, normalizeEnum, asOptionalString } from '@/lib/helper/normalizer.helper';
+import type { RoleUser, SocialLinks, StatusUser, User, UserDetail, UserMitraRoleRelation, UserRoleRelation, UserScope, UsersResponse, MitraProfile } from './user.types';
 
-const USER_ROLE_VALUES = ['SUPER_ADMIN', 'ADMIN', 'MENTOR', 'USER', 'AKADEMIK', 'MURID', 'GURU', 'WALI_MURID'] as const;
-const USER_SCOPE_VALUES = ['INSIDIA', 'MITRA'] as const;
-const USER_STATUS_VALUES = ['ACTIVE', 'SUSPENDED', 'BANNED'] as const;
+export const MITRA_ROLE_VALUES = ['AKADEMIK', 'MURID', 'GURU', 'WALI_MURID'] as const;
+export const INSIDIA_ROLE_VALUES = ['SUPER_ADMIN', 'ADMIN', 'MENTOR', 'USER'] as const;
+export const USER_ROLE_VALUES = [...INSIDIA_ROLE_VALUES, ...MITRA_ROLE_VALUES] as const;
+export const USER_SCOPE_VALUES = ['INSIDIA', 'MITRA'] as const;
+export const USER_STATUS_VALUES = ['ACTIVE', 'SUSPENDED', 'BANNED'] as const;
 
 function normalizeRole(value: unknown): RoleUser {
   return normalizeEnum(value, USER_ROLE_VALUES, 'USER');
@@ -23,7 +25,7 @@ function normalizeRoleData(value: unknown): UserRoleRelation['role'] {
   return {
     id: asString(record?.id),
     scope: normalizeScope(record?.scope),
-    code: normalizeRole(record?.code),
+    code: normalizeRole(record?.code) as UserRoleRelation['role']['code'],
   };
 }
 
@@ -41,8 +43,32 @@ function normalizeInsidiaRole(value: unknown): UserRoleRelation | null {
   };
 }
 
+function normalizeMitraProfile(value: unknown): MitraProfile | null {
+  const record = asRecord(value);
+
+  if (!record) {
+    return null;
+  }
+
+  const profile: MitraProfile = {
+    nip: asOptionalString(record.nip),
+    subject: asOptionalString(record.subject),
+    bio: asOptionalString(record.bio),
+    nis: asOptionalString(record.nis),
+    kelas: asOptionalString(record.kelas),
+    jurusan: asOptionalString(record.jurusan),
+    waliId: asOptionalString(record.waliId),
+    position: asOptionalString(record.position),
+    division: asOptionalString(record.division),
+    note: asOptionalString(record.note),
+    pekerjaan: asOptionalString(record.pekerjaan),
+    alamat: asOptionalString(record.alamat),
+  };
+  return Object.fromEntries(Object.entries(profile).filter(([, value]) => value !== undefined)) as MitraProfile;
+}
 function normalizeMitraRole(value: unknown): UserMitraRoleRelation | null {
   const record = asRecord(value);
+  const mitraRecord = asRecord(record?.mitra);
 
   if (!record) {
     return null;
@@ -51,17 +77,23 @@ function normalizeMitraRole(value: unknown): UserMitraRoleRelation | null {
   return {
     id: asString(record.id),
     roleId: asString(record.roleId),
-    mitraId: asString(record.mitraId),
+    mitraId: asString(record.mitraId || mitraRecord?.id),
+    mitraName: asNullableString(record.mitraName || mitraRecord?.name),
+    mitraSlug: asNullableString(record.mitraSlug || mitraRecord?.slug),
+    roleCode: normalizeRole(record.roleCode || asRecord(record.role)?.code) as UserMitraRoleRelation['roleCode'],
     role: normalizeRoleData(record.role),
+    profile: normalizeMitraProfile(record.profile),
   };
 }
 
-function normalizeMitraRoles(value: unknown): UserMitraRoleRelation | null {
+function normalizeMitraRoles(value: unknown): UserMitraRoleRelation[] | null {
   if (Array.isArray(value)) {
-    return value.map(normalizeMitraRole).find((role): role is UserMitraRoleRelation => Boolean(role)) ?? null;
+    const normalizedRoles = value.map(normalizeMitraRole).filter((role): role is UserMitraRoleRelation => Boolean(role));
+    return normalizedRoles.length ? normalizedRoles : null;
   }
 
-  return normalizeMitraRole(value);
+  const normalizedRole = normalizeMitraRole(value);
+  return normalizedRole ? [normalizedRole] : null;
 }
 
 function normalizeSocialLinks(value: unknown): SocialLinks | null {
@@ -100,7 +132,20 @@ export function normalizeUser(value: unknown): User {
     mitraRoles: normalizeMitraRoles(record.mitraRoles),
   };
 }
+export function normalizeUsersResponse(value: unknown): UsersResponse {
+  const record = asRecord(unwrapDataPayload(value));
 
+  if (!record) {
+    throw new Error('Invalid users response');
+  }
+
+  const rawUsers = Array.isArray(record.users) ? record.users : [];
+
+  return {
+    users: rawUsers.map(normalizeUser),
+    total: Number(record.total ?? 0),
+  };
+}
 export function normalizeUsers(value: unknown): User[] {
   const payload = unwrapDataPayload(value);
 

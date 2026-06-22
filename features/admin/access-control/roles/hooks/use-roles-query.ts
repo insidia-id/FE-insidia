@@ -6,13 +6,13 @@ import type { RoleFormValues } from '../types/role.types';
 import type { AccessScope } from '../../types/access-control.types';
 export const rolesKeys = {
   all: ['roles'] as const,
-  lists: (scope: AccessScope, includeDeleted: boolean, mitraId?: string) => [...rolesKeys.all, 'list', scope, includeDeleted, mitraId ?? 'global'] as const,
-  byScope: (scope: AccessScope, mitraId?: string) => [...rolesKeys.all, 'list', scope, false, mitraId ?? 'global'] as const,
+  lists: (scope: AccessScope, includeDeleted: boolean, mitraId?: string | null) => [...rolesKeys.all, 'list', scope, includeDeleted, mitraId ?? 'global'] as const,
+  byScope: (scope: AccessScope, mitraId?: string | null) => [...rolesKeys.all, 'list', scope, false, mitraId ?? 'global'] as const,
 };
-export function useGetRoles(scope: AccessScope, includeDeleted = false, mitraId?: string) {
+export function useGetRoles(scope: AccessScope, includeDeleted = false, mitraId?: string | null) {
   return useQuery({
     queryKey: rolesKeys.lists(scope, includeDeleted, mitraId),
-    queryFn: () => getRoles(scope, includeDeleted, mitraId),
+    queryFn: () => getRoles(scope, includeDeleted),
   });
 }
 

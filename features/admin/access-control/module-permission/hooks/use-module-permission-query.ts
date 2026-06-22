@@ -7,17 +7,17 @@ import { BulkImportResult, BulkPreviewResult } from '@/features/bulk/types/bulk.
 import { AccessScope } from '@/lib/types/types';
 export const modulePermissionKeys = {
   all: ['module-permissions'] as const,
-  lists: (scope: AccessScope, mitraId?: string) => [...modulePermissionKeys.all, 'list', scope, mitraId ?? 'INSIDIA'] as const,
+  lists: (scope: AccessScope, mitraId?: string | null) => [...modulePermissionKeys.all, 'list', scope, mitraId ?? 'INSIDIA'] as const,
 };
 
-export function useGetModulePermissions(scope: AccessScope, mitraId?: string) {
+export function useGetModulePermissions(scope: AccessScope, mitraId?: string | null) {
   return useQuery({
     queryKey: modulePermissionKeys.lists(scope, mitraId),
-    queryFn: () => getModulePermissions(scope, mitraId),
+    queryFn: () => getModulePermissions(scope),
   });
 }
 
-export function useCreateModulePermission(scope: AccessScope, mitraId?: string) {
+export function useCreateModulePermission(scope: AccessScope, mitraId?: string | null) {
   const queryClient = useQueryClient();
   const listKey = modulePermissionKeys.lists(scope, mitraId);
 
@@ -37,7 +37,7 @@ export function useCreateModulePermission(scope: AccessScope, mitraId?: string) 
   });
 }
 
-export function useUpdateModulePermission(scope: AccessScope, mitraId?: string) {
+export function useUpdateModulePermission(scope: AccessScope, mitraId?: string | null) {
   const queryClient = useQueryClient();
   const listKey = modulePermissionKeys.lists(scope, mitraId);
 
@@ -57,7 +57,7 @@ export function useUpdateModulePermission(scope: AccessScope, mitraId?: string) 
   });
 }
 
-export function useDeleteModulePermission(scope: AccessScope, mitraId?: string) {
+export function useDeleteModulePermission(scope: AccessScope, mitraId?: string | null) {
   const queryClient = useQueryClient();
   const listKey = modulePermissionKeys.lists(scope, mitraId);
 

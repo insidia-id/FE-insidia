@@ -8,24 +8,23 @@ import { RoleListCard } from '../roles/components/RoleListCard';
 import { ModulePermissionLibraryCard } from '../module-permission/components/ModulePermissionLibraryCard';
 import { useMemo, useState } from 'react';
 import { AccessScope } from '../types/access-control.types';
-import { getCurrentUserScope } from '../../user/HelperUser';
+import { getActiveMitraContext, getCurrentUserScope } from '../../user/HelperUser';
 import { useRoles } from '../roles/hooks/use-roles';
 import { usePermissions } from '../permission/hooks/use-permisson';
 import { useModulePermissions } from '../module-permission/hooks/use-module-permission';
 type AccessControlPageProps = {
   currentProfile: AuthProfileResponse;
-  mitraId?: string;
 };
 
-export function AccessControlPage({ currentProfile, mitraId }: AccessControlPageProps) {
-  const userRole = currentProfile.insidiaRole === 'SUPER_ADMIN' || currentProfile.insidiaRole === 'ADMIN' ? currentProfile.insidiaRole : (currentProfile?.mitraRoles?.roleCode ?? currentProfile?.insidiaRole);
+export function AccessControlPage({ currentProfile }: AccessControlPageProps) {
+  const { activeMitraId, activeMitraRole, activeInsidiaRole } = getActiveMitraContext(currentProfile);
+  const userRole = activeMitraRole ?? activeInsidiaRole;
+  const mitraId = activeMitraId ?? undefined;
   const [scope, setScope] = useState<AccessScope>(() => (mitraId ? 'MITRA' : getCurrentUserScope(userRole)));
   const useRole = useRoles({ scope, mitraId });
-  const usePermission = usePermissions({ scope, mitraId, selectedRole: useRole.selectedRole, selectedRoleId: useRole.selectedRoleId });
+  const usePermission = usePermissions({ mitraId, selectedRole: useRole.selectedRole, selectedRoleId: useRole.selectedRoleId });
   const useModulePermission = useModulePermissions({ scope, mitraId });
-  const modulePermissions = useModulePermission.modulePermissions ?? [];
-
-  const permissions = useMemo(() => modulePermissions.flatMap((modulePermission) => modulePermission.permissions ?? []), [modulePermissions]);
+  const permissions = useMemo(() => (useModulePermission.modulePermissions ?? []).flatMap((modulePermission) => modulePermission.permissions ?? []), [useModulePermission.modulePermissions]);
   const canManageRoleCatalog = !mitraId && (userRole === 'SUPER_ADMIN' || userRole === 'ADMIN');
 
   return (

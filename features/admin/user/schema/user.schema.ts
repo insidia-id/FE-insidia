@@ -1,12 +1,13 @@
 import { z } from 'zod';
-export const userRoleValues = ['SUPER_ADMIN', 'ADMIN', 'MENTOR', 'USER', 'AKADEMIK', 'MURID', 'GURU', 'WALI_MURID'] as const;
-export const userStatusValues = ['ACTIVE', 'SUSPENDED', 'BANNED'] as const;
+import { MITRA_ROLE_VALUES, USER_ROLE_VALUES, USER_STATUS_VALUES } from '../types/user.normalizer';
 
+import type { UserMitraAssignment } from '../types/user.types';
 const optionalNullableStringSchema = z
   .string()
   .trim()
-  .transform((value) => (value === '' ? null : value))
-  .nullable();
+  .optional()
+  .nullable()
+  .transform((value) => (value === '' ? null : value));
 
 const optionalUrlStringSchema = z
   .string()
@@ -32,40 +33,61 @@ const socialLinksSchema = z
     const hasValue = Object.values(value).some((item) => typeof item === 'string' && item.trim() !== '');
     return hasValue ? value : undefined;
   });
+const roleProfileSchema = z.object({
+  nip: optionalNullableStringSchema,
+  subject: optionalNullableStringSchema,
+  bio: optionalNullableStringSchema,
+  nis: optionalNullableStringSchema,
+  kelas: optionalNullableStringSchema,
+  jurusan: optionalNullableStringSchema,
+  waliId: optionalNullableStringSchema,
+  pekerjaan: optionalNullableStringSchema,
+  alamat: optionalNullableStringSchema,
+  position: optionalNullableStringSchema,
+  division: optionalNullableStringSchema,
+  note: optionalNullableStringSchema,
+});
+
+export const mitraRoleItemSchema = z.object({
+  mitraId: z.string().trim().min(1),
+  mitraName: z.string().optional().default(''),
+  mitraSlug: z.string().optional().default(''),
+  roleCode: z.enum(MITRA_ROLE_VALUES),
+
+  profile: roleProfileSchema.optional(),
+});
 const baseUserSchema = z.object({
   email: z.string().trim().email('Email tidak valid'),
   name: optionalNullableStringSchema,
   phone: optionalNullableStringSchema,
-  role: z.enum(userRoleValues),
-  mitraRole: z.enum(['AKADEMIK', 'MURID', 'GURU', 'WALI_MURID']).optional(),
+  role: z.enum(USER_ROLE_VALUES),
   scope: z.enum(['INSIDIA', 'MITRA']).default('INSIDIA'),
-  status: z.enum(userStatusValues),
-  mitraId: z.string().optional(),
+  status: z.enum(USER_STATUS_VALUES).default('ACTIVE'),
+  mitraRoles: z.array(mitraRoleItemSchema).optional().default([]),
 });
 
 function validateMitraSelection(
   data: {
-    role?: (typeof userRoleValues)[number];
-    mitraRole?: 'AKADEMIK' | 'MURID' | 'GURU' | 'WALI_MURID';
-    mitraId?: string;
-    scope?: 'INSIDIA' | 'MITRA';
+    mitraRoles?: UserMitraAssignment[];
   },
   ctx: z.RefinementCtx,
 ) {
-  const isMitraScoped = data.scope === 'MITRA' || Boolean(data.mitraRole);
+  const isMitraScoped = data.mitraRoles && data.mitraRoles.length > 0;
+  const resolvedMitraRole = data.mitraRoles?.find((assignment) => assignment.roleCode && assignment.mitraId);
+  const resolvedMitraId = data.mitraRoles?.find((assignment) => assignment.mitraId);
 
-  if (isMitraScoped && !data.mitraRole) {
+  if (isMitraScoped && !resolvedMitraRole) {
     ctx.addIssue({
       code: 'custom',
-      path: ['mitraRole'],
+      path: ['mitraRoles'],
       message: 'Role mitra wajib dipilih',
     });
   }
 
-  if (isMitraScoped && !data.mitraId) {
+  if (isMitraScoped && !resolvedMitraId) {
     ctx.addIssue({
       code: 'custom',
-      path: ['mitraId'],
+      path: ['mitraRoles'],
       message: 'Mitra wajib dipilih untuk user scope mitra',
     });
   }
@@ -78,31 +100,24 @@ export const updateUserSchema = baseUserSchema
   .extend({
     id: z.string(),
     scope: z.enum(['INSIDIA', 'MITRA']).default('INSIDIA'),
+    mitraRoles: z.array(mitraRoleItemSchema).optional().default([]),
     bio: optionalNullableStringSchema,
     websiteUrl: optionalNullableStringSchema,
     socialLinks: socialLinksSchema,
   })
   .superRefine(validateMitraSelection);
 
+export const SwitchUserMitraSchema = z.object({
+  mitraId: z.string(),
+});
+export type SwitchUserMitraInput = z.input<typeof SwitchUserMitraSchema>;
 export type CreateUserInput = z.input<typeof createUserSchema>;
+
 export type UpdateUserSocialLinksInput = {
   instagram?: string;
   linkedin?: string;
   github?: string;
 };
+export type UpdateUserInput = z.input<typeof updateUserSchema>;
 
-export type UpdateUserInput = {
-  id: string;
-  email?: string;
-  name?: string | null;
-  phone?: string | null;
-  role?: (typeof userRoleValues)[number];
-  mitraRole?: 'AKADEMIK' | 'MURID' | 'GURU' | 'WALI_MURID';
-  mitraId?: string;
-  scope: 'INSIDIA' | 'MITRA';
-  status?: (typeof userStatusValues)[number];
-  bio: string | null;
-  websiteUrl: string | null;
-  socialLinks?: UpdateUserSocialLinksInput;
-};
 export type UpdateUserPayload = Partial<Omit<UpdateUserInput, 'id'>>;

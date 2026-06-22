@@ -3,7 +3,7 @@ import { getAssignableRoleOptions } from '../../lib/access-control.helper';
 import type { AccessScope } from '../../types/access-control.types';
 
 type AccessControlHeaderProps = {
-  userRole: string;
+  userRole: string | null;
   scope: AccessScope;
   scopeLocked: boolean;
   includeDeleted: boolean;

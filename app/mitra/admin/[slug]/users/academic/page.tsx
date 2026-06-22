@@ -1,0 +1,20 @@
+import { UsersPage } from '@/features/admin/user/components/UsersPage';
+import { USER_ROLE_PAGE_CONFIG } from '@/features/admin/user/config/user-page.config';
+import { redirect } from 'next/navigation';
+import { getProfileUser } from '@/features/auth/api/api.server';
+import { toUserProfile } from '@/features/auth/auth.utils';
+import { PagePermission } from '@/app/middleware';
+import { Permissions } from '@/lib/helper/permission.helper';
+
+export default async function MitraAdminAcademicUsersPage({ params }: { params: Promise<{ slug: string }> }) {
+  const profile = await getProfileUser();
+  const { slug } = await params;
+
+  if (!profile) {
+    redirect(`/login?callbackUrl=/mitra/admin/${slug}/users/academic`);
+  }
+
+  PagePermission(profile, [Permissions.userPermissions.viewUserMitra, Permissions.userPermissions.viewUserInsidia]);
+
+  return <UsersPage currentProfile={toUserProfile(profile)} pageConfig={USER_ROLE_PAGE_CONFIG.academic} />;
+}

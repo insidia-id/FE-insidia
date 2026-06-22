@@ -23,13 +23,13 @@ import type { CourseFormValues, CourseModuleFormValues, MediaMetadataFormValues,
 export const courseKeys = {
   all: ['courses'] as const,
   lists: () => [...courseKeys.all, 'list'] as const,
-  list: (scope: CourseScope, status?: CourseStatus, mitraId?: string) => [...courseKeys.lists(), { scope, status: status ?? null, mitraId: mitraId ?? null }] as const,
+  list: (scope: CourseScope, status?: CourseStatus, mitraId?: string | null) => [...courseKeys.lists(), { scope, status: status ?? null, mitraId: mitraId ?? null }] as const,
   detail: (courseId: string) => [...courseKeys.all, 'detail', courseId] as const,
   modules: (courseId: string) => [...courseKeys.all, 'modules', courseId] as const,
   media: (courseId: string) => [...courseKeys.all, 'media', courseId] as const,
 };
 
-export function useGetCourses(scope: CourseScope, status?: CourseStatus, mitraId?: string) {
+export function useGetCourses(scope: CourseScope, status?: CourseStatus, mitraId?: string | null) {
   return useQuery({
     queryKey: courseKeys.list(scope, status, mitraId),
     queryFn: () => getCourses(scope, status, mitraId),

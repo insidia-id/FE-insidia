@@ -27,20 +27,15 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const filter = searchParams.get('filter');
-    const scope = searchParams.get('scope');
-    const mitraId = searchParams.get('mitraId');
     const params = new URLSearchParams();
 
-    if (filter) {
-      params.set('filter', filter);
-    }
-    if (scope) {
-      params.set('scope', scope);
-    }
-    if (mitraId) {
-      params.set('mitraId', mitraId);
-    }
+    ['filter', 'scope', 'roleCode', 'search', 'page', 'limit', 'sort'].forEach((key) => {
+      const value = searchParams.get(key);
+
+      if (value) {
+        params.set(key, value);
+      }
+    });
 
     const data = await apiFetchWithAuth(`/admin/user?${params.toString()}`, {
       method: 'GET',

@@ -5,7 +5,7 @@ import { useGetCourses } from '../hooks/useCourses';
 type CoursesControllerOptions = {
   initialScope: CourseScope;
   canChangeScope: boolean;
-  mitraId?: string;
+  mitraId?: string | null;
 };
 
 export function CoursesController({ initialScope, canChangeScope, mitraId }: CoursesControllerOptions) {

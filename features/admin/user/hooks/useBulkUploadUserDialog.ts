@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react';
-import { downloadExcelTemplate } from '../../../bulk/config/downloadExcelTemplate';
 import { useImportBulkUsers, usePreviewBulkUsers } from './useUser';
 import type { AuthProfileResponse } from '@/features/auth/types/auth.types';
 import type { UserScope } from '../types/user.types';
 import { getBulkUserTemplate } from '@/features/bulk/config/bulk.template';
+import { getActiveMitraContext } from '../HelperUser';
 
 type UseBulkUploadUserDialogProps = {
   currentProfile: AuthProfileResponse;
@@ -18,8 +18,9 @@ export function useBulkUploadUserDialog({ currentProfile, scope }: UseBulkUpload
   const importMutation = useImportBulkUsers();
   const resetPreview = previewMutation.reset;
   const resetImport = importMutation.reset;
+  const { activeMitraRole } = getActiveMitraContext(currentProfile);
 
-  const isAkademikMitraContext = scope === 'MITRA' && currentProfile.mitraRoles?.roleCode === 'AKADEMIK';
+  const isAkademikMitraContext = scope === 'MITRA' && activeMitraRole === 'AKADEMIK';
 
   const bulkConfig = useMemo(() => getBulkUserTemplate(scope, isAkademikMitraContext), [scope, isAkademikMitraContext]);
 
@@ -34,25 +35,6 @@ export function useBulkUploadUserDialog({ currentProfile, scope }: UseBulkUpload
   }, [scope, resetPreview]);
 
   const previewResult = previewMutation.data;
-
-  const handleDownloadTemplateCsv = () => {
-    const blob = new Blob([template.content], { type: 'text/csv;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement('a');
-    anchor.href = url;
-    anchor.download = template.fileName;
-    anchor.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const handleDownloadTemplateExcel = () => {
-    const excelFileName = template.fileName.replace(/\.csv$/i, '');
-    downloadExcelTemplate({
-      fileName: excelFileName,
-      sheetName: 'Bulk User',
-      rows: templateRows,
-    });
-  };
 
   const handlePreview = () => {
     if (!file) {

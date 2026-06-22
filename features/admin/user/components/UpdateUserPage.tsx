@@ -7,8 +7,7 @@ import { UpdateUserController } from '../controller/UpdateUserController';
 import { UserFormFields } from '../form/UserForm';
 import { UpdateUserInput } from '../schema/user.schema';
 import { AuthProfileResponse } from '@/features/auth/types/auth.types';
-import { getUsersHref } from '../HelperUser';
-import { LoadingButton } from '@/components/common/ButtonLoading';
+import { getActiveMitraContext, getUsersHref } from '../HelperUser';
 
 type UpdateUserPageProps = {
   currentProfile: AuthProfileResponse;
@@ -18,9 +17,9 @@ type UpdateUserPageProps = {
 
 export function UpdateUserPage({ userId, currentProfile, scope = 'INSIDIA' }: UpdateUserPageProps) {
   const router = useRouter();
-  const { form, user, isLoading, isError, error, isSubmitting, onSubmit, onDeleteMitraRole, isDeletingMitraRole } = UpdateUserController(userId, scope);
-  const userRole = currentProfile?.mitraRoles?.roleCode ?? currentProfile?.insidiaRole;
-  const isMitraUser = user?.mitraRoles?.id ? true : false;
+  const { form, user, isLoading, isError, error, isSubmitting, onSubmit, onDeleteMitraRole, isDeletingMitraRole, deletingMitraId } = UpdateUserController(userId, scope);
+  const { activeMitraRole, activeMitraSlug, activeInsidiaRole } = getActiveMitraContext(currentProfile);
+
   return (
     <main className="min-h-screen bg-muted/30 px-4 py-10">
       <section className="mx-auto w-full max-w-4xl space-y-6">
@@ -33,11 +32,6 @@ export function UpdateUserPage({ userId, currentProfile, scope = 'INSIDIA' }: Up
         <Card>
           <CardHeader>
             <CardTitle>Form Update User</CardTitle>
-            {isMitraUser && (
-              <LoadingButton isLoading={isDeletingMitraRole} onClick={onDeleteMitraRole} variant="destructive" className="ml-auto">
-                Hapus Peran Mitra
-              </LoadingButton>
-            )}
             <CardDescription>{user ? `Mengubah data untuk ${user.name || user.email}` : 'Memuat data user...'}</CardDescription>
           </CardHeader>
           <CardContent>
@@ -53,15 +47,18 @@ export function UpdateUserPage({ userId, currentProfile, scope = 'INSIDIA' }: Up
             ) : (
               <UserFormFields<UpdateUserInput>
                 form={form}
-                currentUserRole={userRole}
+                currentUserRole={activeMitraRole ?? activeInsidiaRole}
                 isLoading={isSubmitting}
                 mode="update"
+                onDeleteMitraRole={onDeleteMitraRole}
+                isDeletingMitraRole={isDeletingMitraRole}
+                deletingMitraId={deletingMitraId}
                 onCancel={() => {
-                  router.push(getUsersHref(currentProfile?.mitraRoles?.mitraSlug ?? null, `users/${userId}?scope=${scope}`));
+                  router.push(getUsersHref(activeMitraSlug, `users/${userId}?scope=${scope}`));
                 }}
                 onSubmit={(data) => {
                   onSubmit(data, (updatedUserId) => {
-                    router.push(getUsersHref(currentProfile?.mitraRoles?.mitraSlug ?? null, `users/${updatedUserId}?scope=${scope}`));
+                    router.push(getUsersHref(activeMitraSlug, `users/${updatedUserId}?scope=${scope}`));
                   });
                 }}
                 submitLabel="Simpan Perubahan"

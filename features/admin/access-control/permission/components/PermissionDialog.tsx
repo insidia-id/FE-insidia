@@ -8,8 +8,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { readErrorMessage } from '@/lib/form/form.helper';
-import type { AccessScope } from '../../types/access-control.types';
-import { ACCESS_SCOPE_OPTIONS } from '../../lib/access-control.helper';
 import { Permission, PermissionFormValues } from '../types/permission.types';
 import type { ModulePermission } from '../../module-permission/types/module-permission.types';
 import { createPermissionSchema } from '../schema/permission.schema';

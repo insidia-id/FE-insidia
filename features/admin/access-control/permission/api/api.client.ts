@@ -2,9 +2,9 @@ import { apiFetchInternal } from '@/lib/api/express.client';
 import type { PermissionFormValues, Permission } from '../types/permission.types';
 import type { AccessScope } from '../../types/access-control.types';
 import { buildAccessControlParams } from '../../lib/access-control.helper';
-export async function getPermissions(scope: AccessScope, mitraId?: string): Promise<Permission[]> {
-  const params = buildAccessControlParams(scope, undefined, mitraId);
-  const path = mitraId ? `/api/mitras/${mitraId}/permissions` : '/api/admin/permissions';
+export async function getPermissions(scope: AccessScope): Promise<Permission[]> {
+  const params = buildAccessControlParams(scope);
+  const path = '/api/admin/permissions';
 
   return apiFetchInternal<Permission[]>(`${path}?${params.toString()}`, {
     method: 'GET',

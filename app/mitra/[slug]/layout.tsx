@@ -9,12 +9,14 @@ export const metadata = {
 };
 export default async function MitraLayout({ children, params }: { children: React.ReactNode; params: Promise<{ slug: string }> }) {
   const profile = await getProfileUser();
-  const { slug } = await params;
-  const activeMitraRole = profile ? getAuthorizedMitraRole(profile.mitraRoles, slug) : null;
 
   if (!profile) {
+    const { slug } = await params;
     redirect(`/login?callbackUrl=/mitra/${slug}`);
   }
+
+  const { slug } = await params;
+  const activeMitraRole = getAuthorizedMitraRole(profile.mitraRoles, slug);
 
   if (profile.status === 'BANNED') {
     redirect('/force-logout');

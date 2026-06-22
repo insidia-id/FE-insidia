@@ -1,12 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Resolver, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { useDeleteUserMitraRole, useGetUserById, useUpdateUser } from '../hooks/useUser';
 import { UpdateUserInput, updateUserSchema } from '../schema/user.schema';
 import type { UserDetail, UserScope } from '../types/user.types';
-import { getUserScope } from '../HelperUser';
-
+import { getUserScope, toUserMitraAssignments } from '../HelperUser';
 const defaultValues: UpdateUserInput = {
   id: '',
   email: '',
@@ -17,6 +16,7 @@ const defaultValues: UpdateUserInput = {
   status: 'ACTIVE',
   bio: '',
   websiteUrl: '',
+  mitraRoles: [],
   socialLinks: {
     instagram: '',
     linkedin: '',
@@ -25,14 +25,15 @@ const defaultValues: UpdateUserInput = {
 };
 
 function toUpdateUserFormValues(user: UserDetail, activeScope: UserScope): UpdateUserInput {
+  const mitraAssignments = toUserMitraAssignments(user.mitraRoles);
+
   return {
     id: user.id,
     email: user.email,
     name: user.name ?? '',
     phone: user.phone ?? '',
     role: user.insidiaRole?.role.code ?? 'USER',
-    mitraRole: user.mitraRoles?.role.code as UpdateUserInput['mitraRole'],
-    mitraId: user.mitraRoles?.mitraId ?? undefined,
+    mitraRoles: mitraAssignments,
     scope: getUserScope(activeScope),
     status: user.status,
     bio: user.bio ?? '',
@@ -46,6 +47,7 @@ function toUpdateUserFormValues(user: UserDetail, activeScope: UserScope): Updat
 }
 
 export function UpdateUserController(userId: string, scope: UserScope = 'INSIDIA') {
+  const [deletingMitraId, setDeletingMitraId] = useState<string | null>(null);
   const form = useForm<UpdateUserInput>({
     resolver: zodResolver(updateUserSchema) as Resolver<UpdateUserInput>,
     defaultValues: {
@@ -64,25 +66,47 @@ export function UpdateUserController(userId: string, scope: UserScope = 'INSIDIA
     form.reset(toUpdateUserFormValues(user, scope));
   }, [form, user, scope]);
 
-  const onDeleteMitraRole = () => {
+  const onDeleteMitraRole = (mitraId?: string) => {
+    if (!mitraId) {
+      const currentAssignments = form.getValues('mitraRoles') ?? [];
+      form.setValue(
+        'mitraRoles',
+        currentAssignments.filter((assignment) => assignment.mitraId !== mitraId),
+        { shouldDirty: true, shouldTouch: true },
+      );
+      return;
+    }
+
+    setDeletingMitraId(mitraId);
     deleteUserMitraRoleMutation.mutate(
-      { userId, mitraId: user?.mitraRoles?.mitraId },
+      { userId, mitraId },
       {
         onSuccess: () => {
-          form.setValue('mitraRole', undefined);
-          form.setValue('mitraId', undefined);
+          const currentAssignments = form.getValues('mitraRoles') ?? [];
+          form.setValue(
+            'mitraRoles',
+            currentAssignments.filter((assignment) => assignment.mitraId !== mitraId),
+            { shouldDirty: true, shouldTouch: true },
+          );
         },
+        onSettled: () => setDeletingMitraId(null),
       },
     );
   };
 
   const onSubmit = (values: UpdateUserInput, onSuccess?: (updatedUserId: string) => void) => {
-    const { id, ...payload } = values;
+    const { id, mitraRoles = [], ...payload } = values;
+    const isMitraScoped = values.scope === 'MITRA' || mitraRoles.length > 0;
 
     updateUserMutation.mutate(
       {
         userId: id,
-        data: payload,
+        data: {
+          ...payload,
+          role: isMitraScoped ? 'USER' : payload.role,
+          scope: isMitraScoped ? 'MITRA' : values.scope,
+          mitraRoles,
+        },
       },
       {
         onSuccess: (updatedUser) => {
@@ -104,5 +128,6 @@ export function UpdateUserController(userId: string, scope: UserScope = 'INSIDIA
     onSubmit,
     onDeleteMitraRole,
     isDeletingMitraRole: deleteUserMitraRoleMutation.isPending,
+    deletingMitraId,
   };
 }

@@ -86,7 +86,7 @@ export function AppSidebar({ menuItems, user }: AppSidebarProps) {
                     return (
                       <Collapsible key={item.href} defaultOpen={isMenuItemActive} className="space-y-1">
                         <CollapsibleTrigger asChild>
-                          <button type="button" className={`flex w-full items-center justify-between rounded-lg p-2 text-left transition-colors ${isMenuItemActive ? 'bg-[#835DE3] text-white' : 'hover:bg-accent'}`}>
+                          <button type="button" className={`group flex w-full items-center justify-between rounded-lg p-2 text-left transition-colors ${isMenuItemActive ? 'bg-[#835DE3] text-white' : 'hover:bg-accent'}`}>
                             <div className="flex min-w-0 items-center gap-3">
                               <Icon className="h-4 w-4 shrink-0" />
                               <span className="truncate text-sm font-medium">{item.title}</span>
@@ -99,42 +99,44 @@ export function AppSidebar({ menuItems, user }: AppSidebarProps) {
                                 </Badge>
                               )}
 
-                              <ChevronDown className="h-4 w-4 shrink-0" />
+                              <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200 ease-out group-data-[state=open]:rotate-180" />
                             </div>
                           </button>
                         </CollapsibleTrigger>
 
-                        <CollapsibleContent className="space-y-1">
-                          <Tabs value={activeSubmenuHref} className="w-full">
-                            <TabsList className="grid h-auto w-full grid-cols-1 gap-1 bg-transparent p-0 pl-6">
-                              {item.submenu.map((subItem) => {
-                                const SubIcon = iconMap[subItem.icon];
-                                const value = subItem.href;
+                        <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
+                          <div className="space-y-1 pt-1">
+                            <Tabs value={activeSubmenuHref} className="w-full">
+                              <TabsList className="grid h-auto w-full grid-cols-1 gap-1 bg-transparent p-0 pl-6">
+                                {item.submenu.map((subItem) => {
+                                  const SubIcon = iconMap[subItem.icon];
+                                  const value = subItem.href;
 
-                                return (
-                                  <TabsTrigger
-                                    key={subItem.href}
-                                    value={value}
-                                    asChild
-                                    className="h-auto justify-start rounded-lg p-2 text-sm font-normal data-[state=active]:bg-[#835DE3] data-[state=active]:text-white data-[state=active]:shadow-none"
-                                  >
-                                    <Link prefetch href={subItem.href}>
-                                      <div className="flex min-w-0 flex-1 items-center gap-3">
-                                        <SubIcon className="h-3.5 w-3.5 shrink-0" />
-                                        <span className="truncate">{subItem.title}</span>
-                                      </div>
+                                  return (
+                                    <TabsTrigger
+                                      key={subItem.href}
+                                      value={value}
+                                      asChild
+                                      className="h-auto justify-start rounded-lg p-2 text-sm font-normal data-[state=active]:bg-[#835DE3] data-[state=active]:text-white data-[state=active]:shadow-none"
+                                    >
+                                      <Link prefetch href={subItem.href}>
+                                        <div className="flex min-w-0 flex-1 items-center gap-3">
+                                          <SubIcon className="h-3.5 w-3.5 shrink-0" />
+                                          <span className="truncate">{subItem.title}</span>
+                                        </div>
 
-                                      {subItem.badge && (
-                                        <Badge variant="secondary" className="ml-auto h-5 px-1.5 text-xs">
-                                          {subItem.badge}
-                                        </Badge>
-                                      )}
-                                    </Link>
-                                  </TabsTrigger>
-                                );
-                              })}
-                            </TabsList>
-                          </Tabs>
+                                        {subItem.badge && (
+                                          <Badge variant="secondary" className="ml-auto h-5 px-1.5 text-xs">
+                                            {subItem.badge}
+                                          </Badge>
+                                        )}
+                                      </Link>
+                                    </TabsTrigger>
+                                  );
+                                })}
+                              </TabsList>
+                            </Tabs>
+                          </div>
                         </CollapsibleContent>
                       </Collapsible>
                     );

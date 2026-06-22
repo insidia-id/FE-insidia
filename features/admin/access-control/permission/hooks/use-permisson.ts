@@ -1,16 +1,14 @@
 import { useState, useMemo } from 'react';
 import { useCreatePermission, useDeletePermission, useReplaceRolePermissions, useUpdatePermission } from './use-permission-query';
 import type { Permission, PermissionFormValues } from '../types/permission.types';
-import type { AccessScope } from '../../types/access-control.types';
 import { resolveSelectedPermissionIds } from '../../lib/access-control.helper';
 import { Role } from '../../roles/types/role.types';
 type UsePermissionsProps = {
-  scope: AccessScope;
-  mitraId?: string;
+  mitraId?: string | null;
   selectedRole: Role | null;
   selectedRoleId: string | null;
 };
-export function usePermissions({ scope, mitraId, selectedRole, selectedRoleId }: UsePermissionsProps) {
+export function usePermissions({ mitraId, selectedRole, selectedRoleId }: UsePermissionsProps) {
   const [permissionDraft, setPermissionDraft] = useState<{
     roleId: string | null;
     permissionIds: string[];

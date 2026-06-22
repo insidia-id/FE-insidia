@@ -17,13 +17,15 @@ interface MitraPageProps {
 
 export default async function MitraPage({ params }: MitraPageProps) {
   const profile = await getProfileUser();
-  const { slug } = await params;
-  const activeMitraRole = profile ? getAuthorizedMitraRole(profile.mitraRoles, slug) : null;
-  const isAkademikMitraContext = profile?.mitraRoles?.roleCode === 'AKADEMIK';
 
   if (!profile) {
+    const { slug } = await params;
     redirect(`/login?callbackUrl=/mitra/${slug}`);
   }
+
+  const { slug } = await params;
+  const activeMitraRole = getAuthorizedMitraRole(profile.mitraRoles, slug);
+  const isAkademikMitraContext = activeMitraRole?.roleCode === 'AKADEMIK';
 
   if (profile.status === 'BANNED') {
     redirect('/force-logout');
