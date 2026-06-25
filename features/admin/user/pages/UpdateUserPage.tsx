@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { UpdateUserController } from '../controller/UpdateUserController';
+import { UpdateUserController } from '../hooks/UpdateUserController';
 import { UserFormFields } from '../form/UserForm';
 import { UpdateUserInput } from '../schema/user.schema';
 import { AuthProfileResponse } from '@/features/auth/types/auth.types';

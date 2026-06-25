@@ -85,14 +85,17 @@ export type UserDetail = User & {
 export type UserProfileForm = {
   id?: string | null;
 
+  //MURID
   nis?: string | null;
   kelas?: string | null;
   jurusan?: string | null;
   waliId?: string | null;
 
+  //GURU
   nip?: string | null;
   subject?: string | null;
 
+  //AKADEMIK
   position?: string | null;
   division?: string | null;
   note?: string | null;
@@ -100,6 +103,7 @@ export type UserProfileForm = {
   expertise?: string | null;
   portfolio?: string | null;
 
+  // WALI_MURID
   pekerjaan?: string | null;
   alamat?: string | null;
 };

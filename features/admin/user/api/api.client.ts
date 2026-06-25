@@ -49,9 +49,7 @@ export async function getUsers(params: UserQueryParams = {}): Promise<UsersRespo
   const res = await apiFetchInternal<unknown>(`/api/admin/user?${urlParams.toString()}`, {
     method: 'GET',
   });
-  console.log('getUsers response:', res);
   const result = normalizeUsersResponse(res);
-  console.log('getUsers normalized result:', result);
   return result;
 }
 
@@ -128,6 +126,6 @@ export async function importBulkUsers(jobId: string): Promise<BulkImportResult> 
   const res = await apiFetchInternal<unknown>(`/api/admin/user/import/${jobId}`, {
     method: 'POST',
   });
-
+  console.log('importBulkUsers res:', res);
   return normalizeBulkImportResult(res);
 }

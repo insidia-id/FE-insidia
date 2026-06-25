@@ -1,4 +1,4 @@
-import { UpdateUserPage } from '@/features/admin/user/components/UpdateUserPage';
+import { UpdateUserPage } from '@/features/admin/user/pages/UpdateUserPage';
 import { getProfileUser } from '@/features/auth/api/api.server';
 import { toUserProfile } from '@/features/auth/auth.utils';
 import { redirect } from 'next/navigation';

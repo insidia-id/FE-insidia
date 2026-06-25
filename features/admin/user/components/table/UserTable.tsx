@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import type { RoleUser, User, UserFilter, UserScope } from '../../types/user.types';
 import { HeaderTable } from './HeaderTable';
 import { UserDeleteDialog } from '../UserDeleteDialog';
-import { UserTableController } from '../../controller/UserTableController';
+import { UserTableController } from '../../hooks/UserTableController';
 import { AuthProfileResponse } from '@/features/auth/types/auth.types';
 import type { UserManagementPageConfig } from '../../config/user-page.config';
 

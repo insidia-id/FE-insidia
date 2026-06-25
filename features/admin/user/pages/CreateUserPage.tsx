@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { CreateUserController } from '../controller/CreateUserController';
+import { useCreateUserController } from '../hooks/CreateUserController';
 import { UserFormFields } from '../form/UserForm';
 import { CreateUserInput } from '../schema/user.schema';
 import { AuthProfileResponse } from '@/features/auth/types/auth.types';
@@ -19,8 +19,11 @@ type CreateUserPageProps = {
 export function CreateUserPage({ currentProfile, defaultRoleCode, defaultScope }: CreateUserPageProps) {
   const router = useRouter();
   const normalizedRoleCode = normalizeRoleQueryParam(defaultRoleCode) as UserRoleCode | undefined;
-  const { activeMitraId, activeMitraRole, activeMitraSlug, activeInsidiaRole } = getActiveMitraContext(currentProfile);
-  const { form, isSubmitting, onSubmit } = CreateUserController(activeMitraId ?? undefined, normalizedRoleCode);
+  const { activeMitraId, activeMitraRole, activeMitraSlug, activeInsidiaRole, activeMitraName } = getActiveMitraContext(currentProfile);
+  const { form, isSubmitting, onSubmit } = useCreateUserController(activeMitraId ?? undefined, activeMitraName ?? undefined, normalizedRoleCode);
+  console.log(
+    `activeMitraId: ${activeMitraId}, activeMitraRole: ${activeMitraRole}, activeMitraSlug: ${activeMitraSlug}, activeInsidiaRole: ${activeInsidiaRole}, activeMitraName: ${activeMitraName} , defaultRoleCode: ${defaultRoleCode}, normalizedRoleCode: ${normalizedRoleCode}`,
+  );
   const title = normalizedRoleCode ? `Tambah ${formatRole(normalizedRoleCode)}` : 'Tambah User';
   const description = normalizedRoleCode ? `Buat akun ${formatRole(normalizedRoleCode).toLowerCase()} baru dan tentukan status awalnya dari halaman ini.` : 'Buat akun user baru dan tentukan role serta status awalnya dari halaman ini.';
 

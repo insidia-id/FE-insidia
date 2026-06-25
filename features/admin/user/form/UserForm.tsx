@@ -37,6 +37,7 @@ type UserFormFieldsProps<TFieldValues extends FieldValues & BaseUserFormShape> =
   children?: ReactNode;
   scope?: 'INSIDIA' | 'MITRA';
 };
+
 export function UserFormFields<TFieldValues extends FieldValues & BaseUserFormShape>({
   form,
   currentUserRole,
@@ -58,7 +59,6 @@ export function UserFormFields<TFieldValues extends FieldValues & BaseUserFormSh
     label: string;
     value: MitraRole;
   }>;
-
   const role = searchParams.get('role') as MitraRole | undefined;
   return (
     <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>

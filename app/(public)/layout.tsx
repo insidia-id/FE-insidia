@@ -13,11 +13,6 @@ export default async function PublicLayout({ children }: { children: React.React
 
   try {
     profile = await getProfileUser();
-    const userProfile = toUserProfile(profile!);
-    console.log('User Profile:', userProfile);
-    const { activeMitraRole, activeMitraSlug } = getActiveMitraContext(userProfile);
-    console.log('Active Mitra Role:', activeMitraRole);
-    console.log('Active Mitra Slug:', activeMitraSlug);
   } catch {
     profile = null;
   }

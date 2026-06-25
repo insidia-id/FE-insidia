@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { User, UserScope } from '../../types/user.types';
 import { useReactTable, getCoreRowModel, getFilteredRowModel, getSortedRowModel, SortingState, ColumnFiltersState, ColumnDef } from '@tanstack/react-table';
 import { getUserRole } from '../../HelperUser';
+
 type UserTableProps = {
   users: User[];
   columns: ColumnDef<User>[];
@@ -9,6 +10,7 @@ type UserTableProps = {
   globalFilter: string;
   onGlobalFilterChange: (value: string) => void;
 };
+
 export const useUserDataTable = ({ users, columns, scope, globalFilter, onGlobalFilterChange }: UserTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([{ id: 'createdAt', desc: true }]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);

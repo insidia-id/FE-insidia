@@ -15,7 +15,6 @@ export function getMutationErrorMessage(error: unknown, fallbackMessage: string)
   const validationErrors = responseData?.error?.errors ?? (Array.isArray(clientError?.errors) ? clientError.errors : undefined);
 
   const firstValidationMessage = validationErrors?.find((item) => typeof item.message === 'string')?.message;
-
   if (firstValidationMessage) {
     return firstValidationMessage;
   }

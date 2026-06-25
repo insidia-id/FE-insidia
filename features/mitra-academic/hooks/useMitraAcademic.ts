@@ -48,30 +48,28 @@ import type {
 
 export const mitraAcademicKeys = {
   all: ['mitra-academic'] as const,
-  resource: (mitraId: string, resource: string) => [...mitraAcademicKeys.all, mitraId, resource] as const,
+  resource: (resource: string) => [...mitraAcademicKeys.all, resource] as const,
 };
 
 function useCrudMutations<TFormValues>({
-  mitraId,
   resourceKey,
   createFn,
   updateFn,
   deleteFn,
   successLabel,
 }: {
-  mitraId: string;
   resourceKey: string;
-  createFn: (mitraId: string, data: TFormValues) => Promise<unknown>;
-  updateFn: (mitraId: string, id: string, data: TFormValues) => Promise<unknown>;
-  deleteFn: (mitraId: string, id: string) => Promise<unknown>;
+  createFn: (data: TFormValues) => Promise<unknown>;
+  updateFn: (id: string, data: TFormValues) => Promise<unknown>;
+  deleteFn: (id: string) => Promise<unknown>;
   successLabel: string;
 }) {
   const queryClient = useQueryClient();
 
-  const invalidate = () => queryClient.invalidateQueries({ queryKey: mitraAcademicKeys.resource(mitraId, resourceKey) });
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: mitraAcademicKeys.resource(resourceKey) });
 
   const createMutation = useMutation({
-    mutationFn: (data: TFormValues) => createFn(mitraId, data),
+    mutationFn: (data: TFormValues) => createFn(data),
     onSuccess: () => {
       invalidate();
       toast.success(`${successLabel} berhasil dibuat`);
@@ -82,7 +80,7 @@ function useCrudMutations<TFormValues>({
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: TFormValues }) => updateFn(mitraId, id, data),
+    mutationFn: ({ id, data }: { id: string; data: TFormValues }) => updateFn(id, data),
     onSuccess: () => {
       invalidate();
       toast.success(`${successLabel} berhasil diperbarui`);
@@ -93,7 +91,7 @@ function useCrudMutations<TFormValues>({
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => deleteFn(mitraId, id),
+    mutationFn: (id: string) => deleteFn(id),
     onSuccess: () => {
       invalidate();
       toast.success(`${successLabel} berhasil dihapus`);
@@ -110,85 +108,82 @@ function useCrudMutations<TFormValues>({
   };
 }
 
-export function useAcademicYears(mitraId: string) {
+export function useAcademicYears() {
   return useQuery({
-    queryKey: mitraAcademicKeys.resource(mitraId, 'academic-years'),
-    queryFn: () => getAcademicYears(mitraId),
+    queryKey: mitraAcademicKeys.resource('academic-years'),
+    queryFn: () => getAcademicYears(),
     refetchOnWindowFocus: false,
   });
 }
 
-export function useSemesters(mitraId: string) {
+export function useSemesters() {
   return useQuery({
-    queryKey: mitraAcademicKeys.resource(mitraId, 'semesters'),
-    queryFn: () => getSemesters(mitraId),
+    queryKey: mitraAcademicKeys.resource('semesters'),
+    queryFn: () => getSemesters(),
     refetchOnWindowFocus: false,
   });
 }
 
-export function useCurricula(mitraId?: string) {
+export function useCurricula() {
   return useQuery({
-    queryKey: mitraAcademicKeys.resource(mitraId ?? 'unknown', 'curricula'),
-    queryFn: () => getCurricula(mitraId!),
-    enabled: Boolean(mitraId),
+    queryKey: mitraAcademicKeys.resource('curricula'),
+    queryFn: () => getCurricula(),
     refetchOnWindowFocus: false,
   });
 }
 
-export function useSubjects(mitraId: string) {
+export function useSubjects() {
   return useQuery({
-    queryKey: mitraAcademicKeys.resource(mitraId, 'subjects'),
-    queryFn: () => getSubjects(mitraId),
+    queryKey: mitraAcademicKeys.resource('subjects'),
+    queryFn: () => getSubjects(),
     refetchOnWindowFocus: false,
   });
 }
 
-export function useAcademicClasses(mitraId: string) {
+export function useAcademicClasses() {
   return useQuery({
-    queryKey: mitraAcademicKeys.resource(mitraId, 'academic-classes'),
-    queryFn: () => getAcademicClasses(mitraId),
+    queryKey: mitraAcademicKeys.resource('academic-classes'),
+    queryFn: () => getAcademicClasses(),
     refetchOnWindowFocus: false,
   });
 }
 
-export function useClassGroups(mitraId: string) {
+export function useClassGroups() {
   return useQuery({
-    queryKey: mitraAcademicKeys.resource(mitraId, 'class-groups'),
-    queryFn: () => getClassGroups(mitraId),
+    queryKey: mitraAcademicKeys.resource('class-groups'),
+    queryFn: () => getClassGroups(),
     refetchOnWindowFocus: false,
   });
 }
 
-export function useClassGroupCourses(mitraId: string) {
+export function useClassGroupCourses() {
   return useQuery({
-    queryKey: mitraAcademicKeys.resource(mitraId, 'class-group-courses'),
-    queryFn: () => getClassGroupCourses(mitraId),
+    queryKey: mitraAcademicKeys.resource('class-group-courses'),
+    queryFn: () => getClassGroupCourses(),
     refetchOnWindowFocus: false,
   });
 }
 
-export function useClassGroupStudents(mitraId: string) {
+export function useClassGroupStudents() {
   return useQuery({
-    queryKey: mitraAcademicKeys.resource(mitraId, 'class-group-students'),
-    queryFn: () => getClassGroupStudents(mitraId),
+    queryKey: mitraAcademicKeys.resource('class-group-students'),
+    queryFn: () => getClassGroupStudents(),
     refetchOnWindowFocus: false,
   });
 }
 
-export function useAcademicYearMutations(mitraId: string) {
+export function useAcademicYearMutations() {
   return useCrudMutations<AcademicYearFormValues>({
-    mitraId,
     resourceKey: 'academic-years',
     createFn: createAcademicYear,
     updateFn: updateAcademicYear,
     deleteFn: deleteAcademicYear,
-    successLabel: 'Tahun ajaran',
+    successLabel: 'Tahun Ajaran',
   });
 }
 
-export function useSemesterMutations(mitraId: string) {
+export function useSemesterMutations() {
   return useCrudMutations<SemesterFormValues>({
-    mitraId,
     resourceKey: 'semesters',
     createFn: createSemester,
     updateFn: updateSemester,
@@ -197,9 +192,8 @@ export function useSemesterMutations(mitraId: string) {
   });
 }
 
-export function useCurriculumMutations(mitraId: string) {
+export function useCurriculumMutations() {
   return useCrudMutations<CurriculumFormValues>({
-    mitraId,
     resourceKey: 'curricula',
     createFn: createCurriculum,
     updateFn: updateCurriculum,
@@ -208,9 +202,8 @@ export function useCurriculumMutations(mitraId: string) {
   });
 }
 
-export function useSubjectMutations(mitraId: string) {
+export function useSubjectMutations() {
   return useCrudMutations<SubjectFormValues>({
-    mitraId,
     resourceKey: 'subjects',
     createFn: createSubject,
     updateFn: updateSubject,
@@ -219,9 +212,8 @@ export function useSubjectMutations(mitraId: string) {
   });
 }
 
-export function useAcademicClassMutations(mitraId: string) {
+export function useAcademicClassMutations() {
   return useCrudMutations<AcademicClassFormValues>({
-    mitraId,
     resourceKey: 'academic-classes',
     createFn: createAcademicClass,
     updateFn: updateAcademicClass,
@@ -230,9 +222,8 @@ export function useAcademicClassMutations(mitraId: string) {
   });
 }
 
-export function useClassGroupMutations(mitraId: string) {
+export function useClassGroupMutations() {
   return useCrudMutations<ClassGroupFormValues>({
-    mitraId,
     resourceKey: 'class-groups',
     createFn: createClassGroup,
     updateFn: updateClassGroup,
@@ -241,9 +232,8 @@ export function useClassGroupMutations(mitraId: string) {
   });
 }
 
-export function useClassGroupCourseMutations(mitraId: string) {
+export function useClassGroupCourseMutations() {
   return useCrudMutations<ClassGroupCourseFormValues>({
-    mitraId,
     resourceKey: 'class-group-courses',
     createFn: createClassGroupCourse,
     updateFn: updateClassGroupCourse,
@@ -252,9 +242,8 @@ export function useClassGroupCourseMutations(mitraId: string) {
   });
 }
 
-export function useClassGroupStudentMutations(mitraId: string) {
+export function useClassGroupStudentMutations() {
   return useCrudMutations<ClassGroupStudentFormValues>({
-    mitraId,
     resourceKey: 'class-group-students',
     createFn: createClassGroupStudent,
     updateFn: updateClassGroupStudent,

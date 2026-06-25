@@ -2,18 +2,19 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, ExternalLink, Link as LinkIcon, Mail, MoreVertical, Pencil, Phone, ShieldCheck, Trash2, UserRound } from 'lucide-react';
+import { ArrowLeft, ExternalLink, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { formatDateTime, formatRole, getStatusVariant, formatStatus, formatBooleanLabel, getUserRole, getUsersHref } from '../HelperUser';
+import { getStatusVariant, formatStatus, getUsersHref } from '../HelperUser';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { UserDeleteDialog } from './UserDeleteDialog';
-import { UserDetailController } from '../controller/UserDetailController';
+import { UserDeleteDialog } from '../components/UserDeleteDialog';
+import { UserDetailController } from '../hooks/UserDetailController';
 import type { UserScope } from '../types/user.types';
 import { AuthProfileResponse } from '@/features/auth/types/auth.types';
 import { getActiveMitraContext } from '../HelperUser';
+import { CardInfoSection, CardInfoUser, MitraRoleCard, userInfo, userSections } from '../components/CardDetailUser';
 
 type UserDetailPageProps = {
   userId: string;
@@ -25,7 +26,6 @@ export function UserDetailPage({ userId, scope = 'INSIDIA', currentUserProfile }
   const router = useRouter();
   const { activeMitraSlug } = getActiveMitraContext(currentUserProfile);
   const { user, isLoading, isError, error, isDeleteOpen, socialLinks, mitraRoles, onDeleteDialogChange } = UserDetailController(userId, scope);
-
   return (
     <>
       <main className="min-h-screen bg-muted/30 px-4 py-10">
@@ -99,7 +99,7 @@ export function UserDetailPage({ userId, scope = 'INSIDIA', currentUserProfile }
                     <div className="space-y-2">
                       <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">User ID</p>
                       <p className="font-mono text-sm text-foreground">{user.id}</p>
-                      <h2 className="text-2xl font-semibold text-foreground">{user.name || 'Tanpa nama'}</h2>
+                      <h2 className="text-2xl font-semibold text-foreground">{user.name || 'User'}</h2>
                       <p className="text-sm text-muted-foreground">{user.bio || 'Belum ada bio profil'}</p>
                     </div>
                     <div className="flex flex-wrap gap-2">
@@ -113,85 +113,15 @@ export function UserDetailPage({ userId, scope = 'INSIDIA', currentUserProfile }
                   </div>
 
                   <div className="grid gap-4 md:grid-cols-2">
-                    <div className="rounded-xl border p-5">
-                      <div className="mb-3 flex items-center gap-2 text-foreground">
-                        <Mail className="size-4" />
-                        <p className="font-medium">Email</p>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{user.email}</p>
-                      <p className="mt-2 text-xs text-muted-foreground">Normalized: {user.normalizedEmail}</p>
-                    </div>
-
-                    <div className="rounded-xl border p-5">
-                      <div className="mb-3 flex items-center gap-2 text-foreground">
-                        <Phone className="size-4" />
-                        <p className="font-medium">Telepon</p>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{user.phone || '-'}</p>
-                      <p className="mt-2 text-xs text-muted-foreground">Verified at: {formatDateTime(user.phoneVerifiedAt)}</p>
-                    </div>
-
-                    <div className="rounded-xl border p-5">
-                      <div className="mb-3 flex items-center gap-2 text-foreground">
-                        <ShieldCheck className="size-4" />
-                        <p className="font-medium">Role</p>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{formatRole(getUserRole(user))}</p>
-                    </div>
-
-                    <div className="rounded-xl border p-5">
-                      <div className="mb-3 flex items-center gap-2 text-foreground">
-                        <UserRound className="size-4" />
-                        <p className="font-medium">Dibuat Pada</p>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{formatDateTime(user.createdAt)}</p>
-                      <p className="mt-2 text-xs text-muted-foreground">Waktu lengkap: {formatDateTime(user.createdAt, { hour: '2-digit', minute: '2-digit' })}</p>
-                    </div>
+                    {userInfo(user).map((card) => (
+                      <CardInfoUser key={card.label} icon={card.icon} label={card.label} value={card.value} subtitle={card.subtitle} />
+                    ))}
                   </div>
 
                   <div className="grid gap-4 md:grid-cols-2">
-                    <div className="rounded-xl border p-5">
-                      <p className="mb-3 font-medium text-foreground">Profil</p>
-                      <div className="space-y-3 text-sm text-muted-foreground">
-                        <div>
-                          <p className="font-medium text-foreground">Bio</p>
-                          <p>{user.bio || '-'}</p>
-                        </div>
-                        <div>
-                          <p className="font-medium text-foreground">Website</p>
-                          {user.websiteUrl ? (
-                            <a className="inline-flex items-center gap-2 text-primary hover:underline" href={user.websiteUrl} rel="noreferrer" target="_blank">
-                              <LinkIcon className="size-4" />
-                              {user.websiteUrl}
-                            </a>
-                          ) : (
-                            <p>-</p>
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-medium text-foreground">Image URL</p>
-                          <p className="break-all">{user.image || '-'}</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="rounded-xl border p-5">
-                      <p className="mb-3 font-medium text-foreground">Audit</p>
-                      <div className="space-y-3 text-sm text-muted-foreground">
-                        <div>
-                          <p className="font-medium text-foreground">Email Verified</p>
-                          <p>{formatBooleanLabel(user.emailVerified)}</p>
-                        </div>
-                        <div>
-                          <p className="font-medium text-foreground">Created By</p>
-                          <p className="break-all">{user.createdById || '-'}</p>
-                        </div>
-                        <div>
-                          <p className="font-medium text-foreground">Deleted At</p>
-                          <p>{formatDateTime(user.deletedAt)}</p>
-                        </div>
-                      </div>
-                    </div>
+                    {userSections(user).map((section) => (
+                      <CardInfoSection key={section.title} title={section.title} items={section.items} />
+                    ))}
                   </div>
 
                   <div className="rounded-xl border p-5">
@@ -215,16 +145,7 @@ export function UserDetailPage({ userId, scope = 'INSIDIA', currentUserProfile }
                     {mitraRoles.length ? (
                       <div className="space-y-3">
                         {mitraRoles.map((mitraRole) => (
-                          <div key={mitraRole.id} className="rounded-lg border bg-muted/30 p-4">
-                            <div className="flex flex-wrap items-center justify-between gap-2">
-                              <p className="font-medium text-foreground">{mitraRole.mitraName || mitraRole.mitraSlug || mitraRole.mitraId}</p>
-                              <Badge variant="outline">{formatRole(mitraRole.roleCode)}</Badge>
-                            </div>
-                            <div className="mt-2 text-sm text-muted-foreground">
-                              <p>Mitra ID: {mitraRole.mitraId}</p>
-                              <p>Slug: {mitraRole.mitraSlug || '-'}</p>
-                            </div>
-                          </div>
+                          <MitraRoleCard key={mitraRole.mitraId} mitraRole={mitraRole} />
                         ))}
                       </div>
                     ) : (

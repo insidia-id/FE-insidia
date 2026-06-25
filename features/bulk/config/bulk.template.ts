@@ -1,3 +1,4 @@
+import { MitraRole } from '@/features/admin/user/types/user.types';
 import { BulkTemplateConfig, ExcelTemplateRow } from '../types/bulk.types';
 
 const COMMON_BULK_RULES = ['Format file yang didukung: CSV, XLSX, dan XLS.', 'Template tersedia dalam format CSV dan Excel.'];
@@ -6,80 +7,120 @@ function createCsv(rows: string[]) {
   return rows.join('\n');
 }
 
-export function getBulkUserTemplate(scope: string, isAkademikMitraContext: boolean): BulkTemplateConfig {
+export function getBulkUserTemplate(scope: string, isAkademikMitraContext: boolean, roleCode?: MitraRole): BulkTemplateConfig {
+  const roleTemplates: Record<
+    MitraRole,
+    {
+      profileFields: string[];
+      profileExample: Record<string, string>;
+    }
+  > = {
+    MURID: {
+      profileFields: ['nis', 'kelas', 'jurusan'],
+      profileExample: {
+        nis: '2024001',
+        kelas: '12 IPA 1',
+        jurusan: 'IPA',
+      },
+    },
+
+    GURU: {
+      profileFields: ['nip', 'subject'],
+      profileExample: {
+        nip: '198001012000011001',
+        subject: 'Matematika',
+      },
+    },
+
+    AKADEMIK: {
+      profileFields: ['position', 'division', 'note'],
+      profileExample: {
+        position: 'Kepala Sekolah',
+        division: 'Administrasi',
+        note: 'Catatan opsional',
+      },
+    },
+
+    WALI_MURID: {
+      profileFields: ['pekerjaan', 'alamat'],
+      profileExample: {
+        pekerjaan: 'Pegawai Swasta',
+        alamat: 'Jl. Contoh No. 123',
+      },
+    },
+  };
+
   if (scope === 'MITRA') {
+    if (!roleCode) {
+      throw new Error('roleCode wajib diisi untuk scope MITRA');
+    }
+
+    const roleTemplate = roleTemplates[roleCode];
+
     if (isAkademikMitraContext) {
-      const templateRows: ExcelTemplateRow[] = [
-        {
-          email: 'murid1@example.com',
-          name: 'Murid Satu',
-          phone: '081234567890',
-          mitraRole: 'MURID',
-          status: 'ACTIVE',
-        },
-        {
-          email: 'guru1@example.com',
-          name: 'Guru Satu',
-          phone: '081234567891',
-          mitraRole: 'GURU',
-          status: 'ACTIVE',
-        },
-      ];
+      const baseRow = {
+        email: `${roleCode.toLowerCase()}1@example.com`,
+        name: `${roleCode} Satu`,
+        phone: '081234567890',
+        mitraRoles: roleCode,
+        status: 'ACTIVE',
+      };
+
+      const templateRow: ExcelTemplateRow = {
+        ...baseRow,
+        ...roleTemplate.profileExample,
+      };
+
+      const headers = ['email', 'name', 'phone', 'mitraRoles', 'status', ...roleTemplate.profileFields];
+
+      const values = headers.map((header) => String(templateRow[header] ?? ''));
 
       return {
         template: {
-          fileName: 'template-bulk-user-mitra-akademik.csv',
-
-          content: createCsv(['email,name,phone,mitraRole,status', 'murid1@example.com,Murid Satu,081234567890,MURID,ACTIVE', 'guru1@example.com,Guru Satu,081234567891,GURU,ACTIVE']),
+          fileName: `template-bulk-user-${roleCode.toLowerCase()}.csv`,
+          content: createCsv([headers.join(','), values.join(',')]),
         },
 
-        templateRows,
+        templateRows: [templateRow],
 
-        rules: [...COMMON_BULK_RULES, 'Kolom minimum: `email`, `mitraRole`, dan `status`. `name` dan `phone` opsional.'],
+        rules: [...COMMON_BULK_RULES, 'Kolom minimum: `email`, `mitraRoles`, dan `status`.', '`name` dan `phone` bersifat opsional.', `Template khusus role ${roleCode}.`],
       };
     }
 
-    const templateRows: ExcelTemplateRow[] = [
-      {
-        email: 'murid1@example.com',
-        name: 'Murid Satu',
-        phone: '081234567890',
-        scope: 'MITRA',
-        role: 'USER',
-        mitraRole: 'MURID',
-        mitraId: 'isi-mitra-id',
-        status: 'ACTIVE',
-      },
-      {
-        email: 'guru1@example.com',
-        name: 'Guru Satu',
-        phone: '081234567891',
-        scope: 'MITRA',
-        role: 'USER',
-        mitraRole: 'GURU',
-        mitraId: 'isi-mitra-id',
-        status: 'ACTIVE',
-      },
-    ];
+    const baseRow = {
+      email: `${roleCode.toLowerCase()}1@example.com`,
+      name: `${roleCode} Satu`,
+      phone: '081234567890',
+      scope: 'MITRA',
+      role: 'USER',
+      mitraRoles: roleCode,
+      mitraId: 'isi-mitra-id',
+      status: 'ACTIVE',
+    };
+
+    const templateRow: ExcelTemplateRow = {
+      ...baseRow,
+      ...roleTemplate.profileExample,
+    };
+
+    const headers = ['email', 'name', 'phone', 'scope', 'role', 'mitraRoles', 'mitraId', 'status', ...roleTemplate.profileFields];
+
+    const values = headers.map((header) => String(templateRow[header] ?? ''));
 
     return {
       template: {
-        fileName: 'template-bulk-user-mitra.csv',
-
-        content: createCsv([
-          'email,name,phone,scope,role,mitraRole,mitraId,status',
-          'murid1@example.com,Murid Satu,081234567890,MITRA,USER,MURID,isi-mitra-id,ACTIVE',
-          'guru1@example.com,Guru Satu,081234567891,MITRA,USER,GURU,isi-mitra-id,ACTIVE',
-        ]),
+        fileName: `template-bulk-user-mitra-${roleCode.toLowerCase()}.csv`,
+        content: createCsv([headers.join(','), values.join(',')]),
       },
 
-      templateRows,
+      templateRows: [templateRow],
 
       rules: [
         ...COMMON_BULK_RULES,
-        'Kolom minimum: `email`, `scope`, `role`, `mitraRole`, `mitraId`, dan `status`.',
-        'Untuk user mitra, isi `scope` dengan `MITRA` dan `role` dengan `USER`.',
-        'Isi `mitraRole` dengan salah satu: `AKADEMIK`, `GURU`, `MURID`, atau `WALI_MURID`.',
+        'Kolom minimum: `email`, `scope`, `role`, `mitraRoles`, `mitraId`, dan `status`.',
+        'Untuk user mitra, isi `scope` dengan `MITRA`.',
+        'Untuk user mitra, isi `role` dengan `USER`.',
+        `Template khusus role ${roleCode}.`,
       ],
     };
   }
@@ -112,7 +153,13 @@ export function getBulkUserTemplate(scope: string, isAkademikMitraContext: boole
 
     templateRows,
 
-    rules: [...COMMON_BULK_RULES, 'Kolom minimum: `email`, `scope`, `role`, dan `status`. `name` dan `phone` opsional.', 'Untuk user Insidia, isi `scope` dengan `INSIDIA`.', 'Isi `role` dengan salah satu role Insidia yang diizinkan.'],
+    rules: [
+      ...COMMON_BULK_RULES,
+      'Kolom minimum: `email`, `scope`, `role`, dan `status`.',
+      '`name` dan `phone` bersifat opsional.',
+      'Untuk user Insidia, isi `scope` dengan `INSIDIA`.',
+      'Isi `role` dengan salah satu role Insidia yang diizinkan.',
+    ],
   };
 }
 

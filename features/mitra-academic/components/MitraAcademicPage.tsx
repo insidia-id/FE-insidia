@@ -27,8 +27,8 @@ import {
 } from '../schema/mitra-academic.schema';
 import type { AcademicStatus } from '../types/mitra-academic.types';
 
-export function MitraAcademicPage({ mitraId, mitraName }: { mitraId: string; mitraName: string }) {
-  const controller = MitraAcademicPageController(mitraId);
+export function MitraAcademicPage({ mitraName }: { mitraName?: string }) {
+  const controller = MitraAcademicPageController();
 
   if (controller.isLoading) {
     return (
@@ -49,7 +49,7 @@ export function MitraAcademicPage({ mitraId, mitraName }: { mitraId: string; mit
         <section className="mx-auto w-full max-w-6xl">
           <Card className="border-border/70 bg-white/90 shadow-sm">
             <CardContent className="p-6">
-              <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{controller.error instanceof Error ? controller.error.message : 'Gagal memuat data akademik mitra.'}</div>
+              <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{'Gagal memuat data akademik mitra.'}</div>
             </CardContent>
           </Card>
         </section>

@@ -31,7 +31,6 @@ export function useCreateUser() {
 
   return useMutation({
     mutationFn: (data: CreateUserInput) => {
-      console.log('useCreateUser mutationFn data:', data);
       return createUser(data);
     },
     onSuccess: () => {

@@ -21,7 +21,7 @@ export function toRouteResponse<T>(result: RouteResult<T>, status = 200) {
 export function toRouteError(message: string, options?: ErrorOptions) {
   const status = options?.status ?? 500;
 
-  return NextResponse.json(
+  const res = NextResponse.json(
     {
       error: {
         code: options?.code ?? mapStatusToCode(status),
@@ -33,6 +33,7 @@ export function toRouteError(message: string, options?: ErrorOptions) {
     },
     { status },
   );
+  return res;
 }
 
 function mapStatusToCode(status: number) {

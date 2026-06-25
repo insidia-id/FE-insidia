@@ -1,14 +1,33 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCreateUser } from '../hooks/useUser';
+import { useCreateUser } from './useUser';
 import { CreateUserInput, createUserSchema } from '../schema/user.schema';
-import { normalizeRoleQueryParam, normalizeUserRolePayload, toUserMitraAssignments } from '../HelperUser';
+import { createProfileByRole, normalizeRoleQueryParam, normalizeUserRolePayload, toUserMitraAssignments } from '../HelperUser';
 
-function getDefaultValues(contextMitraId?: string, defaultRoleCode?: string): CreateUserInput {
+function getDefaultValues(contextMitraId?: string, contextMitraName?: string, defaultRoleCode?: string): CreateUserInput {
   const normalizedRoleCode = normalizeRoleQueryParam(defaultRoleCode);
+
   const normalizedRole = normalizedRoleCode ? normalizeUserRolePayload(normalizedRoleCode) : null;
+
   const isMitraUser = Boolean(normalizedRole?.mitraRole || contextMitraId || normalizedRole?.scope === 'MITRA');
-  const mitraAssignments = toUserMitraAssignments();
+
+  console.log(`getDefaultValues - contextMitraId: ${contextMitraId}, contextMitraName: ${contextMitraName}, defaultRoleCode: ${defaultRoleCode}, normalizedRoleCode: ${normalizedRoleCode}, isMitraUser: ${isMitraUser}`);
+
+  let mitraAssignments: CreateUserInput['mitraRoles'] = [];
+
+  if (contextMitraId) {
+    const roleCode = normalizedRole?.mitraRole ?? 'AKADEMIK';
+
+    mitraAssignments = [
+      {
+        mitraId: contextMitraId,
+        mitraName: contextMitraName ?? '',
+        mitraSlug: '',
+        roleCode,
+        profile: createProfileByRole(roleCode),
+      },
+    ];
+  }
 
   return {
     email: '',
@@ -21,16 +40,15 @@ function getDefaultValues(contextMitraId?: string, defaultRoleCode?: string): Cr
   };
 }
 
-export const CreateUserController = (contextMitraId?: string, defaultRoleCode?: string) => {
+export const useCreateUserController = (contextMitraId?: string, contextMitraName?: string, defaultRoleCode?: string) => {
   const form = useForm<CreateUserInput>({
     resolver: zodResolver(createUserSchema),
-    defaultValues: getDefaultValues(contextMitraId, defaultRoleCode),
+    defaultValues: getDefaultValues(contextMitraId, contextMitraName, defaultRoleCode),
   });
   const createUserMutation = useCreateUser();
   const isSubmitting = createUserMutation.isPending;
 
   const onSubmit = (data: CreateUserInput) => {
-    console.log('CreateUserController onSubmit data:', data);
     if (contextMitraId && !data.mitraRoles) {
       form.setError('mitraRoles', {
         type: 'manual',

@@ -22,22 +22,10 @@ function withQuery(path: string, query?: MyAcademicQuery) {
   return params.size ? `${path}?${params.toString()}` : path;
 }
 
-export function getMyAcademicClasses(
-  mitraId: string,
-  query?: MyAcademicQuery,
-) {
-  return apiFetchWithAuth<Array<ClassGroupCourse | ClassGroupStudent>>(
-    withQuery(`/mitras/${mitraId}/academic/kelas-saya`, query),
-    { method: 'GET' },
-  );
+export function getMyAcademicClasses(query?: MyAcademicQuery) {
+  return apiFetchWithAuth<Array<ClassGroupCourse | ClassGroupStudent>>(withQuery(`/mitras/active/academic/kelas-saya`, query), { method: 'GET' });
 }
 
-export function getMyAcademicSubjects(
-  mitraId: string,
-  query?: MyAcademicQuery,
-) {
-  return apiFetchWithAuth<Subject[]>(
-    withQuery(`/mitras/${mitraId}/academic/mapel-saya`, query),
-    { method: 'GET' },
-  );
+export function getMyAcademicSubjects(query?: MyAcademicQuery) {
+  return apiFetchWithAuth<Subject[]>(withQuery(`/mitras/active/academic/mapel-saya`, query), { method: 'GET' });
 }

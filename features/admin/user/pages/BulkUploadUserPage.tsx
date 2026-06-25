@@ -13,7 +13,7 @@ import type { UserScope } from '../types/user.types';
 import { formatRole, getActiveMitraContext, getUsersHref, normalizeRoleQueryParam, normalizeScopeQueryParam } from '../HelperUser';
 import { BulkPreviewResult } from '@/features/bulk/components/BulkPreviewResult';
 import { handleDownloadTemplateCsv, handleDownloadTemplateExcel } from '@/features/bulk/config/downloadExcelTemplate';
-import { useImportBulkUsers, usePreviewBulkUsers } from '../hooks/useUser';
+import { useUserBulkUpload } from '../hooks/useUserBulkUpload';
 
 type BulkUploadUserPageProps = {
   currentProfile: AuthProfileResponse;
@@ -25,46 +25,12 @@ export function BulkUploadUserPage({ currentProfile, defaultScope, defaultRoleCo
   const { activeMitraRole, activeMitraSlug } = getActiveMitraContext(currentProfile);
   const scope: UserScope = normalizeScopeQueryParam(defaultScope) ?? 'INSIDIA';
   const roleCode = normalizeRoleQueryParam(defaultRoleCode);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const [file, setFile] = useState<File | null>(null);
-  const previewMutation = usePreviewBulkUsers();
-  const importMutation = useImportBulkUsers();
-  const bulkConfig = getBulkUserTemplate(scope, scope === 'MITRA' && activeMitraRole === 'AKADEMIK');
-  const previewResult = previewMutation.data;
-  const title = roleCode ? `Bulk Upload ${formatRole(roleCode)}` : 'Bulk Upload User';
-  const description = roleCode ? `Upload file untuk menambahkan user ${formatRole(roleCode).toLowerCase()} secara massal.` : 'Upload file CSV atau Excel untuk menambahkan user secara massal.';
-  const { rules, template, templateRows } = bulkConfig;
 
-  useEffect(() => {
-    previewMutation.reset();
-  }, [previewMutation, scope]);
-
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setFile(event.target.files?.[0] ?? null);
-    previewMutation.reset();
-  };
-
-  const handlePreview = () => {
-    if (!file) {
-      return;
-    }
-
-    previewMutation.mutate(file);
-  };
-
-  const handleImport = async () => {
-    if (!previewResult?.jobId || !previewResult.canImport) {
-      return;
-    }
-
-    await importMutation.mutateAsync(previewResult.jobId);
-    setFile(null);
-    previewMutation.reset();
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
+  const { fileInputRef, file, previewMutation, importMutation, previewResult, title, description, rules, template, templateRows, handleFileChange, handlePreview, handleImport } = useUserBulkUpload({
+    scope,
+    roleCode,
+    activeMitraRole,
+  });
 
   return (
     <main className="min-h-screen bg-muted/30 px-4 py-10">

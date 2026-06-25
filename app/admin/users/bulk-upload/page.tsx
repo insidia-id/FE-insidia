@@ -1,4 +1,4 @@
-import { BulkUploadUserPage } from '@/features/admin/user/components/BulkUploadUserPage';
+import { BulkUploadUserPage } from '@/features/admin/user/pages/BulkUploadUserPage';
 import { redirect } from 'next/navigation';
 import { getProfileUser } from '@/features/auth/api/api.server';
 import { toUserProfile } from '@/features/auth/auth.utils';

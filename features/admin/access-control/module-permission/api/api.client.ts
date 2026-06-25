@@ -40,9 +40,7 @@ export async function previewBulkModulesPermission(file: File): Promise<BulkPrev
     method: 'POST',
     body: formData,
   });
-  console.log('Preview bulk modules permission response:', res);
   const normalizedResult = normalizeBulkPreviewResult(res);
-  console.log('Normalized preview result:', normalizedResult);
   return normalizedResult;
 }
 

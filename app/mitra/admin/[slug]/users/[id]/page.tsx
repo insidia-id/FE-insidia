@@ -1,4 +1,4 @@
-import { UserDetailPage } from '@/features/admin/user/components/UserDetailPage';
+import { UserDetailPage } from '@/features/admin/user/pages/UserDetailPage';
 import { getProfileUser } from '@/features/auth/api/api.server';
 import { forbidden } from 'next/navigation';
 import { PagePermission } from '@/app/middleware';

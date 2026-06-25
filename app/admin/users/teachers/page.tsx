@@ -1,4 +1,4 @@
-import { UsersPage } from '@/features/admin/user/components/UsersPage';
+import { UsersPage } from '@/features/admin/user/pages/UsersPage';
 import { USER_ROLE_PAGE_CONFIG } from '@/features/admin/user/config/user-page.config';
 import { redirect } from 'next/navigation';
 import { getProfileUser } from '@/features/auth/api/api.server';

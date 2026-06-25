@@ -1,4 +1,4 @@
-import { UserDetailPage } from '@/features/admin/user/components/UserDetailPage';
+import { UserDetailPage } from '@/features/admin/user/pages/UserDetailPage';
 import { getProfileUser } from '@/features/auth/api/api.server';
 import { redirect } from 'next/navigation';
 import { toUserProfile } from '@/features/auth/auth.utils';
@@ -21,10 +21,7 @@ export default async function AdminUserDetailPage({ params, searchParams }: Admi
     redirect('/login?callbackUrl=/admin/users');
   }
 
-  PagePermission(profile, [
-    Permissions.userPermissions.viewUserInsidia,
-    Permissions.userPermissions.viewUserMitra,
-  ]);
+  PagePermission(profile, [Permissions.userPermissions.viewUserInsidia, Permissions.userPermissions.viewUserMitra]);
 
   const { id } = await params;
   const query = await searchParams;

@@ -2,8 +2,8 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { UserTable } from './table/UserTable';
-import { UsersController } from '../controller/UsersController';
+import { UserTable } from '../components/table/UserTable';
+import { UsersController } from '../hooks/UsersController';
 import { AuthProfileResponse } from '@/features/auth/types/auth.types';
 import type { UserManagementPageConfig } from '../config/user-page.config';
 import { getActiveMitraContext, getUsersHref } from '../HelperUser';

@@ -1,4 +1,4 @@
-import { Controller, Path, UseFormReturn, useFieldArray } from 'react-hook-form';
+import { Controller, UseFormReturn, useFieldArray } from 'react-hook-form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { readErrorMessage } from '@/lib/form/form.helper';
 import { MitrasController } from '../../mitras/controller/MitrasController';
@@ -9,8 +9,8 @@ import { Button } from '@/components/ui/button';
 import type { MitraRole, UserMitraAssignment } from '../types/user.types';
 import { createProfileByRole } from '../HelperUser';
 import { MitraRoleRow } from './MitraRoleRow';
-import { useEffect } from 'react';
 import { CreateUserInput } from '../schema/user.schema';
+import { TextField } from '@/components/common/form';
 
 type RoleOption = {
   label: string;
@@ -36,6 +36,7 @@ export const MitraCardForm = ({ form, roleOptions, currentUserRole, onDeleteMitr
     control,
     name: 'mitraRoles',
   });
+  console.log('MitraCardForm - fields:', fields);
   const handleRemove = (index: number) => {
     remove(index);
 
@@ -52,13 +53,14 @@ export const MitraCardForm = ({ form, roleOptions, currentUserRole, onDeleteMitr
     roleCode: role,
     profile: createProfileByRole(role),
   });
+
   const handleAddMitra = (role: MitraRole) => {
     append(createMitraAssignment(role));
     form.setValue(`scope`, 'MITRA', { shouldDirty: true, shouldTouch: true });
   };
+  const isFixedRole = Boolean(role);
+  const MAX_ASSIGNMENTS = 1;
 
-  console.log(`Mitra Roles form watch: ${JSON.stringify(form.watch('mitraRoles'))}`);
-  console.log(`Mitra Roles form values: ${JSON.stringify(form.getValues())}`);
   return (
     <section className="space-y-4 rounded-xl border bg-card p-4">
       <div className="flex items-center justify-between gap-3">
@@ -66,9 +68,17 @@ export const MitraCardForm = ({ form, roleOptions, currentUserRole, onDeleteMitr
           <h3 className="text-base font-semibold">Penugasan Mitra</h3>
           {currentUserRole === 'SUPER_ADMIN' && <p className="text-sm text-muted-foreground">User bisa memiliki lebih dari satu mitra dengan role yang berbeda.</p>}
         </div>
-        <Button type="button" onClick={() => handleAddMitra('AKADEMIK')}>
-          + Tambah Penugasan
-        </Button>
+        {currentUserRole === 'SUPER_ADMIN' ? (
+          <Button type="button" onClick={() => handleAddMitra('AKADEMIK')}>
+            + Tambah Penugasan
+          </Button>
+        ) : (
+          !isFixedRole && (
+            <Button type="button" onClick={() => handleAddMitra('AKADEMIK')} disabled={fields.length >= MAX_ASSIGNMENTS}>
+              + Tambah Penugasan
+            </Button>
+          )
+        )}
       </div>
 
       {fields.length === 0 ? (
@@ -96,11 +106,11 @@ export const MitraCardForm = ({ form, roleOptions, currentUserRole, onDeleteMitr
                     <LoadingButton isLoading={isDeletingMitraRole && deletingMitraId === item.mitraId} type="button" variant="destructive" size="sm" onClick={() => onDeleteMitraRole(item.mitraId)}>
                       Hapus
                     </LoadingButton>
-                  ) : (
+                  ) : currentUserRole === 'SUPER_ADMIN' ? (
                     <Button type="button" variant="destructive" size="sm" onClick={() => handleRemove(index)}>
                       Hapus
                     </Button>
-                  )}
+                  ) : null}
                 </div>
                 <div className="grid gap-4 md:grid-cols-2">
                   {currentUserRole === 'SUPER_ADMIN' && (
@@ -141,42 +151,54 @@ export const MitraCardForm = ({ form, roleOptions, currentUserRole, onDeleteMitr
 
                   {currentUserRole !== 'SUPER_ADMIN' && (
                     <div className="space-y-2">
-                      <Label>Mitra</Label>
-                      <div className="rounded-md border bg-muted/40 px-3 py-2 text-sm text-foreground">{item.mitraName || item.mitraSlug || item.mitraId || 'Mitra belum dipilih'}</div>
+                      <TextField readOnly label="Mitra" id={`mitra-${index}`} value={item.mitraName || item.mitraSlug || item.mitraId || 'Mitra belum dipilih'} />
                     </div>
                   )}
 
                   <div className="space-y-2">
-                    <Label>Role Mitra</Label>
+                    {isFixedRole ? (
+                      <TextField
+                        readOnly
+                        id={`user-role-${index}`}
+                        label="Role Mitra"
+                        placeholder="Role Mitra"
+                        error={readErrorMessage(form.formState.errors, `mitraRoles.${index}.roleCode`)}
+                        className="bg-muted"
+                        value={roleOptions.find((option) => option.value === role)?.label || 'Role tidak ditemukan'}
+                      />
+                    ) : (
+                      <>
+                        <Label>Role Mitra</Label>
 
-                    <Controller
-                      control={control}
-                      name={`mitraRoles.${index}.roleCode`}
-                      render={({ field }) => (
-                        <Select
-                          disabled={isLoadingMitras}
-                          value={field.value}
-                          onValueChange={(role) => {
-                            field.onChange(role);
+                        <Controller
+                          control={control}
+                          name={`mitraRoles.${index}.roleCode`}
+                          render={({ field }) => (
+                            <Select
+                              disabled={isLoadingMitras}
+                              value={field.value}
+                              onValueChange={(role) => {
+                                field.onChange(role);
 
-                            form.setValue(`mitraRoles.${index}.profile`, createProfileByRole(role as MitraRole));
-                          }}
-                        >
-                          <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Pilih role mitra" />
-                          </SelectTrigger>
+                                form.setValue(`mitraRoles.${index}.profile`, createProfileByRole(role as MitraRole));
+                              }}
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Pilih role mitra" />
+                              </SelectTrigger>
 
-                          <SelectContent>
-                            {roleOptions.map((option) => (
-                              <SelectItem key={option.value} value={option.value}>
-                                {option.label}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      )}
-                    />
-
+                              <SelectContent>
+                                {roleOptions.map((option) => (
+                                  <SelectItem key={option.value} value={option.value}>
+                                    {option.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          )}
+                        />
+                      </>
+                    )}
                     {readErrorMessage(form.formState.errors, `mitraRoles.${index}.roleCode`) && <p className="text-sm text-destructive">{readErrorMessage(form.formState.errors, `mitraRoles.${index}.roleCode`)}</p>}
                   </div>
                 </div>

@@ -23,5 +23,5 @@ export default async function MitraAcademicRoutePage({ params }: MitraAcademicRo
     redirect('/admin');
   }
 
-  return <MitraAcademicPage mitraId={activeMitraRole.mitraId} mitraName={activeMitraRole.mitraName} />;
+  return <MitraAcademicPage mitraName={activeMitraRole.mitraName} />;
 }

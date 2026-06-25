@@ -1,4 +1,4 @@
-import { CreateUserPage } from '@/features/admin/user/components/CreateUserPage';
+import { CreateUserPage } from '@/features/admin/user/pages/CreateUserPage';
 
 import { redirect } from 'next/navigation';
 import { getProfileUser } from '@/features/auth/api/api.server';
@@ -8,7 +8,7 @@ import { Permissions } from '@/lib/helper/permission.helper';
 
 export default async function AdminCreateUserPage({ searchParams }: { searchParams: Promise<{ role?: string; scope?: 'INSIDIA' | 'MITRA' }> }) {
   const profile = await getProfileUser();
-  const params = await searchParams;
+  const query = await searchParams;
 
   if (!profile) {
     redirect('/login?callbackUrl=/admin/users');
@@ -18,5 +18,5 @@ export default async function AdminCreateUserPage({ searchParams }: { searchPara
 
   const userProfile = toUserProfile(profile);
 
-  return <CreateUserPage currentProfile={userProfile} />;
+  return <CreateUserPage currentProfile={userProfile} defaultRoleCode={query.role} defaultScope={query.scope} />;
 }

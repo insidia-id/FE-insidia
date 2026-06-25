@@ -1,5 +1,6 @@
 import { MitraRole, RoleUser, User, UserMitraAssignment, UserMitraRoleRelation, UserProfileForm, UserScope } from './types/user.types';
 import { AuthProfileResponse } from '@/features/auth/types/auth.types';
+
 export const USER_STATUS_OPTIONS = [
   { label: 'Aktif', value: 'ACTIVE' },
   { label: 'Ditangguhkan', value: 'SUSPENDED' },
@@ -35,6 +36,7 @@ export const UserScopeOptions = [
   { label: 'Mitra', value: 'MITRA' },
 ] as const;
 export const USER_ROLE_VALUES = USER_ROLE_OPTIONS.map((option) => option.value);
+
 export const USER_MITRA_ROLE_VALUES = USER_ROLE_OPTIONS.filter((option) => option.scope === 'MITRA').map((option) => option.value as MitraRole);
 
 export type UserRoleFormValue = (typeof USER_ROLE_OPTIONS)[number]['value'];
@@ -59,6 +61,7 @@ export function normalizeUserRolePayload(role: string) {
     scope: option?.scope ?? 'INSIDIA',
   };
 }
+
 const ROLE_FILTER_ALL_OPTION = { label: 'Semua role', value: 'ALL' } as const;
 
 function normalizeRole(role?: string | null) {
@@ -169,14 +172,17 @@ export function getAssignableRoleOptions(role?: string | null, scope?: UserScope
 export const getScopeByRole = (role?: string | null) => {
   return USER_ROLE_OPTIONS.find((item) => item.value === normalizeRole(role))?.scope ?? 'MITRA';
 };
+
 export function getRoleFilterOptions(role?: string | null, scope?: UserScope) {
   return [ROLE_FILTER_ALL_OPTION, ...getAssignableRoleOptions(role, scope)] as const;
 }
+
 export function canManageRole(currentUserRole?: string | null, targetRole?: RoleUser | null, scope?: UserScope) {
   if (!targetRole) return false;
 
   return getAssignableRoleOptions(currentUserRole, scope).some((option) => option.value === targetRole);
 }
+
 const TWO_SCOPE_ROLES = ['SUPER_ADMIN', 'ADMIN'] as const;
 
 export function getAssignableScopeOptions(role?: string | null) {
@@ -226,9 +232,11 @@ export function canManageScope(currentProfile: AuthProfileResponse, targetScope:
 
   return false;
 }
+
 export function filterUsersByManageableRoles<T extends Pick<User, 'insidiaRole' | 'mitraRoles'>>(users: T[], currentUserRole?: string | null, activeScope: UserScope = 'INSIDIA') {
   return users.filter((user) => canManageRole(currentUserRole, getUserRole(user as Pick<User, 'insidiaRole' | 'mitraRoles'>, activeScope), activeScope));
 }
+
 export function filterUsersByManageableScopes<T>(users: T[], currentProfile: AuthProfileResponse, scope: UserScope) {
   if (!canManageScope(currentProfile, scope)) {
     return [];
@@ -236,6 +244,7 @@ export function filterUsersByManageableScopes<T>(users: T[], currentProfile: Aut
 
   return users;
 }
+
 export function formatRole(role: RoleUser) {
   return role
     .toLowerCase()
@@ -336,7 +345,7 @@ export function getActiveMitraContext(currentProfile: AuthProfileResponse) {
 
   const activeMitraRole: MitraRole | null = activeMitra?.roleCode ?? null;
   const activeMitraSlug: string | null = activeMitra?.mitraSlug ?? null;
-
+  const activeMitraName: string | null = activeMitra?.mitraName ?? null;
   const activeInsidiaRole: RoleUser | null = !activeMitraId && currentProfile.insidiaRole ? normalizeRole(currentProfile.insidiaRole) : null;
 
   const activeRole: RoleUser | MitraRole | null = activeMitraRole ?? activeInsidiaRole;
@@ -345,6 +354,7 @@ export function getActiveMitraContext(currentProfile: AuthProfileResponse) {
     activeMitraId,
     activeMitraRole,
     activeMitraSlug,
+    activeMitraName,
     activeInsidiaRole,
     activeRole,
     isMitraContext: Boolean(activeMitraId),

@@ -66,7 +66,6 @@ export async function DELETE(_: NextRequest, context: RouteContext) {
     const data = await apiFetchWithAuth(`/admin/permissions/modules/${id}`, {
       method: 'DELETE',
     });
-    console.log('API Response:', data); // Log the API response for debugging
 
     return toRouteResponse({ data });
   } catch (error) {

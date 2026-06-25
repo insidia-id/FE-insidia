@@ -3,7 +3,7 @@ import { useWatch, UseFormReturn } from 'react-hook-form';
 
 import { ProfileFieldsRenderer } from './ProfileForm';
 
-import type { MitraRole, UserMitraAssignment } from '../types/user.types';
+import type { MitraRole } from '../types/user.types';
 import { CreateUserInput } from '../schema/user.schema';
 
 type Props = {
@@ -17,7 +17,6 @@ export const MitraRoleRow = memo(({ form, index, isLoadingMitras }: Props) => {
     control: form.control,
     name: `mitraRoles.${index}.roleCode`,
   }) as MitraRole | undefined;
-
   return <ProfileFieldsRenderer form={form} index={index} role={role} isLoadingMitras={isLoadingMitras} />;
 });
 

@@ -4,23 +4,22 @@ import { appendSearchParams, forwardApiRequest } from '@/lib/api/route-proxy';
 
 type RouteContext = {
   params: Promise<{
-    mitraId: string;
     path: string[];
   }>;
 };
 
-function buildAcademicPath(mitraId: string, path: string[], request: NextRequest) {
+function buildAcademicPath(path: string[], request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const backendPath = `/mitras/${mitraId}/academic/${path.join('/')}`;
+  const backendPath = `/mitras/active/academic/${path.join('/')}`;
 
   return appendSearchParams(backendPath, searchParams);
 }
 
 export async function GET(request: NextRequest, context: RouteContext) {
   try {
-    const { mitraId, path } = await context.params;
-    const data = await forwardApiRequest(request, buildAcademicPath(mitraId, path, request), 'GET');
-
+    const { path } = await context.params;
+    const data = await forwardApiRequest(request, buildAcademicPath(path, request), 'GET');
+    console.log('GET data:', data);
     return toRouteResponse({ data });
   } catch (error) {
     const apiError = error as { status?: number; code?: string; message?: string };
@@ -35,8 +34,8 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
 export async function POST(request: NextRequest, context: RouteContext) {
   try {
-    const { mitraId, path } = await context.params;
-    const data = await forwardApiRequest(request, buildAcademicPath(mitraId, path, request), 'POST');
+    const { path } = await context.params;
+    const data = await forwardApiRequest(request, buildAcademicPath(path, request), 'POST');
 
     return toRouteResponse({ data }, 201);
   } catch (error) {
@@ -52,8 +51,8 @@ export async function POST(request: NextRequest, context: RouteContext) {
 
 export async function PATCH(request: NextRequest, context: RouteContext) {
   try {
-    const { mitraId, path } = await context.params;
-    const data = await forwardApiRequest(request, buildAcademicPath(mitraId, path, request), 'PATCH');
+    const { path } = await context.params;
+    const data = await forwardApiRequest(request, buildAcademicPath(path, request), 'PATCH');
 
     return toRouteResponse({ data });
   } catch (error) {
@@ -69,8 +68,8 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 
 export async function PUT(request: NextRequest, context: RouteContext) {
   try {
-    const { mitraId, path } = await context.params;
-    const data = await forwardApiRequest(request, buildAcademicPath(mitraId, path, request), 'PUT');
+    const { path } = await context.params;
+    const data = await forwardApiRequest(request, buildAcademicPath(path, request), 'PUT');
 
     return toRouteResponse({ data });
   } catch (error) {
@@ -86,8 +85,8 @@ export async function PUT(request: NextRequest, context: RouteContext) {
 
 export async function DELETE(request: NextRequest, context: RouteContext) {
   try {
-    const { mitraId, path } = await context.params;
-    const data = await forwardApiRequest(request, buildAcademicPath(mitraId, path, request), 'DELETE');
+    const { path } = await context.params;
+    const data = await forwardApiRequest(request, buildAcademicPath(path, request), 'DELETE');
 
     return toRouteResponse({ data });
   } catch (error) {

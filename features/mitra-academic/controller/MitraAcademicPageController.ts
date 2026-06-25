@@ -21,15 +21,15 @@ import {
 } from '../hooks/useMitraAcademic';
 import type { SelectOption } from '../types/mitra-academic.types';
 
-export function MitraAcademicPageController(mitraId: string) {
-  const academicYearsQuery = useAcademicYears(mitraId);
-  const semestersQuery = useSemesters(mitraId);
-  const curriculaQuery = useCurricula(mitraId);
-  const subjectsQuery = useSubjects(mitraId);
-  const academicClassesQuery = useAcademicClasses(mitraId);
-  const classGroupsQuery = useClassGroups(mitraId);
-  const classGroupCoursesQuery = useClassGroupCourses(mitraId);
-  const classGroupStudentsQuery = useClassGroupStudents(mitraId);
+export function MitraAcademicPageController() {
+  const academicYearsQuery = useAcademicYears();
+  const semestersQuery = useSemesters();
+  const curriculaQuery = useCurricula();
+  const subjectsQuery = useSubjects();
+  const academicClassesQuery = useAcademicClasses();
+  const classGroupsQuery = useClassGroups();
+  const classGroupCoursesQuery = useClassGroupCourses();
+  const classGroupStudentsQuery = useClassGroupStudents();
   const usersQuery = useGetUsers({ filter: 'available', scope: 'MITRA' });
 
   const teacherOptions = useMemo<SelectOption[]>(
@@ -97,14 +97,14 @@ export function MitraAcademicPageController(mitraId: string) {
     subjectOptions,
     academicClassOptions,
     classGroupOptions,
-    academicYearMutations: useAcademicYearMutations(mitraId),
-    semesterMutations: useSemesterMutations(mitraId),
-    curriculumMutations: useCurriculumMutations(mitraId),
-    subjectMutations: useSubjectMutations(mitraId),
-    academicClassMutations: useAcademicClassMutations(mitraId),
-    classGroupMutations: useClassGroupMutations(mitraId),
-    classGroupCourseMutations: useClassGroupCourseMutations(mitraId),
-    classGroupStudentMutations: useClassGroupStudentMutations(mitraId),
+    academicYearMutations: useAcademicYearMutations(),
+    semesterMutations: useSemesterMutations(),
+    curriculumMutations: useCurriculumMutations(),
+    subjectMutations: useSubjectMutations(),
+    academicClassMutations: useAcademicClassMutations(),
+    classGroupMutations: useClassGroupMutations(),
+    classGroupCourseMutations: useClassGroupCourseMutations(),
+    classGroupStudentMutations: useClassGroupStudentMutations(),
     isLoading,
     error,
   };
