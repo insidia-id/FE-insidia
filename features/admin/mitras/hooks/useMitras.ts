@@ -3,7 +3,11 @@ import { toast } from 'sonner';
 import { createMitra, deleteMitra, getMitraById, getMitras, updateMitra } from '../api/api.client';
 import type { Mitra, MitraVisibilityFilter } from '../types/mitras.types';
 import { getMutationErrorMessage } from '@/lib/error/error.message';
-import type { CreateMitraInput, UpdateMitraPayload } from '../schema/mitra.schema';
+import type { CreateMitraInput, UpdateMitraInput } from '../schema/mitra.schema';
+
+type UseGetMitrasOptions = {
+  enabled?: boolean;
+};
 
 export const mitraKeys = {
   all: ['mitras'] as const,
@@ -14,11 +18,12 @@ export const mitraKeys = {
 
   detail: (mitraId: string) => [...mitraKeys.all, mitraId] as const,
 };
-export const useGetMitras = (filter: MitraVisibilityFilter, query?: string) =>
+export const useGetMitras = (filter: MitraVisibilityFilter, query?: string, options?: UseGetMitrasOptions) =>
   useQuery<Mitra[]>({
     queryKey: mitraKeys.list(filter, query),
     queryFn: () => getMitras(filter, query),
     refetchOnWindowFocus: false,
+    enabled: options?.enabled ?? true,
   });
 
 export const useGetMitraById = (mitraId: string) =>
@@ -48,7 +53,7 @@ export function useUpdateMitra() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ mitraId, data }: { mitraId: string; data: UpdateMitraPayload }) => updateMitra(mitraId, data),
+    mutationFn: ({ mitraId, data }: { mitraId: string; data: UpdateMitraInput }) => updateMitra(mitraId, data),
     onSuccess: (_, variables) => {
       toast.success('Mitra berhasil diperbarui');
       queryClient.invalidateQueries({ queryKey: mitraKeys.all });

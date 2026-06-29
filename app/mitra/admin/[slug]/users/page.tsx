@@ -13,7 +13,7 @@ export default async function MitraAdminUsersPage({ params }: { params: Promise<
   if (!profile) {
     redirect(`/login?callbackUrl=/mitra/admin/${slug}/users`);
   }
-  PagePermission(profile, [Permissions.userPermissions.viewUserMitra, Permissions.userPermissions.viewUserInsidia]);
+  PagePermission(profile, [Permissions.userPermissions.view.MITRA, Permissions.userPermissions.view.INSIDIA]);
   const userProfile = toUserProfile(profile);
   return <UsersPage currentProfile={userProfile} pageConfig={USER_ROLE_PAGE_CONFIG.all} />;
 }

@@ -1,51 +1,84 @@
 export const Permissions = {
   userPermissions: {
-    createUserInsidia: 'user.create.insidia',
-    viewUserInsidia: 'user.view.insidia',
-    updateUserInsidia: 'user.update.insidia',
-    deleteUserInsidia: 'user.delete.insidia',
-
-    createUserMitra: 'user.create.mitra',
-    viewUserMitra: 'user.view.mitra',
-    updateUserMitra: 'user.update.mitra',
-    deleteUserMitra: 'user.delete.mitra',
+    create: {
+      INSIDIA: 'user.create.insidia',
+      MITRA: 'user.create.mitra',
+    },
+    view: {
+      INSIDIA: 'user.view.insidia',
+      MITRA: 'user.view.mitra',
+    },
+    update: {
+      INSIDIA: 'user.update.insidia',
+      MITRA: 'user.update.mitra',
+    },
+    delete: {
+      INSIDIA: 'user.remove.insidia',
+      MITRA: 'user.remove.mitra',
+    },
   },
 
-  mitraPermissionCodes: {
-    create: 'mitra.create',
-    view: 'mitra.view',
-    update: 'mitra.update',
-    delete: 'mitra.delete',
+  mitraPermissions: {
+    create: {
+      MITRA: 'mitra.create',
+    },
+    view: {
+      MITRA: 'mitra.view',
+    },
+    update: {
+      MITRA: 'mitra.update',
+    },
+    delete: {
+      MITRA: 'mitra.delete',
+    },
   },
 
-  coursePermissionCodes: {
-    create: 'course.create.insidia',
-    view: 'course.view.insidia',
-    update: 'course.update.insidia',
-    remove: 'course.remove.insidia',
-
-    createMitra: 'course.create.mitra',
-    viewMitra: 'course.view.mitra',
-    updateMitra: 'course.update.mitra',
-    removeMitra: 'course.remove.mitra',
+  coursePermissions: {
+    create: {
+      INSIDIA: 'course.create.insidia',
+      MITRA: 'course.create.mitra',
+    },
+    view: {
+      INSIDIA: 'course.view.insidia',
+      MITRA: 'course.view.mitra',
+    },
+    update: {
+      INSIDIA: 'course.update.insidia',
+      MITRA: 'course.update.mitra',
+    },
+    remove: {
+      INSIDIA: 'course.remove.insidia',
+      MITRA: 'course.remove.mitra',
+    },
   },
 
-  RolePermissionCodes: {
-    createRoleInsidia: 'roles.create.insidia',
-    viewRoleInsidia: 'roles.view.insidia',
-    updateRoleInsidia: 'roles.update.insidia',
-    removeRoleInsidia: 'roles.remove.insidia',
-
-    createRoleMitra: 'roles.create.mitra',
-    viewRoleMitra: 'roles.view.mitra',
-    updateRoleMitra: 'roles.update.mitra',
-    removeRoleMitra: 'roles.remove.mitra',
+  rolePermissions: {
+    create: {
+      INSIDIA: 'roles.create.insidia',
+      MITRA: 'roles.create.mitra',
+    },
+    view: {
+      INSIDIA: 'roles.view.insidia',
+      MITRA: 'roles.view.mitra',
+    },
+    update: {
+      INSIDIA: 'roles.update.insidia',
+      MITRA: 'roles.update.mitra',
+    },
+    remove: {
+      INSIDIA: 'roles.remove.insidia',
+      MITRA: 'roles.remove.mitra',
+    },
   },
 
-  permissionCodes: {
-    viewMitraPermissions: 'permissions.view.mitra',
-    manageMitraPermissions: 'permissions.manage.mitra',
-    viewInsidiaPermissions: 'permissions.view.insidia',
-    manageInsidiaPermissions: 'permissions.manage.insidia',
+  Permissions: {
+    view: {
+      INSIDIA: 'permissions.view.insidia',
+      MITRA: 'permissions.view.mitra',
+    },
+    manage: {
+      INSIDIA: 'permissions.manage.insidia',
+      MITRA: 'permissions.manage.mitra',
+    },
   },
 } as const;

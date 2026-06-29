@@ -14,7 +14,7 @@ export default async function MitraAdminGuardianUsersPage({ params }: { params: 
     redirect(`/login?callbackUrl=/mitra/admin/${slug}/users/guardians`);
   }
 
-  PagePermission(profile, [Permissions.userPermissions.viewUserMitra, Permissions.userPermissions.viewUserInsidia]);
+  PagePermission(profile, [Permissions.userPermissions.view.MITRA]);
 
   return <UsersPage currentProfile={toUserProfile(profile)} pageConfig={USER_ROLE_PAGE_CONFIG.guardian} />;
 }

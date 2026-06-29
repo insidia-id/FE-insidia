@@ -7,6 +7,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import type { AccessScope } from '../../types/access-control.types';
 import { getRoleStatus } from '../../lib/access-control.helper';
 import type { Role } from '../types/role.types';
+import { Dispatch, SetStateAction } from 'react';
+import { Label } from '@/components/ui/label';
+import { Combobox } from '@/components/common/Combobox';
+
 type RoleListCardProps = {
   userRole: string | null;
   roles: Role[];
@@ -20,23 +24,71 @@ type RoleListCardProps = {
   onSelectRole: (roleId: string) => void;
   onEditRole: (role: Role) => void;
   onDeleteRole: (role: Role) => void;
+  selectedMitraId?: string;
+  setSelectedMitraId?: Dispatch<SetStateAction<string | undefined>>;
+  mitraOptions?: { label: string; value: string }[];
+  isLoadingMitras?: boolean;
+  setMitraQuery?: (query: string) => void;
 };
 
-export function RoleListCard({ userRole, roles, scope, isLoading, isError, error, selectedRoleId, canManageRoleCatalog, onCreateRole, onSelectRole, onEditRole, onDeleteRole }: RoleListCardProps) {
+export function RoleListCard({
+  userRole,
+  roles,
+  scope,
+  isLoading,
+  isError,
+  error,
+  selectedRoleId,
+  canManageRoleCatalog,
+  onCreateRole,
+  onSelectRole,
+  onEditRole,
+  onDeleteRole,
+  selectedMitraId,
+  setSelectedMitraId,
+  mitraOptions,
+  isLoadingMitras,
+  setMitraQuery,
+}: RoleListCardProps) {
   return (
     <Card>
-      <CardHeader className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <CardHeader className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <CardTitle>Daftar Role</CardTitle>
           <CardDescription>{isLoading ? 'Memuat role...' : `${roles.length} role pada scope ${scope.toLowerCase()}`}</CardDescription>
         </div>
 
-        {canManageRoleCatalog && (
-          <Button type="button" variant="insidia" onClick={onCreateRole}>
-            <Plus className="size-4" />
-            Tambah Role
-          </Button>
-        )}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+          {userRole === 'SUPER_ADMIN' && scope === 'MITRA' && (
+            <div className="w-full sm:w-72">
+              <Label className="mb-2 block">Mitra</Label>
+
+              <Combobox
+                data={[
+                  {
+                    value: '',
+                    label: 'Semua Mitra',
+                  },
+                  ...(mitraOptions ?? []),
+                ]}
+                value={selectedMitraId}
+                placeholder="Semua Mitra"
+                onSearch={setMitraQuery}
+                onChange={(value) => {
+                  setSelectedMitraId?.(value || undefined);
+                }}
+                disabled={isLoadingMitras}
+              />
+            </div>
+          )}
+
+          {canManageRoleCatalog && (
+            <Button type="button" variant="insidia" onClick={onCreateRole} className="w-full sm:w-auto">
+              <Plus className="size-4" />
+              Tambah Role
+            </Button>
+          )}
+        </div>
       </CardHeader>
 
       <CardContent>
@@ -65,7 +117,8 @@ export function RoleListCard({ userRole, roles, scope, isLoading, isError, error
             <TableBody>
               {roles.map((role) => {
                 const status = getRoleStatus(role);
-                const totalUsers = role._count.insidiaUsers + role._count.mitraUsers;
+                const totalUsers = role._count.insidiaUsers ?? role._count.mitraUsers;
+                const totalPermissions = role._count.permissions ?? role._count.mitraRolePermissions;
                 return (
                   <TableRow key={role.id} data-state={selectedRoleId === role.id ? 'selected' : undefined}>
                     <TableCell className="align-top">
@@ -76,14 +129,14 @@ export function RoleListCard({ userRole, roles, scope, isLoading, isError, error
                       </div>
                     </TableCell>
                     <TableCell>{role.scope}</TableCell>
-                    <TableCell>{role.code === 'SUPER_ADMIN' ? 'All' : role._count.permissions}</TableCell>
+                    <TableCell>{role.code === 'SUPER_ADMIN' ? 'All' : totalPermissions}</TableCell>
                     <TableCell>{totalUsers}</TableCell>
                     <TableCell>
                       <Badge variant={status.variant}>{status.label}</Badge>
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        {role.code === 'SUPER_ADMIN' || (userRole === 'AKADEMIK' && role.code === 'AKADEMIK') ? (
+                        {role.code === 'SUPER_ADMIN' ? (
                           <Button type="button" variant="outline" size="sm" disabled>
                             Kelola
                           </Button>

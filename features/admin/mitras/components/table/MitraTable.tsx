@@ -3,7 +3,7 @@
 import { flexRender } from '@tanstack/react-table';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { MitraDeleteDialog } from '../MitraDeleteDialog';
-import { MitraTableController } from '../../controller/MitraTableController';
+import { useMitraTableController } from '../../hooks/MitraTableController';
 import { HeaderTable } from './HeaderTable';
 import type { Mitra, MitraVisibilityFilter } from '../../types/mitras.types';
 
@@ -14,7 +14,7 @@ type MitraTableProps = {
 };
 
 export function MitraTable({ mitras, visibilityFilter, onVisibilityFilterChange }: MitraTableProps) {
-  const { columns, table, globalFilter, isDeleteOpen, isDeleting, onConfirmDelete, onDeleteDialogChange, onGlobalFilterChange } = MitraTableController({ mitras });
+  const { columns, table, globalFilter, isDeleteOpen, isDeleting, onConfirmDelete, onDeleteDialogChange, onGlobalFilterChange } = useMitraTableController({ mitras });
 
   return (
     <>

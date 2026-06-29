@@ -13,7 +13,7 @@ export default async function AdminTeacherUsersPage() {
     redirect('/login?callbackUrl=/admin/users/teachers');
   }
 
-  PagePermission(profile, [Permissions.userPermissions.viewUserMitra, Permissions.userPermissions.viewUserInsidia]);
+  PagePermission(profile, [Permissions.userPermissions.view.MITRA, Permissions.userPermissions.view.INSIDIA]);
 
   return <UsersPage currentProfile={toUserProfile(profile)} pageConfig={USER_ROLE_PAGE_CONFIG.teacher} />;
 }

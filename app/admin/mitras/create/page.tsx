@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getProfileUser } from '@/features/auth/api/api.server';
-import { CreateMitraPage } from '@/features/admin/mitras/components/CreateMitraPage';
+import { CreateMitraPage } from '@/features/admin/mitras/pages/CreateMitraPage';
 
 export default async function AdminCreateMitraPage() {
   const profile = await getProfileUser();

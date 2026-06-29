@@ -1,11 +1,9 @@
 import type { IconName } from '../components/sidebar-icons';
 import { Permissions } from '@/lib/helper/permission.helper';
 type ValueOf<T> = T[keyof T];
+type LeafValues<T> = T extends string ? T : T extends object ? LeafValues<T[keyof T]> : never;
 
-type NestedValueOf<T> = {
-  [K in keyof T]: ValueOf<T[K]>;
-}[keyof T];
-export type PermissionCode = NestedValueOf<typeof Permissions>;
+export type PermissionCode = LeafValues<typeof Permissions>;
 
 export type PermissionCodeValue = PermissionCode | string;
 export type SubmenuItem = {
@@ -15,6 +13,7 @@ export type SubmenuItem = {
   exact?: boolean;
   badge?: string;
   permissions?: PermissionCodeValue[];
+  roles?: string[];
 };
 
 export type MenuItem = {
@@ -26,6 +25,7 @@ export type MenuItem = {
   path?: string;
   submenu?: SubmenuItem[];
   permissions?: PermissionCodeValue[];
+  roles?: string[];
 };
 
 export type SidebarUser = {

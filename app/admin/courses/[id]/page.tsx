@@ -16,7 +16,7 @@ export default async function AdminCourseDetailPage({ params }: AdminCourseDetai
   if (!profile) {
     redirect('/login?callbackUrl=/admin/courses');
   }
-  PagePermission(profile, [Permissions.coursePermissionCodes.viewMitra]);
+  PagePermission(profile, [Permissions.coursePermissions.view.MITRA]);
   const { id } = await params;
 
   return <CourseDetailPage courseId={id} mitraSlug={null} />;

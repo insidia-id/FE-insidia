@@ -21,7 +21,7 @@ export default async function MitraCoursesPage({ params }: MitraCoursesPageProps
   }
 
   const activeMitraRole = getAuthorizedMitraRole(profile.mitraRoles, slug);
-  PagePermission(profile, [Permissions.coursePermissionCodes.viewMitra]);
+  PagePermission(profile, [Permissions.coursePermissions.view.MITRA]);
   if (!activeMitraRole) {
     redirect('/admin');
   }

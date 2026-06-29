@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getProfileUser } from '@/features/auth/api/api.server';
-import { MitraDetailPage } from '@/features/admin/mitras/components/MitraDetailPage';
+import { MitraDetailPage } from '@/features/admin/mitras/pages/MitraDetailPage';
 
 type AdminMitraDetailPageProps = {
   params: Promise<{

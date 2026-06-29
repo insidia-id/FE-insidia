@@ -27,6 +27,6 @@ export default async function MitraAdminAccessControlPage({ params }: MitraAdmin
     redirect('/admin');
   }
 
-  PagePermission(profile, [Permissions.permissionCodes.manageMitraPermissions]);
+  PagePermission(profile, [Permissions.Permissions.manage.MITRA]);
   return <AccessControlPage currentProfile={userProfile} />;
 }

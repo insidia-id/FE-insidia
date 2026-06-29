@@ -5,10 +5,11 @@ import { useMemo } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { canManageRole, formatDateTime, formatStatus, getActiveMitraContext, getAssignableRoleOptions, getStatusVariant, getUserRole, getUsersHref, USER_ROLE_OPTIONS, USER_STATUS_OPTIONS } from '../../HelperUser';
+import { canManage, canManageRole, formatDateTime, formatStatus, getActiveMitraContext, getAssignableRoleOptions, getStatusVariant, getUserRole, getUsersHref, USER_ROLE_OPTIONS, USER_STATUS_OPTIONS } from '../../HelperUser';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AuthProfileResponse } from '@/features/auth/types/auth.types';
 import type { UserTableColumnId } from '../../config/user-page.config';
+import { Permissions } from '@/lib/helper/permission.helper';
 
 function RoleSelectCell({ currentUserRole, scope, user, onChange, isLoading }: { currentUserRole?: string | null; scope: UserScope; user: User; onChange: (role: UserRoleCode) => void; isLoading: boolean }) {
   const currentRole = getUserRole(user, scope);
@@ -79,7 +80,8 @@ type UseUserColumnsProps = {
 export const useUserColumns = ({ currentProfile, scope, columnIds, isUpdating, onDeleteRequest, onRoleChange, onStatusChange }: UseUserColumnsProps) => {
   const { activeMitraRole, activeMitraSlug, activeInsidiaRole } = getActiveMitraContext(currentProfile);
   const currentUserRole = activeMitraRole ?? activeInsidiaRole;
-
+  const canUpdate = canManage(currentProfile, [Permissions.userPermissions.update[scope]]);
+  const canDelete = canManage(currentProfile, [Permissions.userPermissions.delete[scope]]);
   return useMemo<ColumnDef<User>[]>(() => {
     const columnsById: Record<UserTableColumnId, ColumnDef<User>> = {
       name: {
@@ -243,14 +245,16 @@ export const useUserColumns = ({ currentProfile, scope, columnIds, isUpdating, o
                       Detail
                     </Link>
                   </DropdownMenuItem>
+                  {canUpdate && (
+                    <DropdownMenuItem asChild>
+                      <Link href={getUsersHref(activeMitraSlug, `users/${user.id}/edit?scope=${scope}`)} className="flex items-center gap-2">
+                        <Pencil className="size-4" />
+                        Edit
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
 
-                  <DropdownMenuItem asChild>
-                    <Link href={getUsersHref(activeMitraSlug, `users/${user.id}/edit?scope=${scope}`)} className="flex items-center gap-2">
-                      <Pencil className="size-4" />
-                      Edit
-                    </Link>
-                  </DropdownMenuItem>
-                  {user.deletedAt === null && (
+                  {canDelete && user.deletedAt === null && (
                     <DropdownMenuItem onClick={() => onDeleteRequest(user)} className="text-destructive">
                       <Trash2 className="size-4" />
                       Hapus User

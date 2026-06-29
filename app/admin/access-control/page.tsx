@@ -10,6 +10,6 @@ export default async function AdminAccessControlPage() {
     redirect('/login?callbackUrl=/admin/access-control');
   }
   const usersProfile = toUserProfile(profile);
-  PagePermission(profile, [Permissions.permissionCodes.viewMitraPermissions]);
+  PagePermission(profile, [Permissions.mitraPermissions.view.MITRA]);
   return <AccessControlPage currentProfile={usersProfile} />;
 }

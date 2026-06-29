@@ -16,10 +16,10 @@ export type Role = {
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
-  permissions: RolePermission[];
   _count: {
-    permissions: number;
     insidiaUsers: number;
     mitraUsers: number;
+    mitraRolePermissions: number;
+    permissions: number;
   };
 };

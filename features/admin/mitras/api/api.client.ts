@@ -1,7 +1,7 @@
 import { apiFetchInternal } from '@/lib/api/express.client';
 import { normalizeMitra, normalizeMitras } from '../mitras.normalizer';
 import type { Mitra, MitraVisibilityFilter } from '../types/mitras.types';
-import type { CreateMitraInput, UpdateMitraPayload } from '../schema/mitra.schema';
+import type { CreateMitraInput, UpdateMitraInput } from '../schema/mitra.schema';
 
 export async function createMitra(data: CreateMitraInput): Promise<Mitra> {
   const res = await apiFetchInternal<unknown>('/api/admin/mitras', {
@@ -30,19 +30,22 @@ export async function getMitras(filter: MitraVisibilityFilter = 'available', que
 
   return normalizeMitras(res);
 }
+
 export async function getMitraById(id: string): Promise<Mitra> {
   const res = await apiFetchInternal<unknown>(`/api/admin/mitras/${id}`, {
     method: 'GET',
   });
   return normalizeMitra(res);
 }
-export async function updateMitra(id: string, data: UpdateMitraPayload): Promise<Mitra> {
+
+export async function updateMitra(id: string, data: UpdateMitraInput): Promise<Mitra> {
   const res = await apiFetchInternal<unknown>(`/api/admin/mitras/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(data),
   });
   return normalizeMitra(res);
 }
+
 export async function deleteMitra(id: string): Promise<null> {
   const res = await apiFetchInternal<unknown>(`/api/admin/mitras/${id}`, {
     method: 'DELETE',

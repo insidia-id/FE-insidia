@@ -11,7 +11,18 @@ function normalizeStatus(value: unknown): StatusMitra {
 function normalizeType(value: unknown): MitraType {
   return normalizeEnum(value, MITRA_TYPE_VALUES, 'SEKOLAH');
 }
+export function normalizeProfileMitra(value: unknown): Mitra['mitraProfile'] {
+  const record = asRecord(unwrapDataPayload(value));
 
+  if (!record) {
+    return undefined;
+  }
+
+  return {
+    npsn: asString(record.npsn),
+    address: asNullableString(record.address),
+  };
+}
 export function normalizeMitra(value: unknown): Mitra {
   const record = asRecord(unwrapDataPayload(value));
 
@@ -25,6 +36,7 @@ export function normalizeMitra(value: unknown): Mitra {
     slug: asNullableString(record.slug),
     type: normalizeType(record.type),
     status: normalizeStatus(record.status),
+    mitraProfile: normalizeProfileMitra(record.mitraProfile),
     createdAt: asString(record.createdAt),
     updatedAt: asString(record.updatedAt),
     deletedAt: asNullableString(record.deletedAt),

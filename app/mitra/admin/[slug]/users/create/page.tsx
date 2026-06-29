@@ -14,7 +14,7 @@ export default async function MitraAdminCreateUserPage({ params, searchParams }:
   if (!profile) {
     redirect(`/login?callbackUrl=/mitra/admin/${slug}/users/create`);
   }
-  PagePermission(profile, [Permissions.userPermissions.createUserMitra, Permissions.userPermissions.createUserInsidia]);
+  PagePermission(profile, [Permissions.userPermissions.create.MITRA]);
 
   const userProfile = toUserProfile(profile);
   return <CreateUserPage currentProfile={userProfile} defaultRoleCode={query.role} defaultScope={query.scope} />;

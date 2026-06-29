@@ -13,7 +13,7 @@ export default async function AdminBulkUploadUserPage({ searchParams }: { search
     redirect('/login?callbackUrl=/admin/users/bulk-upload');
   }
 
-  PagePermission(profile, [Permissions.userPermissions.createUserInsidia, Permissions.userPermissions.createUserMitra]);
+  PagePermission(profile, [Permissions.userPermissions.create.INSIDIA, Permissions.userPermissions.create.MITRA]);
 
   return <BulkUploadUserPage currentProfile={toUserProfile(profile)} defaultRoleCode={params.role} defaultScope={params.scope} />;
 }

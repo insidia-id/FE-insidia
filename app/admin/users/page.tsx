@@ -13,7 +13,7 @@ export default async function AdminUsersPage() {
     redirect('/login?callbackUrl=/admin/users');
   }
 
-  PagePermission(profile, [Permissions.userPermissions.viewUserInsidia, Permissions.userPermissions.viewUserMitra]);
+  PagePermission(profile, [Permissions.userPermissions.view.INSIDIA, Permissions.userPermissions.view.MITRA]);
 
   return <UsersPage currentProfile={toUserProfile(profile)} pageConfig={USER_ROLE_PAGE_CONFIG.all} />;
 }

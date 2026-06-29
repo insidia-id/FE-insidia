@@ -6,6 +6,7 @@ import NavbarAdmin from '@/features/admin/components/NavbarAdmin';
 import { getProfileUser } from '@/features/auth/api/api.server';
 import { toUserProfile } from '@/features/auth/auth.utils';
 import { getRoleLandingPath } from '@/auth/redirect';
+import { getActiveMitraContext } from '@/features/admin/user/HelperUser';
 
 export const metadata = {
   title: 'Dashboard Admin - LmsInsidia',
@@ -20,19 +21,19 @@ export default async function Layout({ children }: { children: React.ReactNode }
   if (userProfile.status === 'BANNED') {
     redirect('/force-logout');
   }
+  const { activeRole, activeMitraSlug } = getActiveMitraContext(userProfile);
 
   const landingPath = getRoleLandingPath(userProfile.insidiaRole, userProfile.mitraRoles);
   if (landingPath !== '/admin') {
     redirect(landingPath);
   }
-
   const profile = toUserProfile(userProfile);
 
   return (
     <AuthSessionProvider>
       <SidebarProvider>
         <div className="flex">
-          <AppSidebarAdmin userProfile={profile} contextMitraSlug={null} />
+          <AppSidebarAdmin userProfile={profile} activeRole={activeRole} activeMitraSlug={activeMitraSlug} />
         </div>
         <SidebarInset className="min-w-0 overflow-x-hidden transition-all duration-300 ease-in-out">
           <div className="fixed top-0 left-0 right-0 z-50">

@@ -1,14 +1,15 @@
 import 'server-only';
 
+import { cache } from 'react';
 import { apiFetchWithAuth } from '@/lib/api/express.server';
 import type { ClassGroupCourse, ClassGroupStudent, Subject } from '../types/mitra-academic.types';
 
-type MyAcademicQuery = {
+export type MyAcademicQuery = {
   academicYearId?: string;
   semesterId?: string;
 };
 
-function withQuery(path: string, query?: MyAcademicQuery) {
+function academicServerPath(path: string, query?: MyAcademicQuery) {
   const params = new URLSearchParams();
 
   if (query?.academicYearId) {
@@ -19,13 +20,15 @@ function withQuery(path: string, query?: MyAcademicQuery) {
     params.set('semesterId', query.semesterId);
   }
 
-  return params.size ? `${path}?${params.toString()}` : path;
+  const queryString = params.toString();
+
+  return `/mitras/active/academic/${path}${queryString ? `?${queryString}` : ''}`;
 }
 
-export function getMyAcademicClasses(query?: MyAcademicQuery) {
-  return apiFetchWithAuth<Array<ClassGroupCourse | ClassGroupStudent>>(withQuery(`/mitras/active/academic/kelas-saya`, query), { method: 'GET' });
-}
+export const getMyAcademicClasses = cache(async (query?: MyAcademicQuery) => {
+  return apiFetchWithAuth<Array<ClassGroupCourse | ClassGroupStudent>>(academicServerPath('kelas-saya', query), { method: 'GET' });
+});
 
-export function getMyAcademicSubjects(query?: MyAcademicQuery) {
-  return apiFetchWithAuth<Subject[]>(withQuery(`/mitras/active/academic/mapel-saya`, query), { method: 'GET' });
-}
+export const getMyAcademicSubjects = cache(async (query?: MyAcademicQuery) => {
+  return apiFetchWithAuth<Subject[]>(academicServerPath('mapel-saya', query), { method: 'GET' });
+});

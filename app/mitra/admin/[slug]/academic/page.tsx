@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getAuthorizedMitraRole } from '@/auth/redirect';
 import { getProfileUser } from '@/features/auth/api/api.server';
-import { MitraAcademicPage } from '@/features/mitra-academic/components/MitraAcademicPage';
+import { AcademicLandingPage } from '@/features/mitra-academic/layout/AcademicLandingPage';
 
 type MitraAcademicRoutePageProps = {
   params: Promise<{
@@ -23,5 +23,5 @@ export default async function MitraAcademicRoutePage({ params }: MitraAcademicRo
     redirect('/admin');
   }
 
-  return <MitraAcademicPage mitraName={activeMitraRole.mitraName} />;
+  return <AcademicLandingPage slug={slug} />;
 }

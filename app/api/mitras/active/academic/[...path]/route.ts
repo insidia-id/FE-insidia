@@ -19,7 +19,6 @@ export async function GET(request: NextRequest, context: RouteContext) {
   try {
     const { path } = await context.params;
     const data = await forwardApiRequest(request, buildAcademicPath(path, request), 'GET');
-    console.log('GET data:', data);
     return toRouteResponse({ data });
   } catch (error) {
     const apiError = error as { status?: number; code?: string; message?: string };

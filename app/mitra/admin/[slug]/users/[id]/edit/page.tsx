@@ -15,7 +15,7 @@ type AdminUserEditPageProps = {
 
 export default async function MitraAdminUserEditPage({ params, searchParams }: AdminUserEditPageProps) {
   const profile = await getProfileUser();
-  PagePermission(profile, [Permissions.userPermissions.viewUserMitra]);
+  PagePermission(profile, [Permissions.userPermissions.update.MITRA]);
   const userProfile = toUserProfile(profile!);
   const { id } = await params;
   const query = await searchParams;

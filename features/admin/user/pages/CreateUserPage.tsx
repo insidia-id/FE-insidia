@@ -21,9 +21,7 @@ export function CreateUserPage({ currentProfile, defaultRoleCode, defaultScope }
   const normalizedRoleCode = normalizeRoleQueryParam(defaultRoleCode) as UserRoleCode | undefined;
   const { activeMitraId, activeMitraRole, activeMitraSlug, activeInsidiaRole, activeMitraName } = getActiveMitraContext(currentProfile);
   const { form, isSubmitting, onSubmit } = useCreateUserController(activeMitraId ?? undefined, activeMitraName ?? undefined, normalizedRoleCode);
-  console.log(
-    `activeMitraId: ${activeMitraId}, activeMitraRole: ${activeMitraRole}, activeMitraSlug: ${activeMitraSlug}, activeInsidiaRole: ${activeInsidiaRole}, activeMitraName: ${activeMitraName} , defaultRoleCode: ${defaultRoleCode}, normalizedRoleCode: ${normalizedRoleCode}`,
-  );
+
   const title = normalizedRoleCode ? `Tambah ${formatRole(normalizedRoleCode)}` : 'Tambah User';
   const description = normalizedRoleCode ? `Buat akun ${formatRole(normalizedRoleCode).toLowerCase()} baru dan tentukan status awalnya dari halaman ini.` : 'Buat akun user baru dan tentukan role serta status awalnya dari halaman ini.';
 

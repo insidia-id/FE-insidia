@@ -21,7 +21,7 @@ export default async function AdminUserDetailPage({ params, searchParams }: Admi
     redirect('/login?callbackUrl=/admin/users');
   }
 
-  PagePermission(profile, [Permissions.userPermissions.viewUserInsidia, Permissions.userPermissions.viewUserMitra]);
+  PagePermission(profile, [Permissions.userPermissions.view.INSIDIA, Permissions.userPermissions.view.MITRA]);
 
   const { id } = await params;
   const query = await searchParams;

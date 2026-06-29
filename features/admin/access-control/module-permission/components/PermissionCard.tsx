@@ -72,7 +72,6 @@ export function PermissionsCard({
           <div className="grid grid-cols-1 md:grid-cols-2  gap-3">
             {availablePermissions.map((permission) => {
               const checked = selectedPermissionIds.includes(permission.id);
-
               return (
                 <label key={permission.id} className="flex items-start gap-3 rounded-lg border p-3 transition-colors hover:bg-muted/40">
                   <input type="checkbox" className="mt-1 size-4" checked={checked} onChange={(event) => onTogglePermission(permission.id, event.target.checked)} />

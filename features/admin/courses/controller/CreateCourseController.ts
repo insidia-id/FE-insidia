@@ -3,11 +3,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { courseFormSchema, type CourseFormValues } from '../schema/course.schema';
 import type { CourseScope } from '../types/course.types';
 import { useCreateCourse } from '../hooks/useCourses';
-import { useCurricula } from '@/features/mitra-academic/hooks/useMitraAcademic';
+import { useCurricula } from '@/features/mitra-academic/curriculum/hooks/useCurriculum';
 import { useMemo } from 'react';
 
 export function CreateCourseController(scope: CourseScope, mitraId?: string) {
-  const curriculaQuery = useCurricula(scope === 'MITRA' ? mitraId : undefined);
+  const curriculaQuery = useCurricula();
   const form = useForm<CourseFormValues, unknown, CourseFormValues>({
     resolver: zodResolver(courseFormSchema) as Resolver<CourseFormValues>,
     defaultValues: {

@@ -55,10 +55,7 @@ export function UserFormFields<TFieldValues extends FieldValues & BaseUserFormSh
   const searchParams = useSearchParams();
   const isUpdateMode = mode === 'update';
   const assignableRoleOptions = getAssignableRoleOptions(currentUserRole, scope);
-  const mitraRoleOptions = assignableRoleOptions.filter((option) => ['AKADEMIK', 'MURID', 'GURU', 'WALI_MURID'].includes(option.value)) as Array<{
-    label: string;
-    value: MitraRole;
-  }>;
+  const mitraRoleOptions = getAssignableRoleOptions(currentUserRole, 'MITRA');
   const role = searchParams.get('role') as MitraRole | undefined;
   return (
     <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
@@ -142,7 +139,7 @@ export function UserFormFields<TFieldValues extends FieldValues & BaseUserFormSh
 
       <MitraCardForm
         form={form as UseFormReturn<CreateUserInput>}
-        roleOptions={mitraRoleOptions}
+        roleOptions={mitraRoleOptions as Array<{ label: string; value: MitraRole }>}
         currentUserRole={currentUserRole}
         onDeleteMitraRole={onDeleteMitraRole}
         isDeletingMitraRole={isDeletingMitraRole}

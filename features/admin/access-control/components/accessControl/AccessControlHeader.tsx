@@ -21,7 +21,7 @@ export function AccessControlHeader({ userRole, scope, scopeLocked, includeDelet
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
-        {!scopeLocked && (
+        {userRole === 'SUPER_ADMIN' && (
           <div className="inline-flex rounded-lg border bg-background p-1">
             {getAssignableRoleOptions(userRole).map((option) => (
               <Button key={option.value} type="button" variant={scope === option.value ? 'default' : 'ghost'} size="sm" onClick={() => onScopeChange(option.value)}>

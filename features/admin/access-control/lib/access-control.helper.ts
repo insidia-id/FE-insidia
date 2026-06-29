@@ -1,12 +1,17 @@
 import type { AccessScope } from '@/lib/types/types';
 import { Role } from '../roles/types/role.types';
-export function buildAccessControlParams(scope: AccessScope, includeDeleted?: boolean) {
+import { RolePermission } from '../types/access-control.types';
+export function buildAccessControlParams(scope: AccessScope, includeDeleted?: boolean, mitraId?: string) {
   const params = new URLSearchParams({
     scope,
   });
 
   if (includeDeleted !== undefined) {
     params.set('includeDeleted', String(includeDeleted));
+  }
+
+  if (mitraId) {
+    params.set('mitraId', mitraId);
   }
 
   return params;
@@ -51,18 +56,21 @@ export function resolveSelectedRole(roles: Role[], selectedRoleId: string | null
 }
 
 export function resolveSelectedPermissionIds(params: {
-  selectedRole: Role | null;
+  scope: AccessScope;
+  mitraId?: string | null;
   selectedRoleId: string | null;
+  rolePermissions: RolePermission[] | undefined;
   permissionDraft: {
+    scope: AccessScope;
+    mitraId?: string | null;
     roleId: string | null;
     permissionIds: string[];
   };
 }) {
-  const { permissionDraft, selectedRole, selectedRoleId } = params;
-
-  if (permissionDraft.roleId === selectedRoleId) {
+  const { permissionDraft, selectedRoleId, rolePermissions, scope, mitraId } = params;
+  if (permissionDraft.scope === scope && permissionDraft.mitraId === mitraId && permissionDraft.roleId === selectedRoleId) {
     return permissionDraft.permissionIds;
   }
 
-  return selectedRole?.permissions.map((item) => item.permissionId) ?? [];
+  return rolePermissions?.map((item) => item.permissionId) ?? [];
 }

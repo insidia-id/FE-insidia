@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { getActiveMitraContext, getAssignableScopeOptions, getRoleFilterOptions, statusFilterOptions, UserFilterOptions } from '../../HelperUser';
+import { canManage, getActiveMitraContext, getAssignableScopeOptions, getRoleFilterOptions, statusFilterOptions, UserFilterOptions } from '../../HelperUser';
 import { Table } from '@tanstack/react-table';
 import type { RoleUser, User, UserFilter, UserScope } from '../../types/user.types';
 import { AuthProfileResponse } from '@/features/auth/types/auth.types';
@@ -28,9 +28,10 @@ type HeaderTableProps = {
 export const HeaderTable = ({ currentProfile, pageConfig, table, onGlobalFilterChange, globalFilter, filter, onFilterChange, scope, onScopeChange, roleCode, onRoleCodeChange, createHref, bulkUploadHref }: HeaderTableProps) => {
   const { activeInsidiaRole, activeMitraRole } = getActiveMitraContext(currentProfile);
   const roleFilterOptions = getRoleFilterOptions(activeMitraRole ?? activeInsidiaRole, scope);
+
   const getCurrentScope = getAssignableScopeOptions(activeMitraRole ?? activeInsidiaRole);
-  const createPermission = scope === 'MITRA' ? Permissions.userPermissions.createUserMitra : Permissions.userPermissions.createUserInsidia;
-  const canCreateUser = currentProfile.insidiaRole === 'SUPER_ADMIN' || currentProfile.permissions.includes(createPermission);
+
+  const canManages = canManage(currentProfile, [Permissions.userPermissions.create[scope]]);
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
       <div className="rounded-xl border border-border/60 bg-slate-50 p-3 lg:flex-1">
@@ -107,7 +108,7 @@ export const HeaderTable = ({ currentProfile, pageConfig, table, onGlobalFilterC
         </div>
       </div>
 
-      {canCreateUser ? (
+      {canManages ? (
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button asChild variant="outline">
             <Link href={bulkUploadHref}>

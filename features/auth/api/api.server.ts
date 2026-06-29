@@ -11,6 +11,7 @@ export const getProfileUser = cache(async (): Promise<AuthProfileResponse | null
       method: 'GET',
     });
     const result = mapAuthProfileResponse(res);
+    console.log(`getProfileUser result:`, result);
     return result;
   } catch (error) {
     if ((error as { status?: number }).status === 401) {

@@ -1,4 +1,5 @@
-import { MitraRole, RoleUser, User, UserMitraAssignment, UserMitraRoleRelation, UserProfileForm, UserScope } from './types/user.types';
+import { PermissionCode } from '../types/Admin';
+import { InsidiaRole, MitraRole, RoleUser, User, UserMitraAssignment, UserMitraRoleRelation, UserProfileForm, UserRoleCode, UserScope } from './types/user.types';
 import { AuthProfileResponse } from '@/features/auth/types/auth.types';
 
 export const USER_STATUS_OPTIONS = [
@@ -346,9 +347,9 @@ export function getActiveMitraContext(currentProfile: AuthProfileResponse) {
   const activeMitraRole: MitraRole | null = activeMitra?.roleCode ?? null;
   const activeMitraSlug: string | null = activeMitra?.mitraSlug ?? null;
   const activeMitraName: string | null = activeMitra?.mitraName ?? null;
-  const activeInsidiaRole: RoleUser | null = !activeMitraId && currentProfile.insidiaRole ? normalizeRole(currentProfile.insidiaRole) : null;
+  const activeInsidiaRole: InsidiaRole | null = !activeMitraId && currentProfile.insidiaRole ? currentProfile.insidiaRole : null;
 
-  const activeRole: RoleUser | MitraRole | null = activeMitraRole ?? activeInsidiaRole;
+  const activeRole: UserRoleCode | null = activeMitraRole ?? activeInsidiaRole;
 
   return {
     activeMitraId,
@@ -359,4 +360,17 @@ export function getActiveMitraContext(currentProfile: AuthProfileResponse) {
     activeRole,
     isMitraContext: Boolean(activeMitraId),
   };
+}
+
+export function canManage(currentProfile: AuthProfileResponse, permission: PermissionCode[]) {
+  const { activeMitraRole, activeInsidiaRole } = getActiveMitraContext(currentProfile);
+
+  if (activeInsidiaRole === 'SUPER_ADMIN' || activeInsidiaRole === 'ADMIN') {
+    return true;
+  }
+
+  if (permission.some((p) => currentProfile.permissions.includes(p))) {
+    return true;
+  }
+  return false;
 }

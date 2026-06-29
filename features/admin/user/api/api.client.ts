@@ -126,6 +126,5 @@ export async function importBulkUsers(jobId: string): Promise<BulkImportResult> 
   const res = await apiFetchInternal<unknown>(`/api/admin/user/import/${jobId}`, {
     method: 'POST',
   });
-  console.log('importBulkUsers res:', res);
   return normalizeBulkImportResult(res);
 }

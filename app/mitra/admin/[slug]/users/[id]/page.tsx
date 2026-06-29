@@ -16,7 +16,7 @@ type MitraAdminUserDetailPageProps = {
 
 export default async function MitraAdminUserDetailPage({ params, searchParams }: MitraAdminUserDetailPageProps) {
   const profile = await getProfileUser();
-  PagePermission(profile, [Permissions.userPermissions.viewUserMitra]);
+  PagePermission(profile, [Permissions.userPermissions.view.MITRA]);
   const { id } = await params;
   const query = await searchParams;
   const scope = (Array.isArray(query.scope) ? query.scope[0] : query.scope) === 'MITRA' ? 'MITRA' : 'INSIDIA';

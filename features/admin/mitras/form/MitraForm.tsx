@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { Controller } from 'react-hook-form';
 import type { FieldValues, Path, SubmitHandler, UseFormReturn } from 'react-hook-form';
 import { LoadingButton } from '@/components/common/ButtonLoading';
-import { TextField } from '@/components/common/form';
+import { TextAreaField, TextField } from '@/components/common/form';
 import { Button } from '@/components/ui/button';
 import { readErrorMessage } from '@/lib/form/form.helper';
 import type { MitraType, StatusMitra } from '../types/mitras.types';
@@ -25,6 +25,7 @@ type MitraFormFieldsProps<TFieldValues extends FieldValues & BaseMitraFormShape>
 };
 
 export function MitraFormFields<TFieldValues extends FieldValues & BaseMitraFormShape>({ form, isLoading, onCancel, onSubmit, submitLabel, children }: MitraFormFieldsProps<TFieldValues>) {
+  console.log('form', form.getValues());
   return (
     <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
       <div className="grid gap-4 md:grid-cols-2">
@@ -78,6 +79,15 @@ export function MitraFormFields<TFieldValues extends FieldValues & BaseMitraForm
               {readErrorMessage(form.formState.errors, 'status') && <p className="text-sm text-destructive">{readErrorMessage(form.formState.errors, 'status')}</p>}
             </div>
           )}
+        />
+        <TextField id="Npsn" label="NPSN" placeholder="Masukkan NPSN" error={readErrorMessage(form.formState.errors, 'mitraProfile.npsn')} disabled={isLoading} {...form.register('mitraProfile.npsn' as Path<TFieldValues>)} />
+        <TextAreaField
+          id="Address"
+          label="Alamat"
+          placeholder="Jl. Raya Sejahtera No. 123"
+          error={readErrorMessage(form.formState.errors, 'mitraProfile.address')}
+          disabled={isLoading}
+          {...form.register('mitraProfile.address' as Path<TFieldValues>)}
         />
       </div>
 

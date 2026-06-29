@@ -21,7 +21,7 @@ export default async function AdminUserEditPage({ params, searchParams }: AdminU
     redirect('/login?callbackUrl=/admin/users');
   }
 
-  PagePermission(profile, [Permissions.userPermissions.updateUserInsidia, Permissions.userPermissions.updateUserMitra]);
+  PagePermission(profile, [Permissions.userPermissions.update.INSIDIA, Permissions.userPermissions.update.MITRA]);
 
   const userProfile = toUserProfile(profile);
   const { id } = await params;

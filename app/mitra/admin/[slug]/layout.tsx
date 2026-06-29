@@ -7,6 +7,7 @@ import { AppSidebarAdmin } from '@/features/admin/components/AppsidebarAdmin';
 import NavbarAdmin from '@/features/admin/components/NavbarAdmin';
 import { toUserProfile } from '@/features/auth/auth.utils';
 import { getActiveMitraContext } from '@/features/admin/user/HelperUser';
+import { normalizeSlug } from '@/features/auth/lib/auth.helper';
 
 export const metadata = {
   title: 'Insidia - Marketplace untuk kebutuhan gaming kamu',
@@ -19,8 +20,9 @@ export default async function MitraLayout({ children, params }: { children: Reac
     redirect(`/login?callbackUrl=/mitra/${slug}`);
   }
   const userProfile = toUserProfile(profile);
-  const { activeMitraSlug } = getActiveMitraContext(userProfile);
+  const { activeRole, activeMitraSlug } = getActiveMitraContext(userProfile);
   const authorizedMitraRole = getAuthorizedMitraRole(userProfile.mitraRoles, slug);
+
   if (profile.status === 'BANNED') {
     redirect('/force-logout');
   }
@@ -28,8 +30,8 @@ export default async function MitraLayout({ children, params }: { children: Reac
     redirect(getRoleLandingPath(profile.insidiaRole, userProfile.mitraRoles, activeMitraSlug));
   }
 
-  if (authorizedMitraRole.mitraSlug !== slug) {
-    redirect(`/mitra/${authorizedMitraRole.mitraSlug}`);
+  if (normalizeSlug(activeMitraSlug) !== normalizeSlug(slug)) {
+    redirect(`/mitra/admin/${activeMitraSlug}`);
   }
 
   return (
@@ -37,7 +39,7 @@ export default async function MitraLayout({ children, params }: { children: Reac
       <AuthSessionProvider>
         <SidebarProvider>
           <div className="flex">
-            <AppSidebarAdmin userProfile={profile} contextMitraSlug={slug} />
+            <AppSidebarAdmin userProfile={profile} activeRole={activeRole} activeMitraSlug={activeMitraSlug} />
           </div>
           <SidebarInset className="min-w-0 overflow-x-hidden transition-all duration-300 ease-in-out">
             <div className="fixed top-0 left-0 right-0 z-50">

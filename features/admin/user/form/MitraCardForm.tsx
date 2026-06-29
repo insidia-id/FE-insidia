@@ -1,7 +1,7 @@
 import { Controller, UseFormReturn, useFieldArray } from 'react-hook-form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { readErrorMessage } from '@/lib/form/form.helper';
-import { MitrasController } from '../../mitras/controller/MitrasController';
+import { useMitrasController } from '../../mitras/hooks/MitrasController';
 import { Combobox } from '@/components/common/Combobox';
 import { Label } from '@/components/ui/label';
 import { LoadingButton } from '@/components/common/ButtonLoading';
@@ -14,7 +14,7 @@ import { TextField } from '@/components/common/form';
 
 type RoleOption = {
   label: string;
-  value: 'AKADEMIK' | 'MURID' | 'GURU' | 'WALI_MURID';
+  value: MitraRole;
 };
 
 type Props = {
@@ -28,7 +28,7 @@ type Props = {
 };
 
 export const MitraCardForm = ({ form, roleOptions, currentUserRole, onDeleteMitraRole, isDeletingMitraRole = false, deletingMitraId = null, role }: Props) => {
-  const { mitraOptions, setMitraQuery, isLoading: isLoadingMitras } = MitrasController();
+  const { mitraOptions, setMitraQuery, isLoading: isLoadingMitras } = useMitrasController({ enabled: currentUserRole === 'SUPER_ADMIN' || currentUserRole === 'ADMIN' });
 
   const mitraRolesError = readErrorMessage(form.formState.errors, 'mitraRoles');
   const { control } = form;
@@ -36,7 +36,6 @@ export const MitraCardForm = ({ form, roleOptions, currentUserRole, onDeleteMitr
     control,
     name: 'mitraRoles',
   });
-  console.log('MitraCardForm - fields:', fields);
   const handleRemove = (index: number) => {
     remove(index);
 

@@ -6,12 +6,13 @@ import { AccessControlHeader } from './accessControl/AccessControlHeader';
 import { AccessControlStats } from './accessControl/AccessControlStats';
 import { RoleListCard } from '../roles/components/RoleListCard';
 import { ModulePermissionLibraryCard } from '../module-permission/components/ModulePermissionLibraryCard';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { AccessScope } from '../types/access-control.types';
 import { getActiveMitraContext, getCurrentUserScope } from '../../user/HelperUser';
 import { useRoles } from '../roles/hooks/use-roles';
 import { usePermissions } from '../permission/hooks/use-permisson';
 import { useModulePermissions } from '../module-permission/hooks/use-module-permission';
+import { useMitrasController } from '../../mitras/hooks/MitrasController';
 type AccessControlPageProps = {
   currentProfile: AuthProfileResponse;
 };
@@ -19,13 +20,21 @@ type AccessControlPageProps = {
 export function AccessControlPage({ currentProfile }: AccessControlPageProps) {
   const { activeMitraId, activeMitraRole, activeInsidiaRole } = getActiveMitraContext(currentProfile);
   const userRole = activeMitraRole ?? activeInsidiaRole;
-  const mitraId = activeMitraId ?? undefined;
+
+  const { mitraOptions, selectedMitraId, setSelectedMitraId, isLoading: isLoadingMitras, setMitraQuery } = useMitrasController({ enabled: userRole === 'SUPER_ADMIN' || userRole === 'ADMIN' });
+
+  const mitraId = activeInsidiaRole === 'SUPER_ADMIN' ? selectedMitraId : activeMitraId;
+
   const [scope, setScope] = useState<AccessScope>(() => (mitraId ? 'MITRA' : getCurrentUserScope(userRole)));
+
   const useRole = useRoles({ scope, mitraId });
-  const usePermission = usePermissions({ mitraId, selectedRole: useRole.selectedRole, selectedRoleId: useRole.selectedRoleId });
+  const usePermission = usePermissions();
+
   const useModulePermission = useModulePermissions({ scope, mitraId });
+
   const permissions = useMemo(() => (useModulePermission.modulePermissions ?? []).flatMap((modulePermission) => modulePermission.permissions ?? []), [useModulePermission.modulePermissions]);
-  const canManageRoleCatalog = !mitraId && (userRole === 'SUPER_ADMIN' || userRole === 'ADMIN');
+
+  const canManageRoleCatalog = userRole === 'SUPER_ADMIN' || userRole === 'ADMIN';
 
   return (
     <>
@@ -50,6 +59,11 @@ export function AccessControlPage({ currentProfile }: AccessControlPageProps) {
                 onSelectRole={useRole.actions.setActiveRoleId}
                 onEditRole={useRole.actions.openEditRoleDialog}
                 onDeleteRole={useRole.actions.setRoleToDelete}
+                mitraOptions={mitraOptions}
+                selectedMitraId={selectedMitraId}
+                setSelectedMitraId={setSelectedMitraId}
+                isLoadingMitras={isLoadingMitras}
+                setMitraQuery={setMitraQuery}
               />
             </div>
 
@@ -65,10 +79,10 @@ export function AccessControlPage({ currentProfile }: AccessControlPageProps) {
                 onDeleteModulePermission={useModulePermission.actions.setModulePermissionToDelete}
                 scope={scope}
                 selectedRole={useRole.selectedRole}
-                selectedPermissionIds={usePermission.selectedPermissionIds}
-                isSyncing={usePermission.mutations.replaceRolePermissionsMutation.isPending}
-                onTogglePermission={usePermission.actions.togglePermission}
-                onSyncPermissions={usePermission.actions.syncPermissions}
+                selectedPermissionIds={useRole.selectedPermissionIds}
+                isSyncing={useRole.mutations.replaceRolePermissionsMutation.isPending}
+                onTogglePermission={useRole.actions.togglePermission}
+                onSyncPermissions={useRole.actions.syncPermissions}
                 onCreatePermission={usePermission.actions.openCreatePermissionDialog}
                 onEditPermission={usePermission.actions.openEditPermissionDialog}
                 onDeletePermission={usePermission.actions.setPermissionToDelete}

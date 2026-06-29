@@ -3,9 +3,6 @@ import { toast } from 'sonner';
 import { getMutationErrorMessage } from '@/lib/error/error.message';
 import { createPermission, deletePermission, updatePermission } from '../api/api.client';
 import type { PermissionFormValues } from '../types/permission.types';
-import type { AccessScope } from '../../types/access-control.types';
-import { rolesKeys } from '../../roles/hooks/use-roles-query';
-import { replaceRolePermissions } from '../../api/api.client';
 import { modulePermissionKeys } from '../../module-permission/hooks/use-module-permission-query';
 
 const invalidateModulePermissions = (queryClient: ReturnType<typeof useQueryClient>) => {
@@ -56,20 +53,6 @@ export function useDeletePermission() {
     },
     onError: (error) => {
       toast.error(getMutationErrorMessage(error, 'Gagal menghapus permission'));
-    },
-  });
-}
-export function useReplaceRolePermissions() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (variables: { roleId: string; permissionIds: string[]; scope: AccessScope; mitraId?: string | null }) => replaceRolePermissions(variables.roleId, variables.permissionIds, variables.scope),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: rolesKeys.byScope(variables.scope, variables.mitraId) });
-      toast.success('Permission role berhasil diperbarui');
-    },
-    onError: (error) => {
-      toast.error(getMutationErrorMessage(error, 'Gagal memperbarui permission role'));
     },
   });
 }

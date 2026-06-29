@@ -14,7 +14,7 @@ export default async function MitraAdminBulkUploadUserPage({ params, searchParam
     redirect(`/login?callbackUrl=/mitra/admin/${slug}/users/bulk-upload`);
   }
 
-  PagePermission(profile, [Permissions.userPermissions.createUserMitra, Permissions.userPermissions.createUserInsidia]);
+  PagePermission(profile, [Permissions.userPermissions.create.MITRA]);
 
   return <BulkUploadUserPage currentProfile={toUserProfile(profile)} defaultRoleCode={query.role} defaultScope={query.scope} />;
 }

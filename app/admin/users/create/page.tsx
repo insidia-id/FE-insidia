@@ -14,7 +14,7 @@ export default async function AdminCreateUserPage({ searchParams }: { searchPara
     redirect('/login?callbackUrl=/admin/users');
   }
 
-  PagePermission(profile, [Permissions.userPermissions.createUserInsidia, Permissions.userPermissions.createUserMitra]);
+  PagePermission(profile, [Permissions.userPermissions.create.INSIDIA, Permissions.userPermissions.create.MITRA]);
 
   const userProfile = toUserProfile(profile);
 

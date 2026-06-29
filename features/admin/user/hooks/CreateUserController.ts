@@ -11,8 +11,6 @@ function getDefaultValues(contextMitraId?: string, contextMitraName?: string, de
 
   const isMitraUser = Boolean(normalizedRole?.mitraRole || contextMitraId || normalizedRole?.scope === 'MITRA');
 
-  console.log(`getDefaultValues - contextMitraId: ${contextMitraId}, contextMitraName: ${contextMitraName}, defaultRoleCode: ${defaultRoleCode}, normalizedRoleCode: ${normalizedRoleCode}, isMitraUser: ${isMitraUser}`);
-
   let mitraAssignments: CreateUserInput['mitraRoles'] = [];
 
   if (contextMitraId) {
