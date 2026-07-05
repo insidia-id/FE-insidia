@@ -24,5 +24,5 @@ export default async function MitraCreateCoursePage({ params }: MitraCreateCours
     redirect('/admin');
   }
   const userProfile = toUserProfile(profile);
-  return <CreateCoursePage scope="MITRA" disableScopeField currentProfile={userProfile} />;
+  return <CreateCoursePage disableScopeField currentProfile={userProfile} />;
 }

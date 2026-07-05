@@ -41,7 +41,6 @@ export function DataTable<TData, TValue>({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [globalFilter, setGlobalFilter] = useState('');
   const [rowSelection, setRowSelection] = useState({});
-  console.log('isError', isError);
   const table = useReactTable({
     data,
     columns,
@@ -153,15 +152,15 @@ export function DataTable<TData, TValue>({
       </div>
 
       <div className="flex flex-col gap-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-        <div>{enableRowSelection ? `${table.getFilteredSelectedRowModel().rows.length} dari ${table.getFilteredRowModel().rows.length} baris dipilih.` : `${table.getFilteredRowModel().rows.length} data ditemukan.`}</div>
+        <div>{enableRowSelection ? `${table?.getFilteredSelectedRowModel().rows.length ?? 0} dari ${table?.getFilteredRowModel().rows.length ?? 0} baris dipilih.` : `${table?.getFilteredRowModel().rows.length ?? 0} data ditemukan.`}</div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+          <Button variant="outline" size="sm" onClick={() => table?.previousPage()} disabled={!table?.getCanPreviousPage()}>
             Sebelumnya
           </Button>
           <span>
-            Halaman {table.getState().pagination.pageIndex + 1} dari {table.getPageCount() || 1}
+            Halaman {table?.getState().pagination.pageIndex + 1} dari {table?.getPageCount() || 1}
           </span>
-          <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+          <Button variant="outline" size="sm" onClick={() => table?.nextPage()} disabled={!table?.getCanNextPage()}>
             Berikutnya
           </Button>
         </div>

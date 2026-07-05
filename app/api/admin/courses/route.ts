@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { toRouteError, toRouteResponse } from '@/lib/api/route-response';
 import { appendSearchParams, forwardApiRequest } from '@/lib/api/route-proxy';
+import { ApiErrorIssue } from '@/lib/api/api.shared';
 
 export async function GET(request: NextRequest) {
   try {
@@ -26,12 +27,13 @@ export async function POST(request: NextRequest) {
 
     return toRouteResponse({ data }, 201);
   } catch (error) {
-    const apiError = error as { status?: number; code?: string; message?: string };
+    const apiError = error as { status?: number; code?: string; message?: string; errors?: ApiErrorIssue[] };
 
     return toRouteError(apiError.message ?? 'Failed to create course', {
       status: apiError.status ?? 500,
       code: apiError.code ?? 'CREATE_COURSE_FAILED',
       message: apiError.message ?? 'Failed to create course',
+      errors: apiError.errors ?? [],
     });
   }
 }

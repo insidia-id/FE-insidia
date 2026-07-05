@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useGetCourseById, useUpdateCourse } from '../hooks/useCourses';
 import { courseFormSchema, type CourseFormValues } from '../schema/course.schema';
 import { joinLines } from '../lib/course.helper';
-import { useCurricula } from '@/features/mitra-academic/hooks/useMitraAcademic';
+import { useCurriculum } from '@/features/mitra-academic/curriculum/hooks/useCurriculum';
 
 function toFormValues(course: Awaited<ReturnType<typeof useGetCourseById>>['data']): CourseFormValues | null {
   if (!course) {
@@ -36,7 +36,9 @@ function toFormValues(course: Awaited<ReturnType<typeof useGetCourseById>>['data
 
 export function UpdateCourseController(courseId: string) {
   const { data: course, isLoading, isError, error } = useGetCourseById(courseId);
-  const curriculaQuery = useCurricula(course?.scope === 'MITRA' ? (course.mitraId ?? undefined) : undefined);
+  const {
+    queries: { curriculum },
+  } = useCurriculum();
   const updateCourseMutation = useUpdateCourse();
   const form = useForm<CourseFormValues, unknown, CourseFormValues>({
     resolver: zodResolver(courseFormSchema) as Resolver<CourseFormValues>,
@@ -63,11 +65,11 @@ export function UpdateCourseController(courseId: string) {
   });
   const curriculumOptions = useMemo(
     () =>
-      (curriculaQuery.data ?? []).map((curriculum) => ({
+      (curriculum ?? []).map((curriculum) => ({
         label: `${curriculum.name}${curriculum.code ? ` (${curriculum.code})` : ''}`,
         value: curriculum.id,
       })),
-    [curriculaQuery.data],
+    [curriculum],
   );
 
   useEffect(() => {

@@ -11,24 +11,25 @@ function toPayload(data: RombelFormValues) {
   };
 }
 
-export function getRombels() {
-  return apiFetchInternal<ClassGroup[]>(academicPath('rombel'), { method: 'GET' });
+export async function getRombels(mitraId: string) {
+  const response = await apiFetchInternal<ClassGroup[]>(academicPath(mitraId, 'class-group'), { method: 'GET' });
+  return response;
 }
 
-export function createRombel(data: RombelFormValues) {
-  return apiFetchInternal<ClassGroup>(academicPath('rombel'), {
+export function createRombel(mitraId: string, data: RombelFormValues) {
+  return apiFetchInternal<ClassGroup>(academicPath(mitraId, 'class-group'), {
     method: 'POST',
     body: JSON.stringify(toPayload(data)),
   });
 }
 
-export function updateRombel(id: string, data: RombelFormValues) {
-  return apiFetchInternal<ClassGroup>(academicPath(`rombel/${id}`), {
+export function updateRombel(mitraId: string, id: string, data: RombelFormValues) {
+  return apiFetchInternal<ClassGroup>(academicPath(mitraId, `class-group/${id}`), {
     method: 'PATCH',
     body: JSON.stringify(toPayload(data)),
   });
 }
 
-export function deleteRombel(id: string) {
-  return apiFetchInternal<{ message: string }>(academicPath(`rombel/${id}`), { method: 'DELETE' });
+export function deleteRombel(mitraId: string, id: string) {
+  return apiFetchInternal<{ message: string }>(academicPath(mitraId, `class-group/${id}`), { method: 'DELETE' });
 }

@@ -9,10 +9,11 @@ import { useClassBatch } from '../hooks/useClassBatch';
 
 type ClassBatchPageProps = {
   slug: string;
+  mitraId: string | null;
 };
 
-export function ClassBatchPage({ slug }: ClassBatchPageProps) {
-  const controller = useClassBatch();
+export function ClassBatchPage({ slug, mitraId }: ClassBatchPageProps) {
+  const controller = useClassBatch(mitraId ?? '');
 
   return (
     <>

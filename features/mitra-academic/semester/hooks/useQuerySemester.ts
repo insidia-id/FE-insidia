@@ -7,20 +7,20 @@ import type { SemesterFormValues } from '../schema/semester.schema';
 
 const RESOURCE_KEY = 'semesters';
 
-export function useGetSemesters() {
+export function useGetSemesters(mitraId: string) {
   return useQuery({
     queryKey: mitraAcademicKeys.resource(RESOURCE_KEY),
-    queryFn: () => getSemesters(),
+    queryFn: () => getSemesters(mitraId),
     refetchOnWindowFocus: false,
   });
 }
 
-export function useSemesterMutations() {
+export function useSemesterMutations(mitraId: string) {
   return useCrudMutations<SemesterFormValues>({
     resourceKey: RESOURCE_KEY,
-    createFn: createSemester,
-    updateFn: updateSemester,
-    deleteFn: deleteSemester,
+    createFn: (data) => createSemester(mitraId, data),
+    updateFn: (id, data) => updateSemester(mitraId, id, data),
+    deleteFn: (id) => deleteSemester(mitraId, id),
     successLabel: 'Semester',
   });
 }

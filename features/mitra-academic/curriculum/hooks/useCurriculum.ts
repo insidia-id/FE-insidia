@@ -26,27 +26,28 @@ function toFormValues(item: Curriculum | null): CurriculumFormValues {
   };
 }
 
-export function useCurricula() {
+export function useCurricula(mitraId: string) {
   return useQuery({
     queryKey: mitraAcademicKeys.resource(RESOURCE_KEY),
-    queryFn: () => getCurricula(),
+    queryFn: () => getCurricula(mitraId),
     refetchOnWindowFocus: false,
+    enabled: !!mitraId,
   });
 }
 
-export function useCurriculumMutations() {
+export function useCurriculumMutations(mitraId: string) {
   return useCrudMutations<CurriculumFormValues>({
     resourceKey: RESOURCE_KEY,
-    createFn: createCurriculum,
-    updateFn: updateCurriculum,
-    deleteFn: deleteCurriculum,
+    createFn: (data) => createCurriculum(mitraId, data),
+    updateFn: (id, data) => updateCurriculum(mitraId, id, data),
+    deleteFn: (id) => deleteCurriculum(mitraId, id),
     successLabel: 'Kurikulum',
   });
 }
 
-export function useCurriculum() {
-  const query = useCurricula();
-  const mutations = useCurriculumMutations();
+export function useCurriculum(mitraId: string) {
+  const query = useCurricula(mitraId);
+  const mutations = useCurriculumMutations(mitraId);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<Curriculum | null>(null);
   const [deletingItem, setDeletingItem] = useState<Curriculum | null>(null);
@@ -95,7 +96,7 @@ export function useCurriculum() {
   return {
     form,
     queries: {
-      curricula: query.data ?? [],
+      curriculum: query.data ?? [],
       options,
       isLoading: query.isLoading,
       isError: query.isError,

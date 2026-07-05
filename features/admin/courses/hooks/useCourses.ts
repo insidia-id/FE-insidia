@@ -16,16 +16,23 @@ import {
   updateMedia,
   uploadCourseMedia,
   uploadModuleMedia,
+  getCourseInsidiaModules,
+  getClassGroupCourseModules,
+  createCourseInsidiaModule,
+  createClassGroupCourseModule,
 } from '../api/api.client';
 import type { CourseScope, CourseStatus } from '../types/course.types';
-import type { CourseFormValues, CourseModuleFormValues, MediaMetadataFormValues, MediaUploadFormValues } from '../schema/course.schema';
+import type { CourseFormValues, CourseModuleFormValues, CreateCourseDto, MediaMetadataFormValues, MediaUploadFormValues } from '../schema/course.schema';
 
 export const courseKeys = {
   all: ['courses'] as const,
   lists: () => [...courseKeys.all, 'list'] as const,
   list: (scope: CourseScope, status?: CourseStatus, mitraId?: string | null) => [...courseKeys.lists(), { scope, status: status ?? null, mitraId: mitraId ?? null }] as const,
   detail: (courseId: string) => [...courseKeys.all, 'detail', courseId] as const,
+  /** @deprecated Use domain-specific module keys */
   modules: (courseId: string) => [...courseKeys.all, 'modules', courseId] as const,
+  insidiaModules: (courseInsidiaId: string) => [...courseKeys.all, 'modules', 'insidia', courseInsidiaId] as const,
+  mitraModules: (classGroupCourseId: string) => [...courseKeys.all, 'modules', 'mitra', classGroupCourseId] as const,
   media: (courseId: string) => [...courseKeys.all, 'media', courseId] as const,
 };
 
@@ -46,11 +53,30 @@ export function useGetCourseById(courseId: string) {
   });
 }
 
+/** @deprecated Use useGetCourseInsidiaModules or useGetClassGroupCourseModules */
 export function useGetCourseModules(courseId: string) {
   return useQuery({
     queryKey: courseKeys.modules(courseId),
     queryFn: () => getCourseModules(courseId),
     enabled: Boolean(courseId),
+    refetchOnWindowFocus: false,
+  });
+}
+
+export function useGetCourseInsidiaModules(courseInsidiaId: string | undefined | null) {
+  return useQuery({
+    queryKey: courseKeys.insidiaModules(courseInsidiaId ?? ''),
+    queryFn: () => getCourseInsidiaModules(courseInsidiaId!),
+    enabled: Boolean(courseInsidiaId),
+    refetchOnWindowFocus: false,
+  });
+}
+
+export function useGetClassGroupCourseModules(classGroupCourseId: string | undefined | null) {
+  return useQuery({
+    queryKey: courseKeys.mitraModules(classGroupCourseId ?? ''),
+    queryFn: () => getClassGroupCourseModules(classGroupCourseId!),
+    enabled: Boolean(classGroupCourseId),
     refetchOnWindowFocus: false,
   });
 }
@@ -68,7 +94,7 @@ export function useCreateCourse() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: CourseFormValues) => createCourse(data),
+    mutationFn: (data: CreateCourseDto) => createCourse(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: courseKeys.all });
       toast.success('Course berhasil dibuat');
@@ -83,7 +109,7 @@ export function useUpdateCourse() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ courseId, data }: { courseId: string; data: CourseFormValues }) => updateCourse(courseId, data),
+    mutationFn: ({ courseId, data }: { courseId: string; data: CreateCourseDto }) => updateCourse(courseId, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: courseKeys.all });
       queryClient.invalidateQueries({ queryKey: courseKeys.detail(variables.courseId) });
@@ -110,6 +136,7 @@ export function useDeleteCourse() {
   });
 }
 
+/** @deprecated Use useCreateCourseInsidiaModule or useCreateClassGroupCourseModule */
 export function useCreateCourseModule(courseId: string) {
   const queryClient = useQueryClient();
 
@@ -126,13 +153,46 @@ export function useCreateCourseModule(courseId: string) {
   });
 }
 
+export function useCreateCourseInsidiaModule(courseInsidiaId: string, courseId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: CourseModuleFormValues) => createCourseInsidiaModule(courseInsidiaId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: courseKeys.insidiaModules(courseInsidiaId) });
+      queryClient.invalidateQueries({ queryKey: courseKeys.detail(courseId) });
+      toast.success('Modul berhasil ditambahkan');
+    },
+    onError: (error) => {
+      toast.error(getMutationErrorMessage(error, 'Gagal menambah modul'));
+    },
+  });
+}
+
+export function useCreateClassGroupCourseModule(classGroupCourseId: string, courseId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: CourseModuleFormValues) => createClassGroupCourseModule(classGroupCourseId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: courseKeys.mitraModules(classGroupCourseId) });
+      queryClient.invalidateQueries({ queryKey: courseKeys.detail(courseId) });
+      toast.success('Modul berhasil ditambahkan');
+    },
+    onError: (error) => {
+      toast.error(getMutationErrorMessage(error, 'Gagal menambah modul'));
+    },
+  });
+}
+
 export function useUpdateCourseModule(courseId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ moduleId, data }: { moduleId: string; data: CourseModuleFormValues }) => updateCourseModule(moduleId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: courseKeys.modules(courseId) });
+      // Invalidate all module queries (both legacy and domain-specific)
+      queryClient.invalidateQueries({ queryKey: [...courseKeys.all, 'modules'] });
       queryClient.invalidateQueries({ queryKey: courseKeys.detail(courseId) });
       toast.success('Modul berhasil diperbarui');
     },
@@ -148,7 +208,8 @@ export function useDeleteCourseModule(courseId: string) {
   return useMutation({
     mutationFn: (moduleId: string) => deleteCourseModule(moduleId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: courseKeys.modules(courseId) });
+      // Invalidate all module queries (both legacy and domain-specific)
+      queryClient.invalidateQueries({ queryKey: [...courseKeys.all, 'modules'] });
       queryClient.invalidateQueries({ queryKey: courseKeys.detail(courseId) });
       toast.success('Modul berhasil dihapus');
     },

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCreateCourseModule, useDeleteCourseModule, useGetCourseModules, useUpdateCourseModule } from '../hooks/useCourses';
+import { useCreateCourseInsidiaModule, useDeleteCourseModule, useGetCourseInsidiaModules, useUpdateCourseModule } from '../hooks/useCourses';
 import { courseModuleFormSchema, type CourseModuleFormValues } from '../schema/course.schema';
 import type { CourseModule } from '../types/course.types';
 
@@ -23,9 +23,9 @@ function toFormValues(module?: CourseModule | null): CourseModuleFormValues {
   };
 }
 
-export function CourseModulesController(courseId: string) {
-  const { data: modules = [], isLoading, isError, error } = useGetCourseModules(courseId);
-  const createMutation = useCreateCourseModule(courseId);
+export function CourseModulesController(courseId: string, courseInsidiaId?: string) {
+  const { data: modules = [], isLoading, isError, error } = useGetCourseInsidiaModules(courseInsidiaId);
+  const createMutation = useCreateCourseInsidiaModule(courseInsidiaId ?? '', courseId);
   const updateMutation = useUpdateCourseModule(courseId);
   const deleteMutation = useDeleteCourseModule(courseId);
   const [editingModule, setEditingModule] = useState<CourseModule | null>(null);

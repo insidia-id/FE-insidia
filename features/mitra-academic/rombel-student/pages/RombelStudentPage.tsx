@@ -9,10 +9,11 @@ import { useRombelStudent } from '../hooks/useRombelStudent';
 
 type RombelStudentPageProps = {
   slug: string;
+  mitraId: string | null;
 };
 
-export function RombelStudentPage({ slug }: RombelStudentPageProps) {
-  const controller = useRombelStudent();
+export function RombelStudentPage({ slug, mitraId }: RombelStudentPageProps) {
+  const controller = useRombelStudent(mitraId ?? '');
 
   return (
     <>

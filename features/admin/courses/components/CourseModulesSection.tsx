@@ -15,10 +15,14 @@ import { CourseModulesController } from '../controller/CourseModulesController';
 
 type CourseModulesSectionProps = {
   courseId: string;
+  courseInsidiaId?: string;
 };
 
-export function CourseModulesSection({ courseId }: CourseModulesSectionProps) {
-  const { modules, form, editingModule, moduleToDelete, isLoading, isError, error, isFormOpen, isSubmitting, isDeleting, onCreate, onEdit, onSubmit, onDelete, onDeleteTargetChange, onFormOpenChange } = CourseModulesController(courseId);
+export function CourseModulesSection({ courseId, courseInsidiaId }: CourseModulesSectionProps) {
+  const { modules, form, editingModule, moduleToDelete, isLoading, isError, error, isFormOpen, isSubmitting, isDeleting, onCreate, onEdit, onSubmit, onDelete, onDeleteTargetChange, onFormOpenChange } = CourseModulesController(
+    courseId,
+    courseInsidiaId,
+  );
 
   return (
     <Card>

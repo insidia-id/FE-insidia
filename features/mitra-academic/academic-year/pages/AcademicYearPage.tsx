@@ -10,10 +10,11 @@ import { FormDialog } from '@/components/dialog/DialogForm';
 import { AcademicYearTableCard } from '../components/AcademicYearTableCard';
 type AcademicYearPageProps = {
   slug: string;
+  mitraId: string | null;
 };
 
-export function AcademicYearPage({ slug }: AcademicYearPageProps) {
-  const controller = useAcademicYearController();
+export function AcademicYearPage({ slug, mitraId }: AcademicYearPageProps) {
+  const controller = useAcademicYearController(mitraId ?? '');
 
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,rgba(15,23,42,0.04),rgba(15,23,42,0)_40%),radial-gradient(120%_80%_at_0%_0%,rgba(14,165,233,0.08),transparent)] px-4 py-8">

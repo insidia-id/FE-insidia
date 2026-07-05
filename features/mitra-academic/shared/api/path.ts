@@ -1,5 +1,5 @@
-export function academicPath(path: string) {
-  return `/api/mitras/active/academic/${path}`;
+export function academicPath(mitraId: string, path: string) {
+  return `/api/mitras/${mitraId}/${path}`;
 }
 
 export function withQuery(path: string, query?: Record<string, string | undefined>) {

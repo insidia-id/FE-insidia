@@ -3,24 +3,24 @@ import { academicPath } from '../../shared/api/path';
 import type { AcademicYearFormValues } from '../schema/academic-year.schema';
 import type { AcademicYear } from '../types/academic-year.types';
 
-export function getAcademicYears() {
-  return apiFetchInternal<AcademicYear[]>(academicPath('tahun-ajaran'), { method: 'GET' });
+export function getAcademicYears(mitraId: string) {
+  return apiFetchInternal<AcademicYear[]>(academicPath(mitraId, 'tahun-ajaran'), { method: 'GET' });
 }
 
-export function createAcademicYear(data: AcademicYearFormValues) {
-  return apiFetchInternal<AcademicYear>(academicPath('tahun-ajaran'), {
+export function createAcademicYear(mitraId: string, data: AcademicYearFormValues) {
+  return apiFetchInternal<AcademicYear>(academicPath(mitraId, 'tahun-ajaran'), {
     method: 'POST',
     body: JSON.stringify(data),
   });
 }
 
-export function updateAcademicYear(id: string, data: AcademicYearFormValues) {
-  return apiFetchInternal<AcademicYear>(academicPath(`tahun-ajaran/${id}`), {
+export function updateAcademicYear(mitraId: string, id: string, data: AcademicYearFormValues) {
+  return apiFetchInternal<AcademicYear>(academicPath(mitraId, `tahun-ajaran/${id}`), {
     method: 'PATCH',
     body: JSON.stringify(data),
   });
 }
 
-export function deleteAcademicYear(id: string) {
-  return apiFetchInternal<{ message: string }>(academicPath(`tahun-ajaran/${id}`), { method: 'DELETE' });
+export function deleteAcademicYear(mitraId: string, id: string) {
+  return apiFetchInternal<{ message: string }>(academicPath(mitraId, `tahun-ajaran/${id}`), { method: 'DELETE' });
 }

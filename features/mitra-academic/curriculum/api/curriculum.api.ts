@@ -11,24 +11,24 @@ function toPayload(data: CurriculumFormValues) {
   };
 }
 
-export function getCurricula() {
-  return apiFetchInternal<Curriculum[]>(academicPath('kurikulum'), { method: 'GET' });
+export function getCurricula(mitraId: string) {
+  return apiFetchInternal<Curriculum[]>(academicPath(mitraId, 'curriculum'), { method: 'GET' });
 }
 
-export function createCurriculum(data: CurriculumFormValues) {
-  return apiFetchInternal<Curriculum>(academicPath('kurikulum'), {
+export function createCurriculum(mitraId: string, data: CurriculumFormValues) {
+  return apiFetchInternal<Curriculum>(academicPath(mitraId, 'curriculum'), {
     method: 'POST',
     body: JSON.stringify(toPayload(data)),
   });
 }
 
-export function updateCurriculum(id: string, data: CurriculumFormValues) {
-  return apiFetchInternal<Curriculum>(academicPath(`kurikulum/${id}`), {
+export function updateCurriculum(mitraId: string, id: string, data: CurriculumFormValues) {
+  return apiFetchInternal<Curriculum>(academicPath(mitraId, `curriculum/${id}`), {
     method: 'PATCH',
     body: JSON.stringify(toPayload(data)),
   });
 }
 
-export function deleteCurriculum(id: string) {
-  return apiFetchInternal<{ message: string }>(academicPath(`kurikulum/${id}`), { method: 'DELETE' });
+export function deleteCurriculum(mitraId: string, id: string) {
+  return apiFetchInternal<{ message: string }>(academicPath(mitraId, `curriculum/${id}`), { method: 'DELETE' });
 }

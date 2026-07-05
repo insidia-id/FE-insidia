@@ -22,7 +22,7 @@ type CoursesPageProps = {
 
 export function CoursesPage({ mitraSlug, initialScope, canChangeScope, currentProfile }: CoursesPageProps) {
   const { activeMitraId } = getActiveMitraContext(currentProfile);
-  const { scope, statusFilter, courses, isLoading, isError, error, onScopeChange, onStatusFilterChange } = CoursesController({
+  const { scope, courses, isLoading, isError, error, onScopeChange } = CoursesController({
     initialScope,
     canChangeScope,
     mitraId: activeMitraId,
@@ -75,22 +75,6 @@ export function CoursesPage({ mitraSlug, initialScope, canChangeScope, currentPr
                   </Select>
                 </div>
               )}
-
-              <div className="space-y-2">
-                <p className="text-sm font-medium">Status</p>
-                <Select value={statusFilter} onValueChange={(value) => onStatusFilterChange(value as typeof statusFilter)}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Pilih status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {COURSE_STATUS_FILTER_OPTIONS.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
             </div>
           </CardHeader>
 
@@ -111,7 +95,6 @@ export function CoursesPage({ mitraSlug, initialScope, canChangeScope, currentPr
                       <TableHead>{isMitraView ? 'Mapel' : 'Course'}</TableHead>
                       {isMitraView && <TableHead>Kurikulum</TableHead>}
                       <TableHead>Scope</TableHead>
-                      <TableHead>Status</TableHead>
                       {isMitraView && <TableHead>Status Akademik</TableHead>}
                       <TableHead>Harga</TableHead>
                       <TableHead>Konten</TableHead>
@@ -137,9 +120,6 @@ export function CoursesPage({ mitraSlug, initialScope, canChangeScope, currentPr
                           </TableCell>
                           {isMitraView && <TableCell>{course.curriculum?.name ?? '-'}</TableCell>}
                           <TableCell>{formatCourseScope(course.scope)}</TableCell>
-                          <TableCell>
-                            <Badge variant={getCourseStatusVariant(course.status)}>{formatCourseStatus(course.status)}</Badge>
-                          </TableCell>
                           {isMitraView && (
                             <TableCell>
                               <Badge variant={course.academicStatus === 'ACTIVE' ? 'success' : 'outline'}>{course.academicStatus}</Badge>
@@ -148,7 +128,7 @@ export function CoursesPage({ mitraSlug, initialScope, canChangeScope, currentPr
                           <TableCell>{course.isFree ? 'Gratis' : `Rp${course.salePrice ?? course.price}`}</TableCell>
                           <TableCell>
                             <span className="text-sm text-muted-foreground">
-                              {course._count.modules} modul • {course._count.media} media
+                              {course.modulesCount ?? 0} modul • {course._count?.media ?? 0} media
                             </span>
                           </TableCell>
                           <TableCell>{formatDate(course.createdAt)}</TableCell>

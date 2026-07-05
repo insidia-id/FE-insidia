@@ -37,32 +37,32 @@ function toFormValues(item: ClassGroupCourse | null, fallback: RombelSubjectForm
   };
 }
 
-export function useRombelSubjects() {
+export function useRombelSubjects(mitraId: string) {
   return useQuery({
     queryKey: mitraAcademicKeys.resource(RESOURCE_KEY),
-    queryFn: () => getRombelSubjects(),
+    queryFn: () => getRombelSubjects(mitraId),
     refetchOnWindowFocus: false,
   });
 }
 
-export function useRombelSubjectMutations() {
+export function useRombelSubjectMutations(mitraId: string) {
   return useCrudMutations<RombelSubjectFormValues>({
     resourceKey: RESOURCE_KEY,
-    createFn: createRombelSubject,
-    updateFn: updateRombelSubject,
-    deleteFn: deleteRombelSubject,
+    createFn: (data) => createRombelSubject(mitraId, data),
+    updateFn: (id, data) => updateRombelSubject(mitraId, id, data),
+    deleteFn: (id) => deleteRombelSubject(mitraId, id),
     successLabel: 'Kelas mata pelajaran',
   });
 }
 
-export function useRombelSubject() {
-  const query = useRombelSubjects();
-  const academicYearsQuery = useAcademicYears();
-  const semestersQuery = useGetSemesters();
-  const rombelsQuery = useRombels();
+export function useRombelSubject(mitraId: string) {
+  const query = useRombelSubjects(mitraId);
+  const academicYearsQuery = useAcademicYears(mitraId);
+  const semestersQuery = useGetSemesters(mitraId);
+  const rombelsQuery = useRombels(mitraId);
   const subjectsQuery = useSubjects();
   const userOptions = useAcademicUserOptions();
-  const mutations = useRombelSubjectMutations();
+  const mutations = useRombelSubjectMutations(mitraId);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ClassGroupCourse | null>(null);
   const [deletingItem, setDeletingItem] = useState<ClassGroupCourse | null>(null);

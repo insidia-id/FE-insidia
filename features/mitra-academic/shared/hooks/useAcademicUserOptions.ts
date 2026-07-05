@@ -5,7 +5,6 @@ import type { SelectOption } from '../types/common.types';
 
 export function useAcademicUserOptions() {
   const usersQuery = useGetUsers({ filter: 'available', scope: 'MITRA' });
-  console.log('usersQuery', usersQuery.data?.users);
   const teacherOptions = useMemo<SelectOption[]>(
     () =>
       (usersQuery.data?.users ?? [])
@@ -16,7 +15,6 @@ export function useAcademicUserOptions() {
         })),
     [usersQuery.data?.users],
   );
-  console.log('teacherOptions', teacherOptions);
   const studentOptions = useMemo<SelectOption[]>(
     () =>
       (usersQuery.data?.users ?? [])

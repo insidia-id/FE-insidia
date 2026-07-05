@@ -5,9 +5,9 @@ import { useAcademicYears, useAcademicYearMutations } from './useAcademicYear';
 import { academicYearFormSchema, type AcademicYearFormValues } from '../schema/academic-year.schema';
 import { AcademicYear } from '../types/academic-year.types';
 
-export function useAcademicYearController() {
-  const query = useAcademicYears();
-  const mutations = useAcademicYearMutations();
+export function useAcademicYearController(mitraId: string) {
+  const query = useAcademicYears(mitraId);
+  const mutations = useAcademicYearMutations(mitraId);
   const { createMutation, updateMutation, deleteMutation } = mutations;
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<AcademicYear | null>(null);

@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { getAuthorizedMitraRole } from '@/auth/redirect';
 import { getProfileUser } from '@/features/auth/api/api.server';
 import { ClassBatchPage } from '@/features/mitra-academic/class-batch/pages/ClassBatchPage';
+import { getActiveMitraContext } from '@/features/admin/user/HelperUser';
 
 type ClassBatchRoutePageProps = {
   params: Promise<{ slug: string }>;
@@ -16,10 +17,10 @@ export default async function ClassBatchRoutePage({ params }: ClassBatchRoutePag
   }
 
   const activeMitraRole = getAuthorizedMitraRole(profile.mitraRoles, slug);
-
+  const { activeMitraId } = getActiveMitraContext(profile);
   if (!activeMitraRole) {
     redirect('/admin');
   }
 
-  return <ClassBatchPage slug={slug} />;
+  return <ClassBatchPage slug={slug} mitraId={activeMitraId} />;
 }

@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { getAuthorizedMitraRole } from '@/auth/redirect';
 import { getProfileUser } from '@/features/auth/api/api.server';
 import { RombelStudentPage } from '@/features/mitra-academic/rombel-student/pages/RombelStudentPage';
+import { getActiveMitraContext } from '@/features/admin/user/HelperUser';
 
 type RombelStudentRoutePageProps = {
   params: Promise<{ slug: string }>;
@@ -16,10 +17,10 @@ export default async function RombelStudentRoutePage({ params }: RombelStudentRo
   }
 
   const activeMitraRole = getAuthorizedMitraRole(profile.mitraRoles, slug);
-
+  const { activeMitraId } = getActiveMitraContext(profile);
   if (!activeMitraRole) {
     redirect('/admin');
   }
 
-  return <RombelStudentPage slug={slug} />;
+  return <RombelStudentPage slug={slug} mitraId={activeMitraId} />;
 }

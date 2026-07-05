@@ -9,10 +9,11 @@ import { useCurriculum } from '../hooks/useCurriculum';
 
 type CurriculumPageProps = {
   slug: string;
+  mitraId: string | null;
 };
 
-export function CurriculumPage({ slug }: CurriculumPageProps) {
-  const controller = useCurriculum();
+export function CurriculumPage({ slug, mitraId }: CurriculumPageProps) {
+  const controller = useCurriculum(mitraId ?? '');
 
   return (
     <>
@@ -21,13 +22,7 @@ export function CurriculumPage({ slug }: CurriculumPageProps) {
       </AcademicFeaturePageShell>
 
       <FormDialog title={controller.state.editingItem ? 'Edit Kurikulum' : 'Tambah Kurikulum'} open={controller.state.isFormOpen} onOpenChange={controller.state.setIsFormOpen}>
-        <CurriculumForm
-          form={controller.form}
-          isSubmitting={controller.queries.isSubmitting}
-          handleSubmit={controller.actions.handleSubmit}
-          editingItem={controller.state.editingItem}
-          handleCloseForm={controller.actions.handleCloseForm}
-        />
+        <CurriculumForm form={controller.form} isSubmitting={controller.queries.isSubmitting} handleSubmit={controller.actions.handleSubmit} editingItem={controller.state.editingItem} handleCloseForm={controller.actions.handleCloseForm} />
       </FormDialog>
 
       <ConfirmDeleteDialog

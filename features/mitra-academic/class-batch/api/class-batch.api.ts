@@ -3,24 +3,24 @@ import { academicPath } from '../../shared/api/path';
 import type { ClassBatchFormValues } from '../schema/class-batch.schema';
 import type { AcademicClass } from '../types/class-batch.types';
 
-export function getClassBatches() {
-  return apiFetchInternal<AcademicClass[]>(academicPath('kelas'), { method: 'GET' });
+export function getClassBatches(mitraId: string) {
+  return apiFetchInternal<AcademicClass[]>(academicPath(mitraId, 'class'), { method: 'GET' });
 }
 
-export function createClassBatch(data: ClassBatchFormValues) {
-  return apiFetchInternal<AcademicClass>(academicPath('kelas'), {
+export function createClassBatch(mitraId: string, data: ClassBatchFormValues) {
+  return apiFetchInternal<AcademicClass>(academicPath(mitraId, 'class'), {
     method: 'POST',
     body: JSON.stringify(data),
   });
 }
 
-export function updateClassBatch(id: string, data: ClassBatchFormValues) {
-  return apiFetchInternal<AcademicClass>(academicPath(`kelas/${id}`), {
+export function updateClassBatch(mitraId: string, id: string, data: ClassBatchFormValues) {
+  return apiFetchInternal<AcademicClass>(academicPath(mitraId, `class/${id}`), {
     method: 'PATCH',
     body: JSON.stringify(data),
   });
 }
 
-export function deleteClassBatch(id: string) {
-  return apiFetchInternal<{ message: string }>(academicPath(`kelas/${id}`), { method: 'DELETE' });
+export function deleteClassBatch(mitraId: string, id: string) {
+  return apiFetchInternal<{ message: string }>(academicPath(mitraId, `class/${id}`), { method: 'DELETE' });
 }

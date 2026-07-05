@@ -34,31 +34,31 @@ function toFormValues(item: ClassGroupStudent | null, fallback: RombelStudentFor
   };
 }
 
-export function useRombelStudents() {
+export function useRombelStudents(mitraId: string) {
   return useQuery({
     queryKey: mitraAcademicKeys.resource(RESOURCE_KEY),
-    queryFn: () => getRombelStudents(),
+    queryFn: () => getRombelStudents(mitraId),
     refetchOnWindowFocus: false,
   });
 }
 
-export function useRombelStudentMutations() {
+export function useRombelStudentMutations(mitraId: string) {
   return useCrudMutations<RombelStudentFormValues>({
     resourceKey: RESOURCE_KEY,
-    createFn: createRombelStudent,
-    updateFn: updateRombelStudent,
-    deleteFn: deleteRombelStudent,
+    createFn: (data) => createRombelStudent(mitraId, data),
+    updateFn: (id, data) => updateRombelStudent(mitraId, id, data),
+    deleteFn: (id) => deleteRombelStudent(mitraId, id),
     successLabel: 'Kelas siswa',
   });
 }
 
-export function useRombelStudent() {
-  const query = useRombelStudents();
-  const academicYearsQuery = useAcademicYears();
-  const semestersQuery = useGetSemesters();
-  const rombelsQuery = useRombels();
+export function useRombelStudent(mitraId: string) {
+  const query = useRombelStudents(mitraId);
+  const academicYearsQuery = useAcademicYears(mitraId);
+  const semestersQuery = useGetSemesters(mitraId);
+  const rombelsQuery = useRombels(mitraId);
   const userOptions = useAcademicUserOptions();
-  const mutations = useRombelStudentMutations();
+  const mutations = useRombelStudentMutations(mitraId);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ClassGroupStudent | null>(null);
   const [deletingItem, setDeletingItem] = useState<ClassGroupStudent | null>(null);

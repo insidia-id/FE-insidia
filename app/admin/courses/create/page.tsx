@@ -10,5 +10,5 @@ export default async function AdminCreateCoursePage() {
     redirect('/login?callbackUrl=/admin/courses/create');
   }
   const userProfile = toUserProfile(profile);
-  return <CreateCoursePage scope="INSIDIA" currentProfile={userProfile} />;
+  return <CreateCoursePage currentProfile={userProfile} />;
 }

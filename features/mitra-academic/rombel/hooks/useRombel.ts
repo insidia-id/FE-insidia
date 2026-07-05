@@ -31,29 +31,29 @@ function toFormValues(item: ClassGroup | null, fallbackClassId = ''): RombelForm
   };
 }
 
-export function useRombels() {
+export function useRombels(mitraId: string) {
   return useQuery({
     queryKey: mitraAcademicKeys.resource(RESOURCE_KEY),
-    queryFn: () => getRombels(),
+    queryFn: () => getRombels(mitraId),
     refetchOnWindowFocus: false,
   });
 }
 
-export function useRombelMutations() {
+export function useRombelMutations(mitraId: string) {
   return useCrudMutations<RombelFormValues>({
     resourceKey: RESOURCE_KEY,
-    createFn: createRombel,
-    updateFn: updateRombel,
-    deleteFn: deleteRombel,
+    createFn: (data) => createRombel(mitraId, data),
+    updateFn: (id, data) => updateRombel(mitraId, id, data),
+    deleteFn: (id) => deleteRombel(mitraId, id),
     successLabel: 'Rombel',
   });
 }
 
-export function useRombel() {
-  const query = useRombels();
-  const classBatchesQuery = useClassBatches();
+export function useRombel(mitraId: string) {
+  const query = useRombels(mitraId);
+  const classBatchesQuery = useClassBatches(mitraId);
   const userOptions = useAcademicUserOptions();
-  const mutations = useRombelMutations();
+  const mutations = useRombelMutations(mitraId);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ClassGroup | null>(null);
   const [deletingItem, setDeletingItem] = useState<ClassGroup | null>(null);

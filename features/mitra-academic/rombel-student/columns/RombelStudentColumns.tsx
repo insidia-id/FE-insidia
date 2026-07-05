@@ -19,7 +19,7 @@ export function RombelStudentColumns({ setEditingItem, setIsFormOpen, setDeletin
     {
       accessorKey: 'student.name',
       header: 'Siswa',
-      cell: ({ row }) => row.original.student.name ?? row.original.student.email,
+      cell: ({ row }) => row.original.student?.name ?? row.original.student?.email ?? '-',
     },
     {
       accessorKey: 'academicYear.name',

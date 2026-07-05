@@ -35,30 +35,30 @@ function toFormValues(item: AcademicClass | null, fallback: ClassBatchFormValues
   };
 }
 
-export function useClassBatches() {
+export function useClassBatches(mitraId: string) {
   return useQuery({
     queryKey: mitraAcademicKeys.resource(RESOURCE_KEY),
-    queryFn: () => getClassBatches(),
+    queryFn: () => getClassBatches(mitraId),
     refetchOnWindowFocus: false,
   });
 }
 
-export function useClassBatchMutations() {
+export function useClassBatchMutations(mitraId: string) {
   return useCrudMutations<ClassBatchFormValues>({
     resourceKey: RESOURCE_KEY,
-    createFn: createClassBatch,
-    updateFn: updateClassBatch,
-    deleteFn: deleteClassBatch,
+    createFn: (data) => createClassBatch(mitraId, data),
+    updateFn: (id, data) => updateClassBatch(mitraId, id, data),
+    deleteFn: (id) => deleteClassBatch(mitraId, id),
     successLabel: 'Kelas',
   });
 }
 
-export function useClassBatch() {
-  const query = useClassBatches();
-  const academicYearsQuery = useAcademicYears();
-  const semestersQuery = useGetSemesters();
-  const curriculaQuery = useCurricula();
-  const mutations = useClassBatchMutations();
+export function useClassBatch(mitraId: string) {
+  const query = useClassBatches(mitraId);
+  const academicYearsQuery = useAcademicYears(mitraId);
+  const semestersQuery = useGetSemesters(mitraId);
+  const curriculaQuery = useCurricula(mitraId);
+  const mutations = useClassBatchMutations(mitraId);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<AcademicClass | null>(null);
   const [deletingItem, setDeletingItem] = useState<AcademicClass | null>(null);

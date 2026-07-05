@@ -13,7 +13,7 @@ export const SemesterColumns = ({ setEditingItem, setIsFormOpen, setDeletingItem
     {
       accessorKey: 'academicYear.name',
       header: 'Tahun Ajaran',
-      cell: ({ row }) => <span className="font-medium">{row.original.academicYear.name}</span>,
+      cell: ({ row }) => <span className="font-medium">{row.original.academicYear?.name}</span>,
     },
     {
       accessorKey: 'name',

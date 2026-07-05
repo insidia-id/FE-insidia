@@ -7,20 +7,20 @@ import type { AcademicYearFormValues } from '../schema/academic-year.schema';
 
 const RESOURCE_KEY = 'academic-years';
 
-export function useAcademicYears() {
+export function useAcademicYears(mitraId: string) {
   return useQuery({
     queryKey: mitraAcademicKeys.resource(RESOURCE_KEY),
-    queryFn: () => getAcademicYears(),
+    queryFn: () => getAcademicYears(mitraId),
     refetchOnWindowFocus: false,
   });
 }
 
-export function useAcademicYearMutations() {
+export function useAcademicYearMutations(mitraId: string) {
   return useCrudMutations<AcademicYearFormValues>({
     resourceKey: RESOURCE_KEY,
-    createFn: createAcademicYear,
-    updateFn: updateAcademicYear,
-    deleteFn: deleteAcademicYear,
+    createFn: (data) => createAcademicYear(mitraId, data),
+    updateFn: (id, data) => updateAcademicYear(mitraId, id, data),
+    deleteFn: (id) => deleteAcademicYear(mitraId, id),
     successLabel: 'Tahun Ajaran',
   });
 }

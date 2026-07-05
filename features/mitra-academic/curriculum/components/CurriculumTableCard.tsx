@@ -31,7 +31,7 @@ export function CurriculumTableCard({ controller }: CurriculumTableCardProps) {
       <CardContent>
         <DataTable
           columns={columns}
-          data={controller.queries.curricula}
+          data={controller.queries.curriculum}
           searchPlaceholder="Cari kurikulum..."
           emptyMessage="Belum ada data kurikulum."
           isLoading={controller.queries.isLoading}

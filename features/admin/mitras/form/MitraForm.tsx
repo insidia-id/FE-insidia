@@ -25,7 +25,6 @@ type MitraFormFieldsProps<TFieldValues extends FieldValues & BaseMitraFormShape>
 };
 
 export function MitraFormFields<TFieldValues extends FieldValues & BaseMitraFormShape>({ form, isLoading, onCancel, onSubmit, submitLabel, children }: MitraFormFieldsProps<TFieldValues>) {
-  console.log('form', form.getValues());
   return (
     <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
       <div className="grid gap-4 md:grid-cols-2">

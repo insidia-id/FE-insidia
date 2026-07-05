@@ -5,9 +5,9 @@ import { useGetSemesters, useSemesterMutations } from './useQuerySemester';
 import { semesterFormSchema, SemesterFormValues } from '../schema/semester.schema';
 import { Semester } from '../types/semester.types';
 
-export function useSemester() {
-  const query = useGetSemesters();
-  const mutations = useSemesterMutations();
+export function useSemester(mitraId: string) {
+  const query = useGetSemesters(mitraId);
+  const mutations = useSemesterMutations(mitraId);
   const { createMutation, updateMutation, deleteMutation } = mutations;
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<Semester | null>(null);
