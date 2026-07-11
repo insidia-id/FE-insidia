@@ -35,7 +35,7 @@ export function CreateUserPage({ currentProfile, defaultRoleCode, defaultScope }
 
   return (
     <main className="min-h-screen bg-muted/30 px-4 py-10">
-      <section className="mx-auto w-full max-w-4xl space-y-6">
+      <section className="mx-auto w-full px-4 space-y-6">
         <div className="space-y-2">
           <p className="text-sm font-medium uppercase tracking-[0.14em] text-muted-foreground">Manajemen User</p>
           <h1 className="text-3xl font-semibold text-foreground">{title}</h1>

@@ -5,12 +5,12 @@ import { Permissions } from '@/lib/helper/permission.helper';
 import { UserRoleCode } from '../user/types/user.types';
 export function getAdminMenuItems(activeRole: UserRoleCode | null, mitraSlug: string | null): MenuItem[] {
   const items: MenuItem[] = [
-    {
-      title: 'Beranda',
-      icon: 'House',
-      href: '/',
-      exact: true,
-    },
+    // {
+    //   title: 'Beranda',
+    //   icon: 'House',
+    //   href: '/',
+    //   exact: true,
+    // },
     {
       title: 'Dashboard',
       icon: 'LayoutDashboard',

@@ -38,8 +38,8 @@ export function AccessControlPage({ currentProfile }: AccessControlPageProps) {
 
   return (
     <>
-      <main className="min-h-screen bg-muted/30 px-4 py-10">
-        <section className="mx-auto w-full max-w-7xl space-y-6">
+      <main className="min-h-screen bg-muted/30 px-4 py-8">
+        <section className="mx-auto w-full px-4 space-y-6">
           <AccessControlHeader userRole={userRole} scope={scope} scopeLocked={Boolean(mitraId)} includeDeleted={useRole.includeDeleted} onScopeChange={setScope} onIncludeDeletedChange={useRole.actions.setIncludeDeleted} />
 
           <AccessControlStats roles={useRole.roles} permissions={permissions} selectedRole={useRole.selectedRole} />

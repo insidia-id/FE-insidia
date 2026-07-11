@@ -13,7 +13,7 @@ export const useUserBulkUpload = ({ scope, roleCode, activeMitraRole }: BulkUplo
   const [file, setFile] = useState<File | null>(null);
   const previewMutation = usePreviewBulkUsers();
   const importMutation = useImportBulkUsers();
-  const bulkConfig = getBulkUserTemplate(scope, scope === 'MITRA' && activeMitraRole === 'AKADEMIK', roleCode as MitraRole | undefined);
+  const bulkConfig = getBulkUserTemplate(scope, scope === 'MITRA' && activeMitraRole === 'AKADEMIK', roleCode as MitraRole | undefined ?? 'MURID');
   const previewResult = previewMutation.data;
   const title = roleCode ? `Bulk Upload ${formatRole(roleCode)}` : 'Bulk Upload User';
   const description = roleCode ? `Upload file untuk menambahkan user ${formatRole(roleCode).toLowerCase()} secara massal.` : 'Upload file CSV atau Excel untuk menambahkan user secara massal.';

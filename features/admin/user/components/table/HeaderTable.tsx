@@ -1,13 +1,12 @@
-import { Search, Plus, Upload } from 'lucide-react';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+'use client';
+
+import { Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { canManage, getActiveMitraContext, getAssignableScopeOptions, getRoleFilterOptions, statusFilterOptions, UserFilterOptions } from '../../HelperUser';
+import { getActiveMitraContext, getAssignableScopeOptions, getRoleFilterOptions, UserFilterOptions } from '../../HelperUser';
 import { Table } from '@tanstack/react-table';
 import type { RoleUser, User, UserFilter, UserScope } from '../../types/user.types';
 import { AuthProfileResponse } from '@/features/auth/types/auth.types';
-import { Permissions } from '@/lib/helper/permission.helper';
 import type { UserManagementPageConfig } from '../../config/user-page.config';
 
 type HeaderTableProps = {
@@ -25,105 +24,107 @@ type HeaderTableProps = {
   createHref: string;
   bulkUploadHref: string;
 };
-export const HeaderTable = ({ currentProfile, pageConfig, table, onGlobalFilterChange, globalFilter, filter, onFilterChange, scope, onScopeChange, roleCode, onRoleCodeChange, createHref, bulkUploadHref }: HeaderTableProps) => {
-  const { activeInsidiaRole, activeMitraRole } = getActiveMitraContext(currentProfile);
-  const roleFilterOptions = getRoleFilterOptions(activeMitraRole ?? activeInsidiaRole, scope);
 
+export const HeaderTable = ({ 
+  currentProfile, 
+  pageConfig, 
+  table, 
+  onGlobalFilterChange, 
+  globalFilter, 
+  filter, 
+  onFilterChange, 
+  scope, 
+  onScopeChange, 
+  roleCode, 
+  onRoleCodeChange 
+}: HeaderTableProps) => {
+  const { activeInsidiaRole, activeMitraRole } = getActiveMitraContext(currentProfile);
+  
+  const roleFilterOptions = getRoleFilterOptions(activeMitraRole ?? activeInsidiaRole, scope);
   const getCurrentScope = getAssignableScopeOptions(activeMitraRole ?? activeInsidiaRole);
 
-  const canManages = canManage(currentProfile, [Permissions.userPermissions.create[scope]]);
+  // KUNCI LOGIKANYA DI SINI:
+  // Filter Scope HANYA muncul jika diizinkan oleh config halaman 
+  // DAN user yang login BUKAN dari role Mitra (Akademik, Guru, Murid, dll)
+  const showScopeFilter = pageConfig.allowScopeFilter && !activeMitraRole;
+
   return (
-    <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-      <div className="rounded-xl border border-border/60 bg-slate-50 p-3 lg:flex-1">
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
-          <div className="relative md:col-span-2">
-            <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input className="bg-white pl-9" onChange={(event) => onGlobalFilterChange(event.target.value)} placeholder="Cari nama, email, role, status..." value={globalFilter} />
+    <div className="w-full mb-4">
+      <div className="rounded-2xl ">
+        
+        {/* Grid dinamis: otomatis menyesuaikan sisa filter yang tampil */}
+        <div 
+          className="grid gap-3"
+          style={{ 
+            gridTemplateColumns: `repeat(auto-fit, minmax(200px, 1fr))` 
+          }}
+        >
+          
+          {/* 1. Bar Input Search */}
+          <div className="relative w-full">
+            <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400" />
+            <Input 
+              className="bg-slate-50/50 border-slate-200/80 rounded-xl pl-9 placeholder:text-slate-400 focus-visible:ring-slate-200 text-sm h-10" 
+              onChange={(event) => onGlobalFilterChange(event.target.value)} 
+              placeholder="Cari nama, email, role..." 
+              value={globalFilter} 
+            />
           </div>
-          {pageConfig.allowScopeFilter ? (
+
+          {/* 2. Filter Scope (Akan GAIB untuk role Akademik) */}
+          {showScopeFilter ? (
             <Select
               onValueChange={(value) => {
                 onScopeChange(value as UserScope);
-
                 table.getColumn('role')?.setFilterValue(undefined);
               }}
               value={scope}
             >
-              <SelectTrigger className="w-full bg-white">
+              <SelectTrigger className="w-full h-10 bg-slate-50/50 border-slate-200/80 rounded-xl text-slate-600 font-medium text-sm focus:ring-slate-200">
                 <SelectValue placeholder="Filter scope" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-xl border-slate-100 shadow-md">
                 {getCurrentScope.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
+                  <SelectItem key={option.value} value={option.value} className="font-medium cursor-pointer">
                     {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           ) : null}
-          <Select
-            onValueChange={(value) => {
-              table.getColumn('status')?.setFilterValue(value === 'all' ? undefined : value);
-            }}
-            value={(table.getColumn('status')?.getFilterValue() as string | undefined) ?? 'all'}
-          >
-            <SelectTrigger className="w-full bg-white">
-              <SelectValue placeholder="Filter status" />
-            </SelectTrigger>
-            <SelectContent>
-              {statusFilterOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
 
+          {/* 3. Filter Role */}
           {pageConfig.allowRoleFilter ? (
             <Select onValueChange={(value) => onRoleCodeChange(value as RoleUser)} value={roleCode}>
-              <SelectTrigger className="w-full bg-white">
+              <SelectTrigger className="w-full h-10 bg-slate-50/50 border-slate-200/80 rounded-xl text-slate-600 font-medium text-sm focus:ring-slate-200">
                 <SelectValue placeholder="Filter role" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-xl border-slate-100 shadow-md">
                 {roleFilterOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
+                  <SelectItem key={option.value} value={option.value} className="font-medium cursor-pointer">
                     {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           ) : null}
+
+          {/* 4. Filter Tipe User */}
           <Select onValueChange={(value) => onFilterChange(value as UserFilter)} value={filter}>
-            <SelectTrigger className="w-full bg-white">
-              <SelectValue placeholder="Filter user" />
+            <SelectTrigger className="w-full h-10 bg-slate-50/50 border-slate-200/80 rounded-xl text-slate-600 font-medium text-sm focus:ring-slate-200">
+              <SelectValue placeholder="Filter tipe user" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="rounded-xl border-slate-100 shadow-md">
               {UserFilterOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
+                <SelectItem key={option.value} value={option.value} className="font-medium cursor-pointer">
                   {option.label}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
+
         </div>
       </div>
-
-      {canManages ? (
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <Button asChild variant="outline">
-            <Link href={bulkUploadHref}>
-              <Upload className="size-4" />
-              {pageConfig.bulkUploadLabel}
-            </Link>
-          </Button>
-          <Button asChild variant="insidia">
-            <Link href={createHref}>
-              <Plus className="size-4" />
-              {pageConfig.createLabel}
-            </Link>
-          </Button>
-        </div>
-      ) : null}
     </div>
   );
 };

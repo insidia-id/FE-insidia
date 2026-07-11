@@ -6,12 +6,14 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { CoursesController } from '../controller/CoursesController';
-import { COURSE_SCOPE_OPTIONS, COURSE_STATUS_FILTER_OPTIONS, formatCourseScope, formatCourseStatus, getCourseStatusVariant, getCoursesHref } from '../lib/course.helper';
+import { COURSE_SCOPE_OPTIONS, getCoursesHref } from '../lib/course.helper';
 import type { CourseScope } from '../types/course.types';
 import { formatDate, getActiveMitraContext } from '@/features/admin/user/HelperUser';
 import { AuthProfileResponse } from '@/features/auth/types/auth.types';
+import { Search, Eye, Pencil, Trash2 } from 'lucide-react';
 
 type CoursesPageProps = {
   mitraSlug: string | null;
@@ -27,16 +29,18 @@ export function CoursesPage({ mitraSlug, initialScope, canChangeScope, currentPr
     canChangeScope,
     mitraId: activeMitraId,
   });
+  
   const isMitraView = scope === 'MITRA';
-  const entityLabel = isMitraView ? 'Mapel Mitra' : 'Course';
-  const emptyColumnCount = isMitraView ? 9 : 7;
+  const entityLabel = isMitraView ? 'Mapel' : 'Course';
+  
+  // Menyesuaikan jumlah kolom fallback (Aksi tetap terhitung 1 kolom)
+  const emptyColumnCount = isMitraView ? 7 : 5;
 
   return (
-    <main className="min-h-screen bg-muted/30 px-4 py-10">
-      <section className="mx-auto w-full max-w-6xl space-y-6">
+    <main className="min-h-screen bg-muted/30 px-4 py-8">
+      <section className="mx-auto w-full px-4 space-y-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="space-y-2">
-            <p className="text-sm font-medium uppercase tracking-[0.14em] text-muted-foreground">{isMitraView ? 'Manajemen Mapel Mitra' : 'Manajemen Course'}</p>
             <h1 className="text-3xl font-semibold text-foreground">{`Daftar ${entityLabel}`}</h1>
             <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
               {isMitraView
@@ -51,34 +55,71 @@ export function CoursesPage({ mitraSlug, initialScope, canChangeScope, currentPr
         </div>
 
         <Card>
-          <CardHeader className="gap-4 md:flex-row md:items-end md:justify-between">
-            <div>
-              <CardTitle>{`Semua ${entityLabel}`}</CardTitle>
-              <CardDescription>{isLoading ? `Memuat data ${entityLabel.toLowerCase()}...` : `${courses.length} ${entityLabel.toLowerCase()} ditemukan`}</CardDescription>
+          {/* CardHeader dengan pembagian kolom SearchBar 60%, Sorting Status 20%, Sorting Tanggal 20% */}
+          <CardHeader className="">
+            <div className="flex items-center justify-between">
+              {/* <div>
+                <CardTitle>{`Semua ${entityLabel}`}</CardTitle>
+                <CardDescription>{isLoading ? `Memuat data ${entityLabel.toLowerCase()}...` : `${courses.length} ${entityLabel.toLowerCase()} ditemukan`}</CardDescription>
+              </div> */}
+              
+              {canChangeScope && (
+                <Select value={scope} onValueChange={(value) => onScopeChange(value as CourseScope)}>
+                  <SelectTrigger className="w-[140px] h-9 text-xs">
+                    <SelectValue placeholder="Scope" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {COURSE_SCOPE_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
 
-            <div className="grid gap-3 md:grid-cols-2">
-              {canChangeScope && (
-                <div className="space-y-2">
-                  <p className="text-sm font-medium">Scope</p>
-                  <Select value={scope} onValueChange={(value) => onScopeChange(value as CourseScope)}>
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Pilih scope" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {COURSE_SCOPE_OPTIONS.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {option.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
+            {/* Grid Komposisi Filter & Pencarian */}
+            <div className="grid grid-cols-10 gap-3  items-center w-full">
+              {/* Search Bar - 60% (col-span-6) */}
+              <div className="relative col-span-10 md:col-span-6">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <Input 
+                  placeholder={`Cari nama ${entityLabel.toLowerCase()}...`} 
+                  className="pl-9 h-10 w-full"
+                />
+              </div>
+
+              {/* Sorting Status - 20% (col-span-2) */}
+              <div className="col-span-5 py-2 md:col-span-2">
+                <Select defaultValue="all">
+                  <SelectTrigger className="h-10 w-full">
+                    <SelectValue placeholder="Urut Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Semua Status</SelectItem>
+                    <SelectItem value="active">Aktif</SelectItem>
+                    <SelectItem value="inactive">Nonaktif</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Sorting Tanggal - 20% (col-span-2) */}
+              <div className="col-span-5 md:col-span-2">
+                <Select defaultValue="desc">
+                  <SelectTrigger className="h-10 w-full">
+                    <SelectValue placeholder="Urut Tanggal" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="desc">Terbaru</SelectItem>
+                    <SelectItem value="asc">Terlama</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </CardHeader>
 
-          <CardContent>
+          <CardContent className="">
             {isLoading ? (
               <div className="space-y-3">
                 <Skeleton className="h-10 w-full" />
@@ -94,12 +135,10 @@ export function CoursesPage({ mitraSlug, initialScope, canChangeScope, currentPr
                     <TableRow>
                       <TableHead>{isMitraView ? 'Mapel' : 'Course'}</TableHead>
                       {isMitraView && <TableHead>Kurikulum</TableHead>}
-                      <TableHead>Scope</TableHead>
                       {isMitraView && <TableHead>Status Akademik</TableHead>}
-                      <TableHead>Harga</TableHead>
                       <TableHead>Konten</TableHead>
                       <TableHead>Dibuat</TableHead>
-                      <TableHead className="text-right">Aksi</TableHead>
+                      <TableHead className="text-right pr-6">Aksi</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -119,26 +158,45 @@ export function CoursesPage({ mitraSlug, initialScope, canChangeScope, currentPr
                             </div>
                           </TableCell>
                           {isMitraView && <TableCell>{course.curriculum?.name ?? '-'}</TableCell>}
-                          <TableCell>{formatCourseScope(course.scope)}</TableCell>
                           {isMitraView && (
                             <TableCell>
                               <Badge variant={course.academicStatus === 'ACTIVE' ? 'success' : 'outline'}>{course.academicStatus}</Badge>
                             </TableCell>
                           )}
-                          <TableCell>{course.isFree ? 'Gratis' : `Rp${course.salePrice ?? course.price}`}</TableCell>
                           <TableCell>
                             <span className="text-sm text-muted-foreground">
                               {course.modulesCount ?? 0} modul • {course._count?.media ?? 0} media
                             </span>
                           </TableCell>
                           <TableCell>{formatDate(course.createdAt)}</TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex justify-end gap-2">
-                              <Button asChild size="sm" variant="outline">
-                                <Link href={getCoursesHref(mitraSlug, course.id)}>Detail</Link>
+                          <TableCell className="text-right pr-4">
+                            <div className="flex justify-end gap-1.5">
+                              {/* Button Detail -> Icon Mata */}
+                              <Button asChild size="icon" variant="ghost" className="h-8 w-8 rounded-md bg-[#21C764] text-white hover:text-foreground hover:bg-muted" title="Detail">
+                                <Link href={getCoursesHref(mitraSlug, course.id)}>
+                                  <Eye className="h-4 w-4" />
+                                </Link>
                               </Button>
-                              <Button asChild size="sm" variant="insidia">
-                                <Link href={getCoursesHref(mitraSlug, `${course.id}/edit`)}>Edit</Link>
+                              
+                              {/* Button Edit -> Icon Pen */}
+                              <Button asChild size="icon" variant="ghost" className="h-8 w-8 rounded-md bg-blue-600 text-white hover:text-foreground hover:bg-muted" title="Edit">
+                                <Link href={getCoursesHref(mitraSlug, `${course.id}/edit`)}>
+                                  <Pencil className="h-4 w-4" />
+                                </Link>
+                              </Button>
+
+                              {/* Button Hapus -> Icon Sampah */}
+                              <Button 
+                                size="icon" 
+                                variant="ghost" 
+                                className="h-8 w-8 rounded-md bg-[#EC4944] text-white hover:text-foreground hover:bg-muted" 
+                                title="Hapus"
+                                onClick={() => {
+                                  if(confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+                                  }
+                                }}
+                              >
+                                <Trash2 className="h-4 w-4" />
                               </Button>
                             </div>
                           </TableCell>

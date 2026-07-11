@@ -38,7 +38,7 @@ type AccessControlDialogsProps = {
   onConfirmDeletePermission: () => void;
   onConfirmDeleteModulePermission: () => void;
 };
-
+  
 export function AccessControlDialogs({
   scope,
   roleDialogOpen,

@@ -17,17 +17,29 @@ import { iconMap } from '@/features/admin/components/sidebar-icons';
 import { useLogout } from '@/features/auth/hooks/useauth';
 
 function getHrefPath(href: string) {
-  return href.split('?')[0];
+  const path = href.split('?')[0];
+
+  if (path.length > 1 && path.endsWith('/')) {
+    return path.slice(0, -1);
+  }
+
+  return path;
 }
 
 function isPathActive(pathname: string, href: string, exact = false) {
   const hrefPath = getHrefPath(href);
 
-  if (exact) {
-    return pathname === hrefPath;
+  const normalizedPathname = pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+
+  if (hrefPath === '/') {
+    return normalizedPathname === '/';
   }
 
-  return pathname === hrefPath || pathname.startsWith(`${hrefPath}/`);
+  if (exact) {
+    return normalizedPathname === hrefPath;
+  }
+
+  return normalizedPathname === hrefPath || normalizedPathname.startsWith(`${hrefPath}/`);
 }
 
 function isSameHref(href: string, pathname: string, searchParams: URLSearchParams) {
@@ -58,13 +70,18 @@ export function AppSidebar({ menuItems, user }: AppSidebarProps) {
       <SidebarContent className="mt-4 flex-1 overflow-y-auto md:mt-20">
         <div className="px-3 py-2">
           <TooltipProvider delayDuration={100}>
-            <div className="space-y-1">
+            <div className="space-y-2">
               {menuItems.length === 0 ? (
                 <p className="px-3 text-sm text-muted-foreground">Tidak ada menu tersedia</p>
               ) : (
                 menuItems.map((item) => {
                   const Icon = iconMap[item.icon];
-                  const isMenuItemActive = isPathActive(pathname, item.href, item.exact);
+
+                  const isSubmenuActive = item.submenu?.length
+                    ? item.submenu.some((subItem) => isSameHref(subItem.href, pathname, searchParams))
+                    : false;
+
+                  const isMenuItemActive = isPathActive(pathname, item.href, item.exact) || isSubmenuActive;
 
                   if (item.submenu?.length) {
                     const activeSubmenuHref = item.submenu.find((subItem) => isSameHref(subItem.href, pathname, searchParams))?.href ?? '';
@@ -84,7 +101,7 @@ export function AppSidebar({ menuItems, user }: AppSidebarProps) {
                     }
 
                     return (
-                      <Collapsible key={item.href} defaultOpen={isMenuItemActive} className="space-y-1">
+                      <Collapsible key={item.href} defaultOpen={isMenuItemActive} className="space-y-1.5">
                         <CollapsibleTrigger asChild>
                           <button type="button" className={`group flex w-full items-center justify-between rounded-lg p-2 text-left transition-colors ${isMenuItemActive ? 'bg-[#835DE3] text-white' : 'hover:bg-accent'}`}>
                             <div className="flex min-w-0 items-center gap-3">
@@ -105,9 +122,9 @@ export function AppSidebar({ menuItems, user }: AppSidebarProps) {
                         </CollapsibleTrigger>
 
                         <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
-                          <div className="space-y-1 pt-1">
+                          <div className="space-y-1.5 pt-2">
                             <Tabs value={activeSubmenuHref} className="w-full">
-                              <TabsList className="grid h-auto w-full grid-cols-1 gap-1 bg-transparent p-0 pl-6">
+                              <TabsList className="grid h-auto w-full grid-cols-1 gap-1.5 bg-transparent p-0 pl-6">
                                 {item.submenu.map((subItem) => {
                                   const SubIcon = iconMap[subItem.icon];
                                   const value = subItem.href;
@@ -117,7 +134,7 @@ export function AppSidebar({ menuItems, user }: AppSidebarProps) {
                                       key={subItem.href}
                                       value={value}
                                       asChild
-                                      className="h-auto justify-start rounded-lg p-2 text-sm font-normal data-[state=active]:bg-[#835DE3] data-[state=active]:text-white data-[state=active]:shadow-none"
+                                      className="h-auto justify-start rounded-lg p-2 text-sm font-normal text-muted-foreground transition-colors hover:bg-accent data-[state=active]:bg-transparent data-[state=active]:font-semibold data-[state=active]:text-[#835DE3] data-[state=active]:shadow-none"
                                     >
                                       <Link prefetch href={subItem.href}>
                                         <div className="flex min-w-0 flex-1 items-center gap-3">

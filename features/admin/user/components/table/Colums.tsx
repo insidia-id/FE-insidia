@@ -222,7 +222,7 @@ export const useUserColumns = ({ currentProfile, scope, columnIds, isUpdating, o
       },
       actions: {
         id: 'actions',
-        header: '',
+        header: 'Aksi',
         enableSorting: false,
         enableColumnFilter: false,
         cell: ({ row }) => {

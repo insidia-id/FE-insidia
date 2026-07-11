@@ -2,6 +2,12 @@ import { redirect } from 'next/navigation';
 import Navbar from '@/components/common/navbar/Navbar';
 import { getAuthorizedMitraRole, getRoleLandingPath } from '@/auth/redirect';
 import { getProfileUser } from '@/features/auth/api/api.server';
+import { AuthSessionProvider } from '@/auth/AuthSessionProvider';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { AppSidebarAdmin } from '@/features/admin/components/AppsidebarAdmin';
+import NavbarAdmin from '@/features/admin/components/NavbarAdmin';
+import { getActiveMitraContext } from '@/features/admin/user/HelperUser';
+import { toUserProfile } from '@/features/auth/auth.utils';
 
 export const metadata = {
   title: 'Insidia - Marketplace untuk kebutuhan gaming kamu',
@@ -17,7 +23,8 @@ export default async function MitraLayout({ children, params }: { children: Reac
 
   const { slug } = await params;
   const activeMitraRole = getAuthorizedMitraRole(profile.mitraRoles, slug);
-
+  const userProfile = toUserProfile(profile);
+  const { activeRole, activeMitraSlug } = getActiveMitraContext(userProfile);
   if (profile.status === 'BANNED') {
     redirect('/force-logout');
   }
@@ -32,11 +39,19 @@ export default async function MitraLayout({ children, params }: { children: Reac
 
   return (
     <>
-      <Navbar userProfile={profile} />
-
-      <main data-mitra={activeMitraRole.mitraSlug} className="min-h-screen">
-        {children}
-      </main>
+        <AuthSessionProvider>
+        <SidebarProvider>
+          <div className="flex">
+            <AppSidebarAdmin userProfile={profile} activeRole={activeRole} activeMitraSlug={activeMitraSlug} />
+          </div>
+          <SidebarInset className="min-w-0 overflow-x-hidden transition-all duration-300 ease-in-out">
+            <div className="fixed top-0 left-0 right-0 z-50">
+              <NavbarAdmin userProfile={profile} />
+            </div>
+            <div className="min-w-0 pt-17 bg-black/1 ">{children}</div>
+          </SidebarInset>
+        </SidebarProvider> 
+      </AuthSessionProvider>  
     </>
   );
 }
