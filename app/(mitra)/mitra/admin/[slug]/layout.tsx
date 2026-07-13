@@ -45,7 +45,8 @@ export default async function MitraLayout({ children, params }: { children: Reac
             <div className="fixed top-0 left-0 right-0 z-50">
               <NavbarAdmin userProfile={profile} />
             </div>
-            <div className="min-w-0 pt-17 ">{children}</div>
+
+            <div className="min-w-0 pt-17 bg-black/1 ">{children}</div>
           </SidebarInset>
         </SidebarProvider>
       </AuthSessionProvider>

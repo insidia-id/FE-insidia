@@ -17,8 +17,8 @@ export function SemesterPage({ slug, mitraId }: SemesterPageProps) {
   const controller = useSemester(mitraId ?? '');
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,rgba(15,23,42,0.04),rgba(15,23,42,0)_40%),radial-gradient(120%_80%_at_0%_0%,rgba(14,165,233,0.08),transparent)] px-4 py-8">
-      <section className="mx-auto w-full max-w-6xl space-y-6">
+    <main className="min-h-screen px-4 py-8">
+      <section className="mx-auto w-full px-4 space-y-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="sm" asChild>
             <Link href={`/mitra/admin/${slug}/academic`}>

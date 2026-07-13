@@ -81,4 +81,16 @@ export const Permissions = {
       MITRA: 'permissions.manage.mitra',
     },
   },
+  MyCoursePermissions: {
+    view: {
+      INSIDIA: 'myclasscourse.view.insidia',
+      MITRA: 'myclasscourse.view.mitra',
+    },
+  },
+  MyClassPermissions: {
+    view: {
+      INSIDIA: 'myclassgroup.view.insidia',
+      MITRA: 'myclassgroup.view.mitra',
+    },
+  },
 } as const;

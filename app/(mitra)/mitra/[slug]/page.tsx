@@ -2,6 +2,7 @@ import { getProfileUser } from '@/features/auth/api/api.server';
 import { toUserProfile } from '@/features/auth/auth.utils';
 import { MitraDashboardPage } from '@/features/mitra-dashboard/pages/MitraDashboardPage';
 import { getMitraDashboardData } from '@/features/mitra-dashboard/services/mitra-dashboard.service';
+import { redirect } from 'next/navigation';
 
 interface MitraPageProps {
   params: Promise<{

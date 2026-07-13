@@ -5,16 +5,16 @@ import { Permissions } from '@/lib/helper/permission.helper';
 import { UserRoleCode } from '../user/types/user.types';
 export function getAdminMenuItems(activeRole: UserRoleCode | null, mitraSlug: string | null): MenuItem[] {
   const items: MenuItem[] = [
-    {
-      title: 'Beranda',
-      icon: 'House',
-      href: '/',
-      exact: true,
-    },
+    // {
+    //   title: 'Beranda',
+    //   icon: 'House',
+    //   href: '/',
+    //   exact: true,
+    // },
     {
       title: 'Dashboard',
       icon: 'LayoutDashboard',
-      href: getUsersHref(mitraSlug),
+      href: getUsersHref(mitraSlug, '', activeRole),
       exact: true,
     },
     {
@@ -180,6 +180,41 @@ export function getAdminMenuItems(activeRole: UserRoleCode | null, mitraSlug: st
       href: getUsersHref(mitraSlug, 'access-control'),
       exact: true,
       permissions: [Permissions.rolePermissions.view.MITRA, Permissions.rolePermissions.view.INSIDIA],
+    },
+    {
+      title: 'Manajemen Materi',
+      icon: 'BookOpen',
+      exact: true,
+      href: getUsersHref(mitraSlug, 'courses', activeRole),
+      permissions: [Permissions.MyCoursePermissions.view.INSIDIA, Permissions.MyCoursePermissions.view.MITRA],
+      roles: ['GURU', 'MURID'],
+      submenu: [
+        {
+          title: 'Semua Mata Pelajaran',
+          href: getUsersHref(mitraSlug, 'courses', activeRole),
+          icon: 'BookOpen',
+          exact: true,
+          permissions: [Permissions.MyCoursePermissions.view.MITRA, Permissions.MyCoursePermissions.view.INSIDIA],
+        },
+      ],
+    },
+    {
+      title: 'Kelas',
+      icon: 'DoorOpen',
+      exact: true,
+      href: getUsersHref(mitraSlug, 'my-classes', activeRole),
+      permissions: [Permissions.MyClassPermissions.view.INSIDIA, Permissions.MyClassPermissions.view.MITRA],
+      roles: ['GURU', 'MURID'],
+      submenu: [
+        {
+          title: 'Semua Kelas ',
+          href: getUsersHref(mitraSlug, 'my-classes', activeRole),
+          icon: 'DoorOpen',
+          exact: true,
+          permissions: [Permissions.MyClassPermissions.view.MITRA, Permissions.MyClassPermissions.view.INSIDIA],
+          roles: ['GURU', 'MURID'],
+        },
+      ],
     },
   ];
 

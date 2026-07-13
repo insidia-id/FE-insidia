@@ -11,7 +11,6 @@ import { formatDate } from '@/lib/helper/normalizer.helper';
 import { cn } from '@/lib/utils';
 
 import { MyCourseResponse } from '../types/my-courses.types';
-import { getUsersHref } from '@/features/admin/user/HelperUser';
 
 interface MyCourseCardProps {
   course: MyCourseResponse;
@@ -21,10 +20,8 @@ interface MyCourseCardProps {
 export function MyCoursesCard({ course, viewMode = 'grid' }: MyCourseCardProps) {
   const isInsidia = course.scope === 'INSIDIA';
   const isList = viewMode === 'list';
-  const thumbnail = `https://picsum.photos/seed/${course.id}/600/340`;
-
-  const teacherName = course.mitra?.teacher?.name ?? 'Belum ditentukan';
-  const teacherInitial = course.mitra?.teacher?.name?.charAt(0).toUpperCase() ?? 'U';
+  const teacherName = course.teacher?.name ?? 'Belum ditentukan';
+  const teacherInitial = course.teacher?.name?.charAt(0).toUpperCase() ?? 'U';
 
   const statusConfig = {
     INSIDIA: {
@@ -40,15 +37,12 @@ export function MyCoursesCard({ course, viewMode = 'grid' }: MyCourseCardProps) 
   };
   const href = `courses/${course.id}`;
 
-  console.log(href);
   const status = statusConfig[course.scope];
 
   return (
     <Card className={cn('group overflow-hidden border-gray-100 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl', isList ? 'flex flex-col sm:flex-row' : 'flex flex-col')}>
-      <div className={cn('relative overflow-hidden bg-gray-100', isList ? 'w-full sm:w-64 h-52 sm:h-auto flex-shrink-0' : 'aspect-video')}>
-        <img src={thumbnail} alt={course.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
-
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+      <div className={cn('relative overflow-hidden bg-gray-100', isList ? 'w-full sm:w-64 h-52 sm:h-auto flex-shrink-0' : 'w-full h-35')}>
+        <div className="absolute inset-0 bg-gradient-to-r from-[#E1D6F8]/50 via-[#835DE3]/50 to-[#835DE3]" />
 
         <div className="absolute top-3 left-3">
           <Badge className={cn('border', status.color)}>
@@ -69,17 +63,17 @@ export function MyCoursesCard({ course, viewMode = 'grid' }: MyCourseCardProps) 
           {isList && course.description && <p className="mt-3 line-clamp-2 text-sm text-gray-500">{course.description}</p>}
 
           <div className="mt-4 flex flex-wrap gap-2">
-            {!isInsidia && course.mitra?.mitraName && (
+            {!isInsidia && course.mitraName && (
               <div className="inline-flex items-center gap-1 rounded-full bg-gray-50 px-3 py-1 text-xs text-gray-600">
                 <Building2 className="h-3.5 w-3.5" />
-                {course.mitra.mitraName}
+                {course.mitraName}
               </div>
             )}
 
-            {!isInsidia && course.mitra?.curriculum && (
+            {!isInsidia && course.curriculum && (
               <div className="inline-flex items-center gap-1 rounded-full bg-gray-50 px-3 py-1 text-xs text-gray-600">
                 <GraduationCap className="h-3.5 w-3.5" />
-                {course.mitra.curriculum}
+                {course.curriculum}
               </div>
             )}
 

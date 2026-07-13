@@ -38,7 +38,7 @@ const Navbar = ({ userProfile }: { userProfile: AuthProfileResponse | null }) =>
     <>
       <TopNavAudience />
 
-      <header className="sticky top-0 z-50  w-full border-b bg-white/80 backdrop-blur-md shadow-sm">
+      <header className="sticky top-0 z-50  w-full border-b bg-white backdrop-blur-md shadow-sm">
         <nav className="container mx-auto px-4">
           <div className="flex h-16 items-center justify-evenly lg:h-20">
             <Sheet>

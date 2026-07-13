@@ -29,10 +29,10 @@ export function CreateCoursePage({ currentProfile }: CreateCoursePageProps) {
 
   const isMitraCourse = selectedScope === 'MITRA';
   return (
-    <main className="min-h-screen bg-muted/30 px-4 py-10">
-      <section className="mx-auto w-full max-w-4xl space-y-6">
+    <main className="min-h-screen bg-muted/30 px-4 py-8">
+      <section className="mx-auto w-full px-4 space-y-6">
         <div className="space-y-2">
-          <p className="text-sm font-medium uppercase tracking-[0.14em] text-muted-foreground">{isMitraCourse ? 'Manajemen Mapel Mitra' : 'Manajemen Course'}</p>
+          {/* <p className="text-sm font-medium uppercase tracking-[0.14em] text-muted-foreground">{isMitraCourse ? 'Manajemen Mapel Mitra' : 'Manajemen Course'}</p> */}
           <h1 className="text-3xl font-semibold text-foreground">{isMitraCourse ? 'Tambah Mapel Mitra' : 'Tambah Course'}</h1>
           <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
             {isMitraCourse
