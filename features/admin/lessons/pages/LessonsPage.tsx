@@ -64,7 +64,7 @@ export function LessonsPage({ params }: LessonsPageProps) {
         <div className="text-center p-8 bg-white rounded-2xl shadow-sm border border-gray-200 max-w-md w-full">
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Belum Ada Pelajaran</h3>
           <p className="text-gray-500 mb-6">Modul ini belum memiliki pelajaran yang tersedia.</p>
-          <Link href={`/mitra/${slug}/courses/${courseId}`}>
+          <Link href={`/mitra/${slug}/my-courses/${courseId}`}>
             <Button className="bg-[#8557E5] hover:bg-[#6f44c9] w-full">Kembali ke Course</Button>
           </Link>
         </div>
@@ -80,7 +80,7 @@ export function LessonsPage({ params }: LessonsPageProps) {
             <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setOpenMobile(!openMobile)}>
               <Menu className="h-5 w-5" />
             </Button>
-            <Link href={`/mitra/${slug}/courses/${courseId}/module/${moduleId}`} className="flex items-center gap-2">
+            <Link href={`/mitra/${slug}/my-courses/${courseId}/module/${moduleId}`} className="flex items-center gap-2">
               <Button variant="ghost" size="sm" className="gap-2 text-gray-600 hover:text-[#8557E5]">
                 <ChevronLeft className="h-4 w-4" />
                 <span>Kembali</span>
@@ -167,7 +167,7 @@ export function LessonsPage({ params }: LessonsPageProps) {
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               ) : (
-                <Link href={`/mitra/${slug}/courses/${courseId}`}>
+                <Link href={`/mitra/${slug}/my-courses/${courseId}`}>
                   <Button className="bg-emerald-500 hover:bg-emerald-600 gap-2">
                     <CheckCircle className="h-4 w-4" />
                     Selesai

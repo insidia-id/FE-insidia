@@ -86,19 +86,19 @@ export function getAdminMenuItems(activeRole: UserRoleCode | null, mitraSlug: st
     {
       title: 'Manajemen Course',
       icon: 'BookOpen',
-      href: getCoursesHref(mitraSlug),
+      href: getUsersHref(mitraSlug, 'courses'),
       permissions: [Permissions.coursePermissions.view.MITRA, Permissions.coursePermissions.view.INSIDIA],
       submenu: [
         {
           title: 'Semua Course',
-          href: getCoursesHref(mitraSlug),
+          href: getUsersHref(mitraSlug, 'courses'),
           icon: 'BookOpen',
           exact: true,
           permissions: [Permissions.coursePermissions.view.MITRA, Permissions.coursePermissions.view.INSIDIA],
         },
         {
           title: 'Tambah Course',
-          href: getCoursesHref(mitraSlug, 'create'),
+          href: getUsersHref(mitraSlug, 'courses/create'),
           icon: 'FolderKanban',
           permissions: [Permissions.coursePermissions.create.MITRA, Permissions.coursePermissions.create.INSIDIA],
         },
@@ -185,13 +185,13 @@ export function getAdminMenuItems(activeRole: UserRoleCode | null, mitraSlug: st
       title: 'Manajemen Materi',
       icon: 'BookOpen',
       exact: true,
-      href: getUsersHref(mitraSlug, 'courses', activeRole),
+      href: getUsersHref(mitraSlug, 'my-courses', activeRole),
       permissions: [Permissions.MyCoursePermissions.view.INSIDIA, Permissions.MyCoursePermissions.view.MITRA],
       roles: ['GURU', 'MURID'],
       submenu: [
         {
           title: 'Semua Mata Pelajaran',
-          href: getUsersHref(mitraSlug, 'courses', activeRole),
+          href: getUsersHref(mitraSlug, 'my-courses', activeRole),
           icon: 'BookOpen',
           exact: true,
           permissions: [Permissions.MyCoursePermissions.view.MITRA, Permissions.MyCoursePermissions.view.INSIDIA],

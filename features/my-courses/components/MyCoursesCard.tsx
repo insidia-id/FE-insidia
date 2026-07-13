@@ -35,7 +35,7 @@ export function MyCoursesCard({ course, viewMode = 'grid' }: MyCourseCardProps) 
       icon: <Building2 className="h-3 w-3" />,
     },
   };
-  const href = `courses/${course.id}`;
+  const href = `my-courses/${course.id}`;
 
   const status = statusConfig[course.scope];
 

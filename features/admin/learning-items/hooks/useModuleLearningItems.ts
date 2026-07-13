@@ -54,7 +54,7 @@ export function useModuleLearningItems({ moduleId, courseId, slug }: UseModuleLe
     if (!item) return;
 
     if (type === 'LESSON') {
-      router.push(`/mitra/${slug}/courses/${courseId}/module/${moduleId}/lessons?li=${item.id}`);
+      router.push(`/mitra/${slug}/my-courses/${courseId}/module/${moduleId}/lessons?li=${item.id}`);
     } else if (type === 'QUIZ') {
       console.log('Quiz editor not implemented yet');
     } else if (type === 'ASSIGNMENT') {

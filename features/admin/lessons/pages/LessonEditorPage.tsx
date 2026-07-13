@@ -26,7 +26,7 @@ export function LessonEditorPage({ slug, courseId, moduleId, learningItemId, les
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex flex-col items-center text-gray-500">
           <Loader2 className="h-12 w-12 animate-spin mb-4 text-[#8557e5]" />
-          <p>Loading lesson...</p>
+          <p>Memuat materi...</p>
         </div>
       </div>
     );
@@ -39,9 +39,9 @@ export function LessonEditorPage({ slug, courseId, moduleId, learningItemId, les
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
             <BookOpen className="h-8 w-8 text-gray-400" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900">Lesson Not Found</h3>
-          <p className="mt-1 text-sm text-gray-500 mb-4">The lesson you are looking for does not exist.</p>
-          <Button onClick={() => router.push(`/mitra/${slug}/courses/${courseId}/module/${moduleId}`)}>Back to Module</Button>
+          <h3 className="text-lg font-semibold text-gray-900">Materi Tidak Ditemukan</h3>
+          <p className="mt-1 text-sm text-gray-500 mb-4">Materi yang Anda cari tidak ditemukan.</p>
+          <Button onClick={() => router.push(`/mitra/${slug}/my-courses/${courseId}/module/${moduleId}`)}>Kembali ke Modul</Button>
         </div>
       </div>
     );
@@ -53,14 +53,14 @@ export function LessonEditorPage({ slug, courseId, moduleId, learningItemId, les
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" onClick={() => router.push(`/mitra/${slug}/courses/${courseId}/module/${moduleId}`)}>
+              <Button variant="ghost" size="sm" onClick={() => router.push(`/mitra/${slug}/my-courses/${courseId}/module/${moduleId}`)}>
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Module
+                Kembali ke Modul
               </Button>
               <div className="h-6 w-px bg-gray-300" />
               <div>
                 <h1 className="text-lg font-semibold text-gray-900">{lesson.title || 'Untitled Lesson'}</h1>
-                <p className="text-xs text-gray-500">Lesson Editor</p>
+                <p className="text-xs text-gray-500">Editor Materi</p>
               </div>
             </div>
           </div>

@@ -94,14 +94,11 @@ export function UpdateUserController(userId: string, scope: UserScope = 'INSIDIA
 
   const onSubmit = (values: UpdateUserInput, onSuccess?: (updatedUserId: string) => void) => {
     const { id, mitraRoles = [], ...payload } = values;
-    const isMitraScoped = values.scope === 'MITRA' || mitraRoles.length > 0;
     updateUserMutation.mutate(
       {
         userId: id,
         data: {
           ...payload,
-          role: isMitraScoped ? 'USER' : payload.role,
-          scope: isMitraScoped ? 'MITRA' : values.scope,
           mitraRoles,
         },
       },

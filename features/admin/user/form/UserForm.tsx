@@ -57,6 +57,7 @@ export function UserFormFields<TFieldValues extends FieldValues & BaseUserFormSh
   const assignableRoleOptions = getAssignableRoleOptions(currentUserRole, scope);
   const mitraRoleOptions = getAssignableRoleOptions(currentUserRole, 'MITRA');
   const role = searchParams.get('role') as MitraRole | undefined;
+  console.log(`form getValues`, form.getValues());
   return (
     <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
       <div className="grid gap-4 md:grid-cols-2">
@@ -79,6 +80,7 @@ export function UserFormFields<TFieldValues extends FieldValues & BaseUserFormSh
                     onValueChange={(nextValue) => {
                       if (!nextValue) return;
                       field.onChange(nextValue);
+                      console.log(`onValueChange`, nextValue, field.value, form.getValues('role' as Path<TFieldValues>));
                     }}
                     value={field.value}
                   >

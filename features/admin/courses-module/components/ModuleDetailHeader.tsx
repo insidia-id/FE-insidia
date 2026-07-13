@@ -17,16 +17,15 @@ type ModuleDetailHeaderProps = {
 };
 
 export function ModuleDetailHeader({ module, mitraSlug, courseId, onEdit, onDelete }: ModuleDetailHeaderProps) {
-  const courseName = module.course?.title || module.classGroupCourse?.courseMitra.course.title || module.courseInsidia?.course.title || 'Course';
-
+  const courseName = module.course?.title || module.classGroupCourse?.courseMitra.course.title || module.courseInsidia?.course.title || 'Mata Pelajaran';
   return (
     <div className="mb-6 space-y-4">
       <div className="flex items-center gap-2 text-sm text-gray-500">
-        <Link href={`/mitra/${mitraSlug}/courses`} className="hover:text-gray-700">
-          Courses
+        <Link href={`/mitra/${mitraSlug}/my-courses`} className="hover:text-gray-700">
+          Semua Mata Pelajaran
         </Link>
         <span>/</span>
-        <Link href={`/mitra/${mitraSlug}/courses/${courseId}`} className="hover:text-gray-700">
+        <Link href={`/mitra/${mitraSlug}/my-courses/${courseId}`} className="hover:text-gray-700">
           {courseName}
         </Link>
         <span>/</span>

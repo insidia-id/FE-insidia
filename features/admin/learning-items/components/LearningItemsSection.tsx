@@ -34,19 +34,19 @@ export function LearningItemsSection({ items, onTogglePublish, onDelete, onOpen,
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem asChild>
-              <Link href={`/mitra/${slug}/courses/${courseId}/module/${moduleId}/lessons/create`} className="cursor-pointer">
+              <Link href={`/mitra/${slug}/my-courses/${courseId}/module/${moduleId}/lessons/create`} className="cursor-pointer">
                 <BookOpen className="mr-2 h-4 w-4" />
                 Lesson
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href={`/mitra/${slug}/courses/${courseId}/module/${moduleId}/quiz/create`} className="cursor-pointer">
+              <Link href={`/mitra/${slug}/my-courses/${courseId}/module/${moduleId}/quiz/create`} className="cursor-pointer">
                 <FileQuestion className="mr-2 h-4 w-4" />
                 Quiz
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href={`/mitra/${slug}/courses/${courseId}/module/${moduleId}/assignment/create`} className="cursor-pointer">
+              <Link href={`/mitra/${slug}/my-courses/${courseId}/module/${moduleId}/assignment/create`} className="cursor-pointer">
                 <ClipboardList className="mr-2 h-4 w-4" />
                 Assignment
               </Link>
@@ -66,19 +66,19 @@ export function LearningItemsSection({ items, onTogglePublish, onDelete, onOpen,
             <h3 className="text-lg font-semibold text-gray-900 mb-1">No Learning Items</h3>
             <p className="text-sm text-gray-500 mb-4">Get started by adding your first lesson, quiz, or assignment.</p>
             <div className="flex justify-center gap-2">
-              <Link href={`/mitra/${slug}/courses/${courseId}/module/${moduleId}/lessons/create`}>
+              <Link href={`/mitra/${slug}/my-courses/${courseId}/module/${moduleId}/lessons/create`}>
                 <Button variant="outline" size="sm">
                   <BookOpen className="mr-2 h-4 w-4" />
                   Add Lesson
                 </Button>
               </Link>
-              <Link href={`/mitra/${slug}/courses/${courseId}/module/${moduleId}/quiz/create`}>
+              <Link href={`/mitra/${slug}/my-courses/${courseId}/module/${moduleId}/quiz/create`}>
                 <Button variant="outline" size="sm">
                   <FileQuestion className="mr-2 h-4 w-4" />
                   Add Quiz
                 </Button>
               </Link>
-              <Link href={`/mitra/${slug}/courses/${courseId}/module/${moduleId}/assignment/create`}>
+              <Link href={`/mitra/${slug}/my-courses/${courseId}/module/${moduleId}/assignment/create`}>
                 <Button variant="outline" size="sm">
                   <ClipboardList className="mr-2 h-4 w-4" />
                   Add Assignment

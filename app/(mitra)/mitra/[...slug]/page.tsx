@@ -1,8 +1,15 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { getUsersHref } from '@/features/admin/user/HelperUser';
 
-export default function PublicFallbackPage() {
+type PageProps = {
+  params: Promise<{
+    slug: string;
+  }>;
+};
+export default async function PublicFallbackPage({ params }: PageProps) {
+  const { slug } = await params;
   return (
     <main className="min-h-[70vh] bg-[linear-gradient(180deg,rgba(15,23,42,0.04),rgba(15,23,42,0)_35%)] px-4 py-10">
       <section className="mx-auto flex w-full max-w-xl flex-col items-center">
@@ -14,7 +21,7 @@ export default function PublicFallbackPage() {
           <CardContent className="space-y-4">
             <p className="text-sm text-slate-600">Cek kembali tautan yang kamu buka atau kembali ke dashboard utama.</p>
             <Button variant="insidia" asChild className="w-full">
-              <Link href="/admin">Kembali ke Dashboard</Link>
+              <Link href={getUsersHref(slug)}>Kembali ke Dashboard</Link>
             </Button>
           </CardContent>
         </Card>

@@ -2,8 +2,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateUser } from './useUser';
 import { CreateUserInput, createUserSchema } from '../schema/user.schema';
-import { createProfileByRole, normalizeRoleQueryParam, normalizeUserRolePayload, toUserMitraAssignments } from '../HelperUser';
-
+import { createProfileByRole, getUsersHref, normalizeRoleQueryParam, normalizeUserRolePayload, toUserMitraAssignments } from '../HelperUser';
+import { useRouter } from 'next/navigation';
 function getDefaultValues(contextMitraId?: string, contextMitraName?: string, defaultRoleCode?: string): CreateUserInput {
   const normalizedRoleCode = normalizeRoleQueryParam(defaultRoleCode);
 
@@ -37,15 +37,21 @@ function getDefaultValues(contextMitraId?: string, contextMitraName?: string, de
     status: 'ACTIVE',
   };
 }
+export type CreateUserControllerProps = {
+  contextMitraId?: string;
+  contextMitraName?: string;
+  defaultRoleCode?: string;
+  activeMitraSlug?: string;
+};
 
-export const useCreateUserController = (contextMitraId?: string, contextMitraName?: string, defaultRoleCode?: string) => {
+export const useCreateUserController = ({ contextMitraId, contextMitraName, defaultRoleCode, activeMitraSlug }: CreateUserControllerProps) => {
   const form = useForm<CreateUserInput>({
     resolver: zodResolver(createUserSchema),
     defaultValues: getDefaultValues(contextMitraId, contextMitraName, defaultRoleCode),
   });
   const createUserMutation = useCreateUser();
   const isSubmitting = createUserMutation.isPending;
-
+  const router = useRouter();
   const onSubmit = (data: CreateUserInput) => {
     if (contextMitraId && !data.mitraRoles) {
       form.setError('mitraRoles', {
@@ -55,7 +61,11 @@ export const useCreateUserController = (contextMitraId?: string, contextMitraNam
       return;
     }
 
-    createUserMutation.mutate(data);
+    createUserMutation.mutate(data, {
+      onSuccess: (createdUser) => {
+        router.push(getUsersHref(activeMitraSlug ?? '', `users/${createdUser.id}`));
+      },
+    });
   };
   return {
     form,

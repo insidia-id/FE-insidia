@@ -64,7 +64,6 @@ export function AppSidebar({ menuItems, user }: AppSidebarProps) {
   const isCollapsed = state === 'collapsed';
   const { mutate: logout, isPending } = useLogout();
   const isLoading = isPending;
-
   return (
     <Sidebar collapsible="icon" className="border-r bg-red-400">
       <SidebarContent className="mt-4 flex-1  overflow-y-auto md:mt-20">
@@ -77,9 +76,7 @@ export function AppSidebar({ menuItems, user }: AppSidebarProps) {
                 menuItems.map((item) => {
                   const Icon = iconMap[item.icon];
 
-                  const isSubmenuActive = item.submenu?.length
-                    ? item.submenu.some((subItem) => isSameHref(subItem.href, pathname, searchParams))
-                    : false;
+                  const isSubmenuActive = item.submenu?.length ? item.submenu.some((subItem) => isSameHref(subItem.href, pathname, searchParams)) : false;
 
                   const isMenuItemActive = isPathActive(pathname, item.href, item.exact) || isSubmenuActive;
 

@@ -4,7 +4,6 @@ import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { LessonCreateForm } from '../components/LessonCreateForm';
 import { useLessonCreateForm } from '../hooks/useLessonCreateForm';
-import { AuthProfileResponse } from '@/features/auth/types/auth.types';
 
 type LessonCreatePageProps = {
   slug: string;
