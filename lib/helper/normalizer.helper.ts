@@ -1,3 +1,5 @@
+import { PaginationResponse } from '../types/types';
+
 export function asRecord(value: unknown): Record<string, unknown> | null {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
     return null;
@@ -102,4 +104,15 @@ export function formatDate(value: DateInput, options?: Intl.DateTimeFormatOption
     year: 'numeric',
     ...options,
   }).format(date);
+}
+
+export function recordPaginationParams(params: PaginationResponse) {
+  return {
+    total: params.total,
+    totalPages: params.totalPages,
+    currentPage: params.currentPage,
+    limit: params.limit,
+    hasNextPage: params.hasNextPage,
+    hasPreviousPage: params.hasPreviousPage,
+  };
 }

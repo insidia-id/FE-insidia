@@ -4,7 +4,7 @@ import { useGetUsers } from '@/features/admin/user/hooks/useUser';
 import type { SelectOption } from '../types/common.types';
 
 export function useAcademicUserOptions() {
-  const usersQuery = useGetUsers({ filter: 'available', scope: 'MITRA' });
+  const usersQuery = useGetUsers({ filter: 'available', scope: 'MITRA', page: 1, limit: 10 });
   const teacherOptions = useMemo<SelectOption[]>(
     () =>
       (usersQuery.data?.users ?? [])

@@ -13,8 +13,13 @@ export function UsersController(currentProfile: AuthProfileResponse, pageConfig:
   const [search, setSearch] = useState('');
   const resolvedScope = pageConfig.scope ?? scope;
   const resolvedRoleCode = pageConfig.roleCode ?? roleCode;
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+
   const {
-    data = { users: [], total: 0 },
+    data = { users: [], total: 0, totalPages: 0, currentPage: 1, limit: 10, hasNextPage: false, hasPreviousPage: false },
     isLoading,
     isError,
     error,
@@ -22,6 +27,8 @@ export function UsersController(currentProfile: AuthProfileResponse, pageConfig:
     filter,
     scope: resolvedScope,
     roleCode: resolvedRoleCode,
+    page: pagination.pageIndex + 1,
+    limit: pagination.pageSize,
   });
 
   const visibleUsers = useMemo(() => {
@@ -34,6 +41,8 @@ export function UsersController(currentProfile: AuthProfileResponse, pageConfig:
     roleCode: resolvedRoleCode,
     search,
     visibleUsers,
+    pagination,
+    setPagination,
     total: data.total,
     isLoading,
     isError,

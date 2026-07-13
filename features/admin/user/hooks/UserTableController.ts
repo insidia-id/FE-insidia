@@ -5,6 +5,7 @@ import { useUserDataTable } from '../components/table/DataTable';
 import type { User, UserScope } from '../types/user.types';
 import { AuthProfileResponse } from '@/features/auth/types/auth.types';
 import type { UserTableColumnId } from '../config/user-page.config';
+import { OnChangeFn, PaginationState } from '@tanstack/react-table';
 
 type UserTableControllerProps = {
   currentProfile: AuthProfileResponse;
@@ -13,9 +14,12 @@ type UserTableControllerProps = {
   columnIds: UserTableColumnId[];
   globalFilter: string;
   onGlobalFilterChange: (value: string) => void;
+  total: number;
+  pagination: PaginationState;
+  setPagination: OnChangeFn<PaginationState>;
 };
 
-export function UserTableController({ currentProfile, users, scope, columnIds, globalFilter, onGlobalFilterChange }: UserTableControllerProps) {
+export function UserTableController({ currentProfile, users, scope, columnIds, globalFilter, onGlobalFilterChange, total, setPagination, pagination }: UserTableControllerProps) {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [selectedUserScope, setSelectedUserScope] = useState<UserScope>('INSIDIA');
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -54,6 +58,9 @@ export function UserTableController({ currentProfile, users, scope, columnIds, g
     scope,
     globalFilter,
     onGlobalFilterChange,
+    pagination,
+    onPaginationChange: setPagination,
+    total,
   });
 
   return {

@@ -1,5 +1,6 @@
 export type InsidiaRole = 'SUPER_ADMIN' | 'ADMIN' | 'MENTOR' | 'USER';
 import type { MitraRole as AuthMitraRole } from '@/features/auth/types/auth.types';
+import { PaginationParams, PaginationResponse } from '@/lib/types/types';
 export type MitraRole = 'AKADEMIK' | 'MURID' | 'GURU' | 'WALI_MURID';
 export type RoleUser = InsidiaRole | MitraRole | 'ALL';
 export type UserRoleCode = Exclude<RoleUser, 'ALL'>;
@@ -7,13 +8,11 @@ export type UserScope = 'INSIDIA' | 'MITRA';
 export type StatusUser = 'ACTIVE' | 'SUSPENDED' | 'BANNED';
 export type UserFilter = 'all' | 'available' | 'deleted';
 
-export type UserQueryParams = {
+export type UserQueryParams = PaginationParams & {
   filter?: UserFilter;
   scope?: UserScope;
   roleCode?: RoleUser;
   search?: string;
-  page?: number;
-  limit?: number;
   sort?: string;
 };
 
@@ -67,9 +66,8 @@ export type User = {
   insidiaRole: UserRoleRelation | null;
   mitraRoles: UserMitraRoleRelation[] | null;
 };
-export type UsersResponse = {
+export type UsersResponse = PaginationResponse & {
   users: User[];
-  total: number;
 };
 export type UserDetail = User & {
   normalizedEmail: string;

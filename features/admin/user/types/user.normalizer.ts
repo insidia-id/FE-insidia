@@ -1,5 +1,6 @@
-import { asBoolean, asNullableString, asRecord, asString, unwrapDataPayload, normalizeEnum, asOptionalString } from '@/lib/helper/normalizer.helper';
+import { asBoolean, asNullableString, asRecord, asString, unwrapDataPayload, normalizeEnum, asOptionalString, recordPaginationParams, asNumber } from '@/lib/helper/normalizer.helper';
 import type { RoleUser, SocialLinks, StatusUser, User, UserDetail, UserMitraRoleRelation, UserRoleRelation, UserScope, UsersResponse, MitraProfile } from './user.types';
+import { PaginationResponse } from '@/lib/types/types';
 
 export const MITRA_ROLE_VALUES = ['AKADEMIK', 'MURID', 'GURU', 'WALI_MURID'] as const;
 export const INSIDIA_ROLE_VALUES = ['SUPER_ADMIN', 'ADMIN', 'MENTOR', 'USER'] as const;
@@ -140,10 +141,9 @@ export function normalizeUsersResponse(value: unknown): UsersResponse {
   }
 
   const rawUsers = Array.isArray(record.users) ? record.users : [];
-
   return {
     users: rawUsers.map(normalizeUser),
-    total: Number(record.total ?? 0),
+    ...recordPaginationParams(record as PaginationResponse),
   };
 }
 export function normalizeUsers(value: unknown): User[] {

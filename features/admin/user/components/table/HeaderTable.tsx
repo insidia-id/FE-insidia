@@ -25,53 +25,33 @@ type HeaderTableProps = {
   bulkUploadHref: string;
 };
 
-export const HeaderTable = ({ 
-  currentProfile, 
-  pageConfig, 
-  table, 
-  onGlobalFilterChange, 
-  globalFilter, 
-  filter, 
-  onFilterChange, 
-  scope, 
-  onScopeChange, 
-  roleCode, 
-  onRoleCodeChange 
-}: HeaderTableProps) => {
+export const HeaderTable = ({ currentProfile, pageConfig, table, onGlobalFilterChange, globalFilter, filter, onFilterChange, scope, onScopeChange, roleCode, onRoleCodeChange }: HeaderTableProps) => {
   const { activeInsidiaRole, activeMitraRole } = getActiveMitraContext(currentProfile);
-  
+
   const roleFilterOptions = getRoleFilterOptions(activeMitraRole ?? activeInsidiaRole, scope);
   const getCurrentScope = getAssignableScopeOptions(activeMitraRole ?? activeInsidiaRole);
 
-  // KUNCI LOGIKANYA DI SINI:
-  // Filter Scope HANYA muncul jika diizinkan oleh config halaman 
-  // DAN user yang login BUKAN dari role Mitra (Akademik, Guru, Murid, dll)
   const showScopeFilter = pageConfig.allowScopeFilter && !activeMitraRole;
 
   return (
     <div className="w-full mb-4">
       <div className="rounded-2xl ">
-        
-        {/* Grid dinamis: otomatis menyesuaikan sisa filter yang tampil */}
-        <div 
+        <div
           className="grid gap-3"
-          style={{ 
-            gridTemplateColumns: `repeat(auto-fit, minmax(200px, 1fr))` 
+          style={{
+            gridTemplateColumns: `repeat(auto-fit, minmax(200px, 1fr))`,
           }}
         >
-          
-          {/* 1. Bar Input Search */}
           <div className="relative w-full">
             <Search className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-slate-400" />
-            <Input 
-              className="bg-slate-50/50 border-slate-200/80 rounded-xl pl-9 placeholder:text-slate-400 focus-visible:ring-slate-200 text-sm h-10" 
-              onChange={(event) => onGlobalFilterChange(event.target.value)} 
-              placeholder="Cari nama, email, role..." 
-              value={globalFilter} 
+            <Input
+              className="bg-slate-50/50 border-slate-200/80 rounded-xl pl-9 placeholder:text-slate-400 focus-visible:ring-slate-200 text-sm h-10"
+              onChange={(event) => onGlobalFilterChange(event.target.value)}
+              placeholder="Cari nama, email, role..."
+              value={globalFilter}
             />
           </div>
 
-          {/* 2. Filter Scope (Akan GAIB untuk role Akademik) */}
           {showScopeFilter ? (
             <Select
               onValueChange={(value) => {
@@ -93,7 +73,6 @@ export const HeaderTable = ({
             </Select>
           ) : null}
 
-          {/* 3. Filter Role */}
           {pageConfig.allowRoleFilter ? (
             <Select onValueChange={(value) => onRoleCodeChange(value as RoleUser)} value={roleCode}>
               <SelectTrigger className="w-full h-10 bg-slate-50/50 border-slate-200/80 rounded-xl text-slate-600 font-medium text-sm focus:ring-slate-200">
@@ -109,7 +88,6 @@ export const HeaderTable = ({
             </Select>
           ) : null}
 
-          {/* 4. Filter Tipe User */}
           <Select onValueChange={(value) => onFilterChange(value as UserFilter)} value={filter}>
             <SelectTrigger className="w-full h-10 bg-slate-50/50 border-slate-200/80 rounded-xl text-slate-600 font-medium text-sm focus:ring-slate-200">
               <SelectValue placeholder="Filter tipe user" />
@@ -122,7 +100,6 @@ export const HeaderTable = ({
               ))}
             </SelectContent>
           </Select>
-
         </div>
       </div>
     </div>

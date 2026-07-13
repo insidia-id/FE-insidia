@@ -2,26 +2,33 @@ import { useState } from 'react';
 import { User, UserScope } from '../../types/user.types';
 import { useReactTable, getCoreRowModel, getFilteredRowModel, getSortedRowModel, SortingState, ColumnFiltersState, ColumnDef } from '@tanstack/react-table';
 import { getUserRole } from '../../HelperUser';
-
+import { PaginationState, OnChangeFn } from '@tanstack/react-table';
 type UserTableProps = {
   users: User[];
   columns: ColumnDef<User>[];
   scope: UserScope;
   globalFilter: string;
   onGlobalFilterChange: (value: string) => void;
+  pagination: PaginationState;
+  onPaginationChange: OnChangeFn<PaginationState>;
+  total: number;
 };
 
-export const useUserDataTable = ({ users, columns, scope, globalFilter, onGlobalFilterChange }: UserTableProps) => {
+export const useUserDataTable = ({ users, columns, scope, globalFilter, onGlobalFilterChange, onPaginationChange, pagination, total }: UserTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([{ id: 'createdAt', desc: true }]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   return useReactTable({
     data: users,
     columns,
+    manualPagination: true,
+    rowCount: total,
     state: {
       sorting,
       columnFilters,
       globalFilter,
+      pagination,
     },
+    onPaginationChange,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange,

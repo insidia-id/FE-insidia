@@ -8,15 +8,12 @@ import { UserDeleteDialog } from '../UserDeleteDialog';
 import { UserTableController } from '../../hooks/UserTableController';
 import { AuthProfileResponse } from '@/features/auth/types/auth.types';
 import type { UserManagementPageConfig } from '../../config/user-page.config';
+import { OnChangeFn } from '@tanstack/react-table';
 
-// Import Dropdown untuk aksi sorting filter status di level kolom
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
-} from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { ArrowUpDown } from 'lucide-react';
+import { PaginationState } from '@/lib/types/types';
+import { Button } from '@/components/ui/button';
 
 type UserTableProps = {
   currentProfile: AuthProfileResponse;
@@ -33,9 +30,28 @@ type UserTableProps = {
   onSearchChange: (value: string) => void;
   createHref: string;
   bulkUploadHref: string;
+  pagination: PaginationState;
+  setPagination: OnChangeFn<PaginationState>;
 };
 
-export function UserTable({ currentProfile, users, total, pageConfig, filter, onFilterChange, scope, onScopeChange, roleCode, onRoleCodeChange, search, onSearchChange, createHref, bulkUploadHref }: UserTableProps) {
+export function UserTable({
+  currentProfile,
+  users,
+  total,
+  pageConfig,
+  filter,
+  onFilterChange,
+  scope,
+  onScopeChange,
+  roleCode,
+  onRoleCodeChange,
+  search,
+  onSearchChange,
+  createHref,
+  bulkUploadHref,
+  setPagination,
+  pagination,
+}: UserTableProps) {
   const { columns, table, selectedUserId, selectedUserScope, isDeleteOpen, onDeleteDialogChange, onDeleteSuccess } = UserTableController({
     currentProfile,
     users,
@@ -43,12 +59,13 @@ export function UserTable({ currentProfile, users, total, pageConfig, filter, on
     columnIds: pageConfig.columns,
     globalFilter: search,
     onGlobalFilterChange: onSearchChange,
+    setPagination,
+    pagination,
+    total,
   });
-
   return (
     <>
       <div className="space-y-4">
-        {/* Di dalam komponen HeaderTable ini sisa input search dan filter role */}
         <HeaderTable
           currentProfile={currentProfile}
           pageConfig={pageConfig}
@@ -64,8 +81,7 @@ export function UserTable({ currentProfile, users, total, pageConfig, filter, on
           createHref={createHref}
           bulkUploadHref={bulkUploadHref}
         />
-        
-        {/* Sisi Desain Table Tanpa Border Kasar */}
+
         <div className="rounded-xl border border-slate-100 bg-background overflow-hidden">
           <Table>
             <TableHeader className="bg-slate-50/70">
@@ -79,17 +95,22 @@ export function UserTable({ currentProfile, users, total, pageConfig, filter, on
                         {header.isPlaceholder ? null : (
                           <div className="flex items-center gap-1.5">
                             {flexRender(header.column.columnDef.header, header.getContext())}
-                            
-                            {/* POIN 3: MEMINDAHKAN FILTER STATUS MENJADI ICON SORTING DI KOLOM HEADER */}
+
                             {isStatusColumn && (
                               <DropdownMenu>
                                 <DropdownMenuTrigger className="focus:outline-none p-1 rounded hover:bg-slate-200/60 transition-colors">
                                   <ArrowUpDown className="h-3.5 w-3.5 text-slate-400 hover:text-slate-600" />
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="start" className="rounded-xl shadow-lg border-slate-100">
-                                  <DropdownMenuItem className="font-medium cursor-pointer" onClick={() => onFilterChange('ACTIVE' as any)}>Aktif</DropdownMenuItem>
-                                  <DropdownMenuItem className="font-medium cursor-pointer" onClick={() => onFilterChange('INACTIVE' as any)}>Nonaktif</DropdownMenuItem>
-                                  <DropdownMenuItem className="font-medium cursor-pointer" onClick={() => onFilterChange('' as any)}>Semua Status</DropdownMenuItem>
+                                  <DropdownMenuItem className="font-medium cursor-pointer" onClick={() => onFilterChange('ACTIVE' as any)}>
+                                    Aktif
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem className="font-medium cursor-pointer" onClick={() => onFilterChange('INACTIVE' as any)}>
+                                    Nonaktif
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem className="font-medium cursor-pointer" onClick={() => onFilterChange('' as any)}>
+                                    Semua Status
+                                  </DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
                             )}
@@ -125,6 +146,17 @@ export function UserTable({ currentProfile, users, total, pageConfig, filter, on
               )}
             </TableBody>
           </Table>
+          <div className="flex items-center gap-2 justify-end px-4 py-2 border-t border-slate-100 bg-slate-50/70 w-full">
+            <Button variant="outline" size="sm" onClick={() => table?.previousPage()} disabled={!table?.getCanPreviousPage()}>
+              Sebelumnya
+            </Button>
+            <span>
+              Halaman {table?.getState().pagination.pageIndex + 1} dari {table?.getPageCount() || 1}
+            </span>
+            <Button variant="outline" size="sm" onClick={() => table?.nextPage()} disabled={!table?.getCanNextPage()}>
+              Berikutnya
+            </Button>
+          </div>
         </div>
       </div>
       <UserDeleteDialog userId={selectedUserId} scope={selectedUserScope} open={isDeleteOpen} onOpenChange={onDeleteDialogChange} onSuccess={onDeleteSuccess} />

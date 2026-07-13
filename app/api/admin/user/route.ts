@@ -39,7 +39,6 @@ export async function GET(req: NextRequest) {
         params.set(key, value);
       }
     });
-
     const data = await apiFetchWithAuth(`/admin/user?${params.toString()}`, {
       method: 'GET',
     });

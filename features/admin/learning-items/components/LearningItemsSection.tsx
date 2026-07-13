@@ -21,7 +21,6 @@ type LearningItemsSectionProps = {
 export function LearningItemsSection({ items, onTogglePublish, onDelete, onOpen, slug, courseId, moduleId, userRole }: LearningItemsSectionProps) {
   const sortedItems = [...items].sort((a, b) => a.order - b.order);
   const canManage = userRole !== 'MURID' && userRole !== 'USER';
-  console.log(userRole, 'userRole');
   return (
     <div className="bg-white rounded-xl border overflow-hidden">
       <div className="p-4 border-b bg-gray-50 flex items-center justify-between">

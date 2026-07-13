@@ -54,7 +54,6 @@ export function useModuleLearningItems({ moduleId, courseId, slug }: UseModuleLe
     if (!item) return;
 
     if (type === 'LESSON') {
-      console.log('Navigating to lesson editor for item:', itemId);
       router.push(`/mitra/${slug}/courses/${courseId}/module/${moduleId}/lessons?li=${item.id}`);
     } else if (type === 'QUIZ') {
       console.log('Quiz editor not implemented yet');

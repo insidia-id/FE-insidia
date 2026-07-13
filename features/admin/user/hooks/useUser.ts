@@ -12,7 +12,7 @@ export const userKeys = {
 
   detail: (userId: string) => [...userKeys.all, userId] as const,
 };
-export const useGetUsers = (params: UserQueryParams = {}) =>
+export const useGetUsers = (params: UserQueryParams) =>
   useQuery<UsersResponse>({
     queryKey: userKeys.list(params),
     queryFn: () => getUsers(params),

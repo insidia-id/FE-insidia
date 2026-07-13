@@ -26,7 +26,6 @@ const defaultValues: UpdateUserInput = {
 
 function toUpdateUserFormValues(user: UserDetail, activeScope: UserScope): UpdateUserInput {
   const mitraAssignments = toUserMitraAssignments(user.mitraRoles);
-  console.log('toUpdateUserFormValues', user, activeScope);
   return {
     id: user.id,
     email: user.email,
@@ -96,7 +95,6 @@ export function UpdateUserController(userId: string, scope: UserScope = 'INSIDIA
   const onSubmit = (values: UpdateUserInput, onSuccess?: (updatedUserId: string) => void) => {
     const { id, mitraRoles = [], ...payload } = values;
     const isMitraScoped = values.scope === 'MITRA' || mitraRoles.length > 0;
-    console.log('onSubmit', values, isMitraScoped, payload);
     updateUserMutation.mutate(
       {
         userId: id,

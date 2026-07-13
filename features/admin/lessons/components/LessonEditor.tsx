@@ -83,13 +83,11 @@ export function LessonEditor({ initialContentJson, initialContentHtml, isSaving,
       },
     },
   });
-  console.log(`Extensions: ${editor?.extensionManager.extensions.map((ext) => ext.name).join(', ')}`);
   useEffect(() => {
     if (!editor) return;
 
     const content = initialContentJson ? JSON.parse(initialContentJson) : initialContentHtml || '';
     editor.commands.setContent(content);
-    console.log(`Editor commands: ${Object.keys(editor.commands).join(', ')}`);
   }, [editor, initialContentJson, initialContentHtml]);
 
   if (!editor) return null;

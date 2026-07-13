@@ -14,8 +14,16 @@ export async function createUser(data: CreateUserInput): Promise<User> {
   return normalizeUser(res);
 }
 
-export async function getUsers(params: UserQueryParams = {}): Promise<UsersResponse> {
+export async function getUsers(params: UserQueryParams): Promise<UsersResponse> {
   const urlParams = new URLSearchParams();
+
+  if (params.page) {
+    urlParams.set('page', String(params.page));
+  }
+
+  if (params.limit) {
+    urlParams.set('limit', String(params.limit));
+  }
 
   if (params.filter) {
     urlParams.set('filter', params.filter);
@@ -32,18 +40,6 @@ export async function getUsers(params: UserQueryParams = {}): Promise<UsersRespo
 
   if (params.search) {
     urlParams.set('search', params.search);
-  }
-
-  if (typeof params.page === 'number') {
-    urlParams.set('page', String(params.page));
-  }
-
-  if (typeof params.limit === 'number') {
-    urlParams.set('limit', String(params.limit));
-  }
-
-  if (params.sort) {
-    urlParams.set('sort', params.sort);
   }
 
   const res = await apiFetchInternal<unknown>(`/api/admin/user?${urlParams.toString()}`, {
