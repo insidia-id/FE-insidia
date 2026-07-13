@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getProfileUser } from '@/features/auth/api/api.server';
-import { CoursesPage } from '@/features/admin/courses/components/CoursesPage';
+import { CoursesPage } from '@/features/admin/courses/pages/CoursesPage';
 import { toUserProfile } from '@/features/auth/auth.utils';
 
 export default async function AdminCoursesPage() {

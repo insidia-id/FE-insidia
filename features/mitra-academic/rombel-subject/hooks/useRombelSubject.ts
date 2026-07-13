@@ -12,13 +12,14 @@ import { useCrudMutations } from '../../shared/hooks/useCrudMutations';
 import { createRombelSubject, deleteRombelSubject, getRombelSubjects, updateRombelSubject } from '../api/rombel-subject.api';
 import { rombelSubjectFormSchema, type RombelSubjectFormValues } from '../schema/rombel-subject.schema';
 import type { ClassGroupCourse } from '../types/rombel-subject.types';
+import { CoursesController } from '@/features/admin/courses/controller/CoursesController';
 
 const RESOURCE_KEY = 'class-group-courses';
 
 function getDefaultValues(options?: Partial<RombelSubjectFormValues>): RombelSubjectFormValues {
   return {
     classGroupId: options?.classGroupId ?? '',
-    courseId: options?.courseId ?? '',
+    courseMitraId: options?.courseMitraId ?? '',
     teacherId: options?.teacherId ?? '',
     academicYearId: options?.academicYearId ?? '',
     semesterId: options?.semesterId ?? '',
@@ -29,7 +30,7 @@ function getDefaultValues(options?: Partial<RombelSubjectFormValues>): RombelSub
 function toFormValues(item: ClassGroupCourse | null, fallback: RombelSubjectFormValues): RombelSubjectFormValues {
   return {
     classGroupId: item?.classGroupId ?? fallback.classGroupId,
-    courseId: item?.subject.id ?? fallback.courseId,
+    courseMitraId: item?.course.courseMitraId ?? fallback.courseMitraId,
     teacherId: item?.teacherId ?? fallback.teacherId,
     academicYearId: item?.academicYearId ?? fallback.academicYearId,
     semesterId: item?.semesterId ?? fallback.semesterId,
@@ -60,28 +61,27 @@ export function useRombelSubject(mitraId: string) {
   const academicYearsQuery = useAcademicYears(mitraId);
   const semestersQuery = useGetSemesters(mitraId);
   const rombelsQuery = useRombels(mitraId);
-  const subjectsQuery = useSubjects();
+  const CourseQuery = CoursesController({ initialScope: 'MITRA', mitraId });
   const userOptions = useAcademicUserOptions();
   const mutations = useRombelSubjectMutations(mitraId);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<ClassGroupCourse | null>(null);
   const [deletingItem, setDeletingItem] = useState<ClassGroupCourse | null>(null);
-
   const academicYearOptions = useMemo(() => (academicYearsQuery.data ?? []).map((item) => ({ label: item.name, value: item.id })), [academicYearsQuery.data]);
   const semesterOptions = useMemo(() => (semestersQuery.data ?? []).map((item) => ({ label: `${item.name} - ${item.academicYear.name}`, value: item.id })), [semestersQuery.data]);
   const rombelOptions = useMemo(() => (rombelsQuery.data ?? []).map((item) => ({ label: `${item.name} - ${item.academicClass.name}`, value: item.id })), [rombelsQuery.data]);
-  const subjectOptions = useMemo(() => (subjectsQuery.data ?? []).map((item) => ({ label: `${item.name}${item.code ? ` (${item.code})` : ''}`, value: item.id })), [subjectsQuery.data]);
+  const CourseOptions = useMemo(() => CourseQuery.courses.map((item) => (item.scope === 'MITRA' ? { label: item.title, value: item.courseMitraId } : { label: item.title, value: item.id })), [CourseQuery.courses]);
 
   const fallbackValues = useMemo(
     () =>
       getDefaultValues({
         classGroupId: rombelOptions[0]?.value,
-        courseId: subjectOptions[0]?.value,
+        courseMitraId: CourseOptions[0]?.value ?? '',
         teacherId: userOptions.teacherOptions[0]?.value,
         academicYearId: academicYearOptions[0]?.value,
         semesterId: semesterOptions[0]?.value,
       }),
-    [academicYearOptions, rombelOptions, semesterOptions, subjectOptions, userOptions.teacherOptions],
+    [academicYearOptions, rombelOptions, semesterOptions, CourseOptions, userOptions.teacherOptions],
   );
 
   const form = useForm<RombelSubjectFormValues>({
@@ -130,7 +130,7 @@ export function useRombelSubject(mitraId: string) {
       academicYearOptions,
       semesterOptions,
       rombelOptions,
-      subjectOptions,
+      CourseOptions,
       teacherOptions: userOptions.teacherOptions,
       isLoading: query.isLoading,
       isError: query.isError,
@@ -140,8 +140,8 @@ export function useRombelSubject(mitraId: string) {
       isErrorSemesters: semestersQuery.isError,
       isLoadingRombels: rombelsQuery.isLoading,
       isErrorRombels: rombelsQuery.isError,
-      isLoadingSubjects: subjectsQuery.isLoading,
-      isErrorSubjects: subjectsQuery.isError,
+      isLoadingSubjects: CourseQuery.isLoading,
+      isErrorSubjects: CourseQuery.isError,
       isLoadingTeachers: userOptions.isLoading,
       isErrorTeachers: userOptions.isError,
       isSubmitting,

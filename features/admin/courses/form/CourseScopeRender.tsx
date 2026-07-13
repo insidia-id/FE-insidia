@@ -2,11 +2,10 @@ import { UseFormReturn } from 'react-hook-form';
 import { AccessScope } from '@/lib/types/types';
 import { CourseMitraForm } from './CourseMitraForm';
 import { CourseInsidiaForm } from './CourseInsidiaForm';
-import { CreateCourseInsidiaFormValues, CreateCourseMitraFormValues } from '../schema/course.schema';
 import { UserRoleCode } from '../../user/types/user.types';
 import type { CourseFormValues } from '../schema/course.schema';
 type Props = {
-  scope: AccessScope;
+  scope?: AccessScope;
   form: UseFormReturn<CourseFormValues>;
   isLoadingCourses?: boolean;
   curriculumOptions: Array<{ label: string; value: string }>;

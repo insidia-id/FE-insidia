@@ -28,7 +28,7 @@ function toFormValues(item: Curriculum | null): CurriculumFormValues {
 
 export function useCurricula(mitraId: string) {
   return useQuery({
-    queryKey: mitraAcademicKeys.resource(RESOURCE_KEY),
+    queryKey: [...mitraAcademicKeys.resource(RESOURCE_KEY), mitraId],
     queryFn: () => getCurricula(mitraId),
     refetchOnWindowFocus: false,
     enabled: !!mitraId,

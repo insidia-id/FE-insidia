@@ -1,3 +1,4 @@
+import { CourseDetail, CourseMitraDetail, CourseSummary } from '@/features/admin/courses/types/course.types';
 import type { ReactNode } from 'react';
 
 export type AcademicStatus = 'ACTIVE' | 'INACTIVE';
@@ -90,11 +91,28 @@ export type AcademicClass = {
 export type TeacherSummary = {
   id: string;
   name: string | null;
-  email: string;
+  email?: string;
 };
 
+export type AcademicYearSummary = {
+  id: string;
+  name: string;
+};
+
+export type SemesterSummary = {
+  id: string;
+  name: string;
+};
 export type StudentSummary = TeacherSummary;
 
+export type ClassGroupSummary = {
+  id: string;
+  name: string;
+};
+export type AcademicClassSummary = {
+  id: string;
+  name: string;
+};
 export type ClassGroup = {
   id: string;
   mitraId: string;
@@ -119,16 +137,13 @@ export type ClassGroupCourse = {
   status: AcademicStatus;
   createdAt: string;
   updatedAt: string;
-  deletedAt: string | null;
-  classGroup: ClassGroup;
-  subject: Subject;
+  deletedAt?: string | null;
+  classGroup: ClassGroupSummary;
+  course: CourseSummary;
   teacher: TeacherSummary;
-  academicYear: AcademicYear;
-  semester: {
-    id: string;
-    name: string;
-    status: AcademicStatus;
-  };
+  academicYear: AcademicYearSummary;
+  semester: SemesterSummary;
+  academicClass?: AcademicClassSummary;
 };
 
 export type ClassGroupStudent = {
@@ -142,14 +157,11 @@ export type ClassGroupStudent = {
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
-  classGroup: ClassGroup;
+  classGroup: ClassGroupSummary;
   student: StudentSummary;
-  academicYear: AcademicYear;
-  semester: {
-    id: string;
-    name: string;
-    status: AcademicStatus;
-  };
+  academicYear: AcademicYearSummary;
+  semester: SemesterSummary;
+  academicClass?: AcademicClassSummary;
 };
 
 export type AcademicFieldConfig<TFormValues> = {

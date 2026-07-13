@@ -37,7 +37,7 @@ export function RombelSubjectPage({ slug, mitraId }: RombelSubjectPageProps) {
         onOpenChange={(open) => {
           if (!open) controller.state.setDeletingItem(null);
         }}
-        description={`Relasi "${controller.state.deletingItem?.classGroup.name} - ${controller.state.deletingItem?.subject.name}" akan dihapus dari sistem.`}
+        description={`Relasi "${controller.state.deletingItem?.classGroup.name} - ${controller.state.deletingItem?.course.title}" akan dihapus dari sistem.`}
         isLoading={controller.queries.isDeleting}
         onConfirm={controller.actions.handleDelete}
       />

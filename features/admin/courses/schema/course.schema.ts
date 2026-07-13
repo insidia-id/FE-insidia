@@ -1,72 +1,47 @@
 import { z } from 'zod';
 import { toTrimmedNullableString, toLineArray, optionalNullableNumberSchema, booleanSchema } from '@/lib/schema/zod.schemas';
 
-export const baseCourseFormSchema = z.object({
-  title: z.string().trim().min(1, 'Judul course wajib diisi'),
-  code: toTrimmedNullableString,
-  slug: z.string().trim().optional().or(z.literal('')),
-  subtitle: toTrimmedNullableString,
-  description: toTrimmedNullableString,
-  scope: z.enum(['INSIDIA', 'MITRA']),
+const baseCourseFormSchema = z.object({
+  title: z.string().trim().min(1, 'Judul wajib diisi'),
+  code: z.string().trim().nullable(),
+  subtitle: z.string().trim().nullable(),
+  description: z.string().trim().nullable(),
 });
 
-export const createCourseInsidiaFormSchema = baseCourseFormSchema
-  .extend({
-    scope: z.literal('INSIDIA'),
-    level: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'ALL_LEVEL']),
-    price: z.coerce.number().min(0, 'Harga tidak boleh negatif'),
-    salePrice: optionalNullableNumberSchema,
-    isFree: booleanSchema,
-    requirements: toLineArray,
-    outcomes: toLineArray,
-    targetUsers: toLineArray,
-  })
-  .superRefine((value, ctx) => {
-    if (!value.isFree && value.salePrice !== null && value.salePrice !== undefined && value.salePrice > value.price) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['salePrice'],
-        message: 'Harga promo tidak boleh lebih besar dari harga normal',
-      });
-    }
-  });
+export const insidiaCourseFormSchema = baseCourseFormSchema.extend({
+  scope: z.literal('INSIDIA'),
+  slug: z.string().trim().min(1),
 
-export const createCourseMitraFormSchema = baseCourseFormSchema.extend({
+  level: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'ALL_LEVEL']),
+
+  price: z.coerce.number().min(0),
+  salePrice: optionalNullableNumberSchema,
+  isFree: booleanSchema,
+
+  requirements: toLineArray,
+  outcomes: toLineArray,
+  targetUsers: toLineArray,
+});
+
+export const mitraCourseFormSchema = baseCourseFormSchema.extend({
   scope: z.literal('MITRA'),
+
   academicStatus: z.enum(['ACTIVE', 'INACTIVE']),
+
   mitraId: z.string().trim().min(1, 'Mitra wajib dipilih'),
+
   curriculumId: z.string().trim().min(1, 'Kurikulum wajib dipilih'),
 });
 
-export const courseModuleFormSchema = z.object({
-  title: z.string().trim().min(1, 'Judul modul wajib diisi'),
-  summary: toTrimmedNullableString,
-  sortOrder: z.coerce.number().int().min(0, 'Urutan minimal 0'),
+export const courseFormSchema = z.discriminatedUnion('scope', [mitraCourseFormSchema, insidiaCourseFormSchema]).superRefine((value, ctx) => {
+  if (value.scope === 'INSIDIA' && !value.isFree && value.salePrice != null && value.salePrice > value.price) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['salePrice'],
+      message: 'Harga promo tidak boleh lebih besar dari harga normal',
+    });
+  }
 });
-
-export const courseFormSchema = baseCourseFormSchema
-  .extend({
-    level: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'ALL_LEVEL']),
-    price: z.coerce.number().min(0, 'Harga tidak boleh negatif'),
-    salePrice: optionalNullableNumberSchema,
-    isFree: booleanSchema,
-    requirements: toLineArray,
-    outcomes: toLineArray,
-    targetUsers: toLineArray,
-
-    academicStatus: z.enum(['ACTIVE', 'INACTIVE']),
-    mitraId: z.string().trim().min(1, 'Mitra wajib dipilih'),
-    curriculumId: z.string().trim().min(1, 'Kurikulum wajib dipilih'),
-  })
-  .superRefine((value, ctx) => {
-    if (!value.isFree && value.salePrice !== null && value.salePrice !== undefined && value.salePrice > value.price) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['salePrice'],
-        message: 'Harga promo tidak boleh lebih besar dari harga normal',
-      });
-    }
-  });
 
 export const mediaUploadFormSchema = z.object({
   file: z.instanceof(File, { message: 'File media wajib dipilih' }).refine((file) => file.size > 0, 'File media wajib dipilih'),
@@ -85,9 +60,8 @@ export const mediaMetadataFormSchema = z.object({
 });
 
 export type CourseFormValues = z.infer<typeof courseFormSchema>;
-export type CreateCourseDto = z.infer<typeof createCourseInsidiaFormSchema> | z.infer<typeof createCourseMitraFormSchema>;
-export type CreateCourseInsidiaFormValues = z.infer<typeof createCourseInsidiaFormSchema>;
-export type CreateCourseMitraFormValues = z.infer<typeof createCourseMitraFormSchema>;
-export type CourseModuleFormValues = z.infer<typeof courseModuleFormSchema>;
+export type CreateCourseDto = z.infer<typeof insidiaCourseFormSchema> | z.infer<typeof mitraCourseFormSchema>;
+export type CreateCourseInsidiaFormValues = z.infer<typeof insidiaCourseFormSchema>;
+export type CreateCourseMitraFormValues = z.infer<typeof mitraCourseFormSchema>;
 export type MediaUploadFormValues = z.infer<typeof mediaUploadFormSchema>;
 export type MediaMetadataFormValues = z.infer<typeof mediaMetadataFormSchema>;

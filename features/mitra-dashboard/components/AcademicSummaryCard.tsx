@@ -23,7 +23,7 @@ export function AcademicSummaryCard({ roleCode, overview }: AcademicSummaryCardP
           </div>
           <div className="space-y-1">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Mapel</p>
-            <p className="text-2xl font-semibold text-slate-900">{overview.subjects.length}</p>
+            <p className="text-2xl font-semibold text-slate-900">{overview.courses.length}</p>
             <p className="text-sm text-slate-600">Daftar mapel aktif pada periode berjalan.</p>
           </div>
         </div>

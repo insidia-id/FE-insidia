@@ -54,9 +54,9 @@ export function AppSidebar({ menuItems, user }: AppSidebarProps) {
   const isLoading = isPending;
 
   return (
-    <Sidebar collapsible="icon" className="border-r">
-      <SidebarContent className="mt-4 flex-1 overflow-y-auto md:mt-20">
-        <div className="px-3 py-2">
+    <Sidebar collapsible="icon" className="border-r bg-red-400">
+      <SidebarContent className="mt-4 flex-1  overflow-y-auto md:mt-20">
+        <div className="px-3 py-2 ">
           <TooltipProvider delayDuration={100}>
             <div className="space-y-1">
               {menuItems.length === 0 ? (

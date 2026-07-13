@@ -14,16 +14,16 @@ export function ClassItemCard({ item }: ClassItemCardProps) {
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <p className="text-base font-semibold text-slate-900">
-              {item.classGroup.name} / {item.subject.name}
+              {item.classGroup?.name} / {item.course?.title}
             </p>
             <p className="mt-1 text-sm text-slate-600">
-              {item.classGroup.academicClass.name} / {item.academicYear.name} / {item.semester.name}
+              {item.academicClass?.name ?? 'N/A'} / {item.academicYear?.name} / {item.semester?.name}
             </p>
           </div>
           <Badge variant={item.status === 'ACTIVE' ? 'success' : 'outline'}>{item.status}</Badge>
         </div>
         <div className="mt-3 grid gap-2 text-sm text-slate-600 sm:grid-cols-2">
-          <span>Guru: {item.teacher.name ?? item.teacher.email}</span>
+          <span>Guru: {item.teacher?.name ?? item.teacher?.email}</span>
           <span>Diperbarui: {formatDate(item.updatedAt)}</span>
         </div>
       </div>
@@ -36,13 +36,13 @@ export function ClassItemCard({ item }: ClassItemCardProps) {
         <div>
           <p className="text-base font-semibold text-slate-900">{item.classGroup.name}</p>
           <p className="mt-1 text-sm text-slate-600">
-            {item.classGroup.academicClass.name} / {item.academicYear.name} / {item.semester.name}
+            {item.academicClass?.name ?? 'N/A'} / {item.academicYear?.name} / {item.semester?.name}
           </p>
         </div>
         <Badge variant={item.status === 'ACTIVE' ? 'success' : 'outline'}>{item.status}</Badge>
       </div>
       <div className="mt-3 grid gap-2 text-sm text-slate-600 sm:grid-cols-2">
-        <span>Murid: {item.student.name ?? item.student.email}</span>
+        <span>Murid: {item.student?.name ?? item.student?.email}</span>
         <span>Diperbarui: {formatDate(item.updatedAt)}</span>
       </div>
     </div>

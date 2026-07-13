@@ -11,7 +11,14 @@ type RouteContext = {
 export async function GET(request: NextRequest, context: RouteContext) {
   try {
     const { courseId } = await context.params;
-    const data = await forwardApiRequest(request, `/admin/courses/${courseId}`, 'GET');
+    const { searchParams } = new URL(request.url);
+    const scope = searchParams.get('scope');
+    const params = new URLSearchParams();
+
+    if (scope) {
+      params.set('scope', scope);
+    }
+    const data = await forwardApiRequest(request, `/admin/courses/${courseId}?${params.toString()}`, 'GET');
 
     return toRouteResponse({ data });
   } catch (error) {

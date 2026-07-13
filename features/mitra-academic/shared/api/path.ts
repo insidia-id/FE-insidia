@@ -1,4 +1,4 @@
-export function academicPath(mitraId: string, path: string) {
+export function academicPath(mitraId?: string, path?: string) {
   return `/api/mitras/${mitraId}/${path}`;
 }
 

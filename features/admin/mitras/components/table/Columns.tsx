@@ -5,7 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import Link from 'next/link';
-import { formatMitraDate, formatMitraStatus, formatMitraType, getMitraStatusVariant } from '../../lib/mitra.helper';
+import { formatMitraStatus, formatMitraType, getMitraStatusVariant } from '../../lib/mitra.helper';
+import { formatDate } from '@/lib/helper/normalizer.helper';
 import type { Mitra } from '../../types/mitras.types';
 
 type UseMitraColumnsProps = {
@@ -52,7 +53,7 @@ export function useMitraColumns({ onDeleteRequest }: UseMitraColumnsProps) {
             <ArrowUpDown className="size-4" />
           </Button>
         ),
-        cell: ({ row }) => formatMitraDate(row.original.createdAt),
+        cell: ({ row }) => formatDate(row.original.createdAt),
       },
       {
         id: 'actions',

@@ -2,9 +2,12 @@ import { apiFetchInternal } from '@/lib/api/express.client';
 import { academicPath } from '../../shared/api/path';
 import type { RombelSubjectFormValues } from '../schema/rombel-subject.schema';
 import type { ClassGroupCourse } from '../types/rombel-subject.types';
-
-export function getRombelSubjects(mitraId: string) {
-  return apiFetchInternal<ClassGroupCourse[]>(academicPath(mitraId, 'class-group-courses'), { method: 'GET' });
+import { mapClassGroupCourses } from '../mapper/RombelSubject.mapper';
+import type { ClassGroupCourseResponse } from '../types/rombel-subject.types';
+export async function getRombelSubjects(mitraId: string) {
+  const response = await apiFetchInternal<ClassGroupCourseResponse[]>(academicPath(mitraId, 'class-group-courses'), { method: 'GET' });
+  const classGroupCourses = mapClassGroupCourses(response);
+  return classGroupCourses;
 }
 
 export function createRombelSubject(mitraId: string, data: RombelSubjectFormValues) {

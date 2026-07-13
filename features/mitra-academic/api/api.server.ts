@@ -3,6 +3,7 @@ import 'server-only';
 import { cache } from 'react';
 import { apiFetchWithAuth } from '@/lib/api/express.server';
 import type { ClassGroupCourse, ClassGroupStudent, Subject } from '../types/mitra-academic.types';
+import { CourseSummary } from '@/features/admin/courses/types/course.types';
 
 export type MyAcademicQuery = {
   academicYearId?: string;
@@ -22,13 +23,13 @@ function academicServerPath(path: string, query?: MyAcademicQuery) {
 
   const queryString = params.toString();
 
-  return `/mitras/active/academic/${path}${queryString ? `?${queryString}` : ''}`;
+  return `/mitras/${path}${queryString ? `?${queryString}` : ''}`;
 }
 
 export const getMyAcademicClasses = cache(async (query?: MyAcademicQuery) => {
-  return apiFetchWithAuth<Array<ClassGroupCourse | ClassGroupStudent>>(academicServerPath('kelas-saya', query), { method: 'GET' });
+  return apiFetchWithAuth<Array<ClassGroupCourse | ClassGroupStudent>>(academicServerPath('my-classes', query), { method: 'GET' });
 });
 
 export const getMyAcademicSubjects = cache(async (query?: MyAcademicQuery) => {
-  return apiFetchWithAuth<Subject[]>(academicServerPath('mapel-saya', query), { method: 'GET' });
+  return apiFetchWithAuth<Array<CourseSummary>>(academicServerPath('my-courses', query), { method: 'GET' });
 });

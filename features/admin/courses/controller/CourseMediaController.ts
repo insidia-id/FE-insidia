@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useDeleteMedia, useGetCourseMedia, useGetCourseModules, useUpdateMedia, useUploadCourseMedia, useUploadModuleMedia } from '../hooks/useCourses';
+import { useDeleteMedia, useGetCourseMedia, useUpdateMedia, useUploadCourseMedia, useUploadModuleMedia } from '../hooks/useCourses';
 import { mediaMetadataFormSchema, mediaUploadFormSchema, type MediaMetadataFormValues, type MediaUploadFormValues } from '../schema/course.schema';
 import type { CourseMedia } from '../types/course.types';
 
@@ -27,7 +27,7 @@ function toMetadataFormValues(media?: CourseMedia | null): MediaMetadataFormValu
 
 export function CourseMediaController(courseId: string) {
   const { data: media = [], isLoading, isError, error } = useGetCourseMedia(courseId);
-  const { data: modules = [] } = useGetCourseModules(courseId);
+  // const { data: modules = [] } = useGetCourseModules(courseId);
   const uploadCourseMutation = useUploadCourseMedia(courseId);
   const uploadModuleMutation = useUploadModuleMedia(courseId);
   const updateMediaMutation = useUpdateMedia(courseId);
@@ -140,7 +140,7 @@ export function CourseMediaController(courseId: string) {
 
   return {
     media,
-    modules,
+    // modules,
     groupedMedia,
     uploadForm,
     metadataForm,

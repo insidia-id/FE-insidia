@@ -1,4 +1,5 @@
-import type { CourseLevel, CourseScope, CourseStatus, CourseStatusFilter } from '../types/course.types';
+import { CourseFormValues, CreateCourseInsidiaFormValues, CreateCourseMitraFormValues } from '../schema/course.schema';
+import type { CourseDetail, CourseLevel, CourseScope, CourseStatus, CourseStatusFilter } from '../types/course.types';
 
 export const COURSE_SCOPE_OPTIONS: Array<{ label: string; value: CourseScope }> = [
   { label: 'Insidia', value: 'INSIDIA' },
@@ -13,10 +14,7 @@ export const COURSE_STATUS_OPTIONS: Array<{ label: string; value: CourseStatus }
   { label: 'Archived', value: 'ARCHIVED' },
 ];
 
-export const COURSE_STATUS_FILTER_OPTIONS: Array<{ label: string; value: CourseStatusFilter }> = [
-  { label: 'Semua status', value: 'ALL' },
-  ...COURSE_STATUS_OPTIONS,
-];
+export const COURSE_STATUS_FILTER_OPTIONS: Array<{ label: string; value: CourseStatusFilter }> = [{ label: 'Semua status', value: 'ALL' }, ...COURSE_STATUS_OPTIONS];
 
 export const COURSE_LEVEL_OPTIONS: Array<{ label: string; value: CourseLevel }> = [
   { label: 'Semua level', value: 'ALL_LEVEL' },
@@ -83,4 +81,66 @@ export function bytesToSize(sizeBytes: number | null) {
   }
 
   return `${size.toFixed(size >= 10 || unitIndex === 0 ? 0 : 1)} ${units[unitIndex]}`;
+}
+
+export function defaultMitraCourseValues(mitraId?: string): CreateCourseMitraFormValues {
+  return {
+    scope: 'MITRA',
+    title: '',
+    code: '',
+    subtitle: '',
+    description: '',
+    mitraId: mitraId ?? '',
+    curriculumId: '',
+    academicStatus: 'ACTIVE',
+  };
+}
+
+export function defaultInsidiaCourseValues(): CreateCourseInsidiaFormValues {
+  return {
+    scope: 'INSIDIA',
+    title: '',
+    code: '',
+    slug: '',
+    subtitle: '',
+    description: '',
+    level: 'ALL_LEVEL',
+    price: 0,
+    salePrice: null,
+    isFree: false,
+    requirements: [],
+    outcomes: [],
+    targetUsers: [],
+  };
+}
+
+export function toFormValues(course: CourseDetail): CourseFormValues {
+  if (course.scope === 'MITRA') {
+    return {
+      scope: 'MITRA',
+      title: course.title ?? '',
+      code: course.code ?? '',
+      subtitle: course.subtitle ?? '',
+      description: course.description ?? '',
+      mitraId: course.mitraId ?? '',
+      curriculumId: course.curriculum?.id ?? '',
+      academicStatus: course.academicStatus ?? 'ACTIVE',
+    };
+  }
+
+  return {
+    scope: 'INSIDIA',
+    title: course.title ?? '',
+    code: '',
+    slug: course.slug ?? '',
+    subtitle: course.subtitle ?? '',
+    description: course.description ?? '',
+    level: course.level ?? 'ALL_LEVEL',
+    price: course.price ?? 0,
+    salePrice: course.salePrice ?? null,
+    isFree: course.isFree ?? false,
+    requirements: course.requirements ?? [],
+    outcomes: course.outcomes ?? [],
+    targetUsers: course.targetUsers ?? [],
+  };
 }

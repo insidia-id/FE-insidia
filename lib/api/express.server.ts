@@ -13,7 +13,6 @@ export async function apiFetchWithAuth<T = unknown>(path: string, init?: Request
   const requestHeaders = createHeaders(init);
   const token = await resolveAuthToken();
   const accessToken = typeof token?.accessToken === 'string' ? token.accessToken : null;
-
   if (!accessToken) {
     throw buildClientError(
       {

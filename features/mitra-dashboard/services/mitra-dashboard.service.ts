@@ -32,17 +32,16 @@ export async function getMitraDashboardData(slug: string): Promise<MitraDashboar
   const shouldLoad = shouldLoadAcademicOverview(roleCode);
 
   let classes: MitraDashboardData['academicOverview']['classes'] = [];
-  let subjects: MitraDashboardData['academicOverview']['subjects'] = [];
+  let courses: MitraDashboardData['academicOverview']['courses'] = [];
   let error: string | null = null;
 
   if (shouldLoad) {
     try {
-      [classes, subjects] = await Promise.all([getMyAcademicClasses(), getMyAcademicSubjects()]);
+      [classes, courses] = await Promise.all([getMyAcademicClasses(), getMyAcademicSubjects()]);
     } catch (caughtError) {
       error = getAcademicErrorMessage(caughtError);
     }
   }
-
   return {
     slug,
     userLabel: profile.name ?? profile.email,
@@ -52,7 +51,7 @@ export async function getMitraDashboardData(slug: string): Promise<MitraDashboar
     isAcademicAdmin: roleCode === 'AKADEMIK',
     academicOverview: {
       classes,
-      subjects,
+      courses,
       error,
       shouldLoad,
     },

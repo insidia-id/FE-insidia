@@ -4,22 +4,18 @@ import { useGetCourses } from '../hooks/useCourses';
 
 type CoursesControllerOptions = {
   initialScope: CourseScope;
-  canChangeScope: boolean;
   mitraId?: string | null;
 };
 
-export function CoursesController({ initialScope, canChangeScope, mitraId }: CoursesControllerOptions) {
+export function CoursesController({ initialScope, mitraId }: CoursesControllerOptions) {
   const [scope, setScope] = useState<CourseScope>(initialScope);
   const [statusFilter, setStatusFilter] = useState<CourseStatusFilter>('ALL');
   const { data = [], isLoading, isError, error } = useGetCourses(scope, statusFilter === 'ALL' ? undefined : statusFilter, mitraId);
-
-  const courses = useMemo(() => data, [data]);
-
+  const courses = data ?? [];
   return {
     scope,
     statusFilter,
     courses,
-    canChangeScope,
     isLoading,
     isError,
     error,

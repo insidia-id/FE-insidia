@@ -70,8 +70,36 @@ export function asBoolean(value: unknown, fallback = false) {
 
   return fallback;
 }
+
 export function normalizeEnum<TValue extends string>(value: unknown, allowedValues: readonly TValue[], fallback: TValue): TValue {
   const normalizedValue = asString(value) as TValue;
 
   return allowedValues.includes(normalizedValue) ? normalizedValue : fallback;
+}
+
+type DateInput = string | Date | null | undefined;
+
+function toDate(value: DateInput): Date | null {
+  if (!value) {
+    return null;
+  }
+
+  const date = value instanceof Date ? value : new Date(value);
+
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+export function formatDate(value: DateInput, options?: Intl.DateTimeFormatOptions) {
+  const date = toDate(value);
+
+  if (!date) {
+    return '-';
+  }
+
+  return new Intl.DateTimeFormat('id-ID', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+    ...options,
+  }).format(date);
 }

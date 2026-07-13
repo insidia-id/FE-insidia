@@ -1,6 +1,6 @@
 'use client';
 
-import { Controller } from 'react-hook-form';
+import { Controller, useWatch } from 'react-hook-form';
 import type { SubmitHandler, UseFormReturn } from 'react-hook-form';
 import { LoadingButton } from '@/components/common/ButtonLoading';
 import { TextAreaField, TextField, SelectField } from '@/components/common/form';
@@ -10,6 +10,7 @@ import { COURSE_SCOPE_OPTIONS } from '../lib/course.helper';
 import type { CourseFormValues } from '../schema/course.schema';
 import { CourseScopeRow } from './CourseScopeRow';
 import type { UserRoleCode } from '@/features/admin/user/types/user.types';
+import { AccessScope } from '../../access-control/types/access-control.types';
 type CourseFormProps = {
   form: UseFormReturn<CourseFormValues, unknown, CourseFormValues>;
   isSubmitting: boolean;
@@ -17,20 +18,24 @@ type CourseFormProps = {
   onCancel: () => void;
   submitLabel: string;
   curriculumOptions?: Array<{ label: string; value: string }>;
-  disableScopeField?: boolean;
   mitraOptions?: Array<{ label: string; value: string }>;
   isLoadingMitras?: boolean;
   userRole: UserRoleCode | null;
   setMitraQuery?: (query: string) => void;
+  scope?: AccessScope;
   getCurrentScope?: readonly {
     label: string;
     value: string;
   }[];
 };
 
-export function CourseForm({ form, isSubmitting, onSubmit, onCancel, submitLabel, curriculumOptions = [], disableScopeField = false, mitraOptions, isLoadingMitras, userRole, setMitraQuery, getCurrentScope }: CourseFormProps) {
-  const scope = form.watch('scope');
+export function CourseForm({ form, isSubmitting, onSubmit, onCancel, submitLabel, curriculumOptions = [], mitraOptions, isLoadingMitras, userRole, setMitraQuery, getCurrentScope, scope }: CourseFormProps) {
   const isMitraCourse = scope === 'MITRA';
+  const isScopeReadonly = !!scope;
+  const selectedScope = useWatch({
+    control: form.control,
+    name: 'scope',
+  });
 
   return (
     <form className="space-y-5" onSubmit={form.handleSubmit(onSubmit)}>
@@ -73,7 +78,7 @@ export function CourseForm({ form, isSubmitting, onSubmit, onCancel, submitLabel
               options={getCurrentScope ? getCurrentScope : COURSE_SCOPE_OPTIONS}
               placeholder="Pilih scope"
               error={readErrorMessage(form.formState.errors, 'scope')}
-              disabled={isSubmitting || disableScopeField}
+              disabled={isSubmitting || isScopeReadonly}
             />
           )}
         />
@@ -88,7 +93,16 @@ export function CourseForm({ form, isSubmitting, onSubmit, onCancel, submitLabel
         />
       </div>
 
-      <CourseScopeRow scope={scope} form={form} isLoadingCourses={isSubmitting} curriculumOptions={curriculumOptions} mitraOptions={mitraOptions} isLoadingMitras={isLoadingMitras} userRole={userRole} setMitraQuery={setMitraQuery} />
+      <CourseScopeRow
+        scope={scope ?? selectedScope}
+        form={form}
+        isLoadingCourses={isSubmitting}
+        curriculumOptions={curriculumOptions}
+        mitraOptions={mitraOptions}
+        isLoadingMitras={isLoadingMitras}
+        userRole={userRole}
+        setMitraQuery={setMitraQuery}
+      />
       <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
         <Button type="button" variant="outline" disabled={isSubmitting} onClick={onCancel}>
           Batal

@@ -10,6 +10,7 @@ export const getProfileUser = cache(async (): Promise<AuthProfileResponse | null
     const res = await apiFetchWithAuth<AuthProfileResponse>('/auth/profile', {
       method: 'GET',
     });
+
     const result = mapAuthProfileResponse(res);
     return result;
   } catch (error) {

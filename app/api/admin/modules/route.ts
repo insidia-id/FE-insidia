@@ -2,14 +2,6 @@ import { NextRequest } from 'next/server';
 import { toRouteError, toRouteResponse } from '@/lib/api/route-response';
 import { forwardApiRequest } from '@/lib/api/route-proxy';
 
-/**
- * GET /api/admin/modules
- * Fetch modules by domain (courseInsidiaId or classGroupCourseId)
- *
- * Routes to backend:
- * - INSIDIA: GET /admin/courses-insidia/:courseInsidiaId/modules
- * - MITRA:   GET /admin/class-group-courses/:classGroupCourseId/modules
- */
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
@@ -44,17 +36,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-/**
- * POST /api/admin/modules
- * Create a new module for a specific domain
- *
- * Routes to backend:
- * - INSIDIA: POST /admin/courses-insidia/:courseInsidiaId/modules
- * - MITRA:   POST /admin/class-group-courses/:classGroupCourseId/modules
- *
- * Body must contain courseInsidiaId or classGroupCourseId to determine routing.
- * The owner ID is extracted from body and used as path param; removed from forwarded body.
- */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -74,7 +55,6 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Create a new request with the cleaned body (owner ID removed)
     const newRequest = new NextRequest(request.url, {
       method: 'POST',
       headers: request.headers,

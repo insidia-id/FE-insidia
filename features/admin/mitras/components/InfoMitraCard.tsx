@@ -1,8 +1,8 @@
 import { Building2, CalendarDays, Hash, MapPinHouse, ShieldCheck, University } from 'lucide-react';
-import { formatMitraDate, formatMitraType } from '../lib/mitra.helper';
+import { formatMitraType } from '../lib/mitra.helper';
 import type { LucideIcon } from 'lucide-react';
 import { Mitra } from '../types/mitras.types';
-
+import { formatDate as formatMitraDate } from '@/lib/helper/normalizer.helper';
 type InfoCardProps = {
   icon: LucideIcon;
   label: string;

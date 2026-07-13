@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCreateCourseInsidiaModule, useDeleteCourseModule, useGetCourseInsidiaModules, useUpdateCourseModule } from '../hooks/useCourses';
-import { courseModuleFormSchema, type CourseModuleFormValues } from '../schema/course.schema';
-import type { CourseModule } from '../types/course.types';
+import { useCreateCourseInsidiaModule, useDeleteCourseModule, useGetCourseInsidiaModules, useUpdateCourseModule } from '../../courses-module/hooks/courses-module.query';
+import { courseModuleFormSchema, type CourseModuleFormValues } from '../../courses-module/schema/courses-module.schema';
+import type { CourseModule } from '../../courses-module/types/courses-module.types';
 
 const defaultValues: CourseModuleFormValues = {
   title: '',
   summary: null,
   sortOrder: 0,
+  mitraId: null,
 };
 
 function toFormValues(module?: CourseModule | null): CourseModuleFormValues {
@@ -20,6 +21,7 @@ function toFormValues(module?: CourseModule | null): CourseModuleFormValues {
     title: module.title,
     summary: module.summary,
     sortOrder: module.sortOrder,
+    mitraId: module.mitraId,
   };
 }
 

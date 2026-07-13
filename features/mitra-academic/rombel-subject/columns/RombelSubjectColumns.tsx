@@ -14,22 +14,25 @@ export function RombelSubjectColumns({ setEditingItem, setIsFormOpen, setDeletin
     {
       accessorKey: 'classGroup.name',
       header: 'Kelas',
-      cell: ({ row }) => <span className="font-medium">{row.original.classGroup.name}</span>,
+      cell: ({ row }) => <span className="font-medium">{row.original.classGroup?.name ?? 'N/A'}</span>,
     },
     {
       accessorKey: 'subject.name',
       header: 'Mata Pelajaran',
-      cell: ({ row }) => row.original.subject.name,
+      cell: ({ row }) => {
+        const subjectName = row.original.course?.title ?? 'N/A';
+        return <span className="font-medium">{subjectName}</span>;
+      },
     },
     {
       accessorKey: 'teacher.name',
       header: 'Guru',
-      cell: ({ row }) => row.original.teacher.name ?? row.original.teacher.email,
+      cell: ({ row }) => row.original.teacher?.name ?? row.original.teacher?.email,
     },
     {
       accessorKey: 'semester.name',
       header: 'Periode',
-      cell: ({ row }) => `${row.original.academicYear.name} - ${row.original.semester.name}`,
+      cell: ({ row }) => `${row.original.academicYear?.name ?? 'N/A'} - ${row.original.semester?.name ?? 'N/A'}`,
     },
     {
       accessorKey: 'status',

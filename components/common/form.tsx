@@ -8,17 +8,18 @@ type BaseFieldProps = {
   id: string;
   placeholder?: string;
   error?: string | null;
+  type?: string;
 };
 
 type TextFieldProps = BaseFieldProps & React.ComponentProps<typeof Input>;
 
 type TextAreaFieldProps = BaseFieldProps & React.ComponentProps<typeof Textarea>;
 
-export function TextField({ label, id, placeholder, error, ...props }: TextFieldProps) {
+export function TextField({ label, id, placeholder, error, type, ...props }: TextFieldProps) {
   return (
     <div className="space-y-2">
       <Label htmlFor={id}>{label}</Label>
-      <Input id={id} placeholder={placeholder} {...props} />
+      <Input id={id} type={type} placeholder={placeholder} {...props} />
       {error && <p className="text-sm text-destructive">{error}</p>}
     </div>
   );
@@ -43,7 +44,7 @@ export function SelectField({
   error,
   disabled,
 }: {
-  label: string;
+  label?: string;
   value?: string;
   onChange: (value: string) => void;
   options: readonly {
@@ -55,9 +56,17 @@ export function SelectField({
   disabled?: boolean;
 }) {
   return (
-    <div className="space-y-2">
-      <label className="text-sm font-medium">{label}</label>
-      <Select value={value} onValueChange={onChange} disabled={disabled}>
+    <div className="space-y-2  flex flex-col ">
+      {label && <label className="text-sm font-medium ">{label}</label>}
+      <Select
+        value={value ?? undefined}
+        onValueChange={(nextValue) => {
+          if (!nextValue) return;
+
+          onChange(nextValue);
+        }}
+        disabled={disabled}
+      >
         <SelectTrigger className="w-full">
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>

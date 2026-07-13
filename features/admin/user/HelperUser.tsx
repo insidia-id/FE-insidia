@@ -42,11 +42,14 @@ export const USER_MITRA_ROLE_VALUES = USER_ROLE_OPTIONS.filter((option) => optio
 
 export type UserRoleFormValue = (typeof USER_ROLE_OPTIONS)[number]['value'];
 
-export function getUsersHref(Mitraslug: string | null, path?: string) {
+export function getUsersHref(Mitraslug: string | null, path?: string, role?: UserRoleCode | null) {
   if (!path) {
     path = '';
   }
   if (Mitraslug) {
+    if (role && role.toUpperCase() !== 'AKADEMIK') {
+      return `/mitra/${Mitraslug}/${path}`;
+    }
     return `/mitra/admin/${Mitraslug}/${path}`;
   }
   return `/admin/${path}`;

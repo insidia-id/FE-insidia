@@ -1,8 +1,9 @@
 import { apiFetchInternal } from '@/lib/api/express.client';
-import type { CourseDetail, CourseListItem, CourseMedia, CourseModule, CourseScope, CourseStatus } from '../types/course.types';
-import type { CourseFormValues, CourseModuleFormValues, CreateCourseDto, MediaMetadataFormValues, MediaUploadFormValues } from '../schema/course.schema';
+import type { CourseDetail, CourseMedia, CourseScope, CourseStatus } from '../types/course.types';
+import type { CourseFormValues, CreateCourseDto, MediaMetadataFormValues, MediaUploadFormValues } from '../schema/course.schema';
+import { AccessScope } from '@/lib/types/types';
 
-export async function getCourses(scope: CourseScope, status?: CourseStatus, mitraId?: string | null): Promise<CourseListItem[]> {
+export async function getCourses(scope: CourseScope, status?: CourseStatus, mitraId?: string | null): Promise<CourseDetail[]> {
   const params = new URLSearchParams();
   params.set('scope', scope);
 
@@ -14,15 +15,18 @@ export async function getCourses(scope: CourseScope, status?: CourseStatus, mitr
     params.set('mitraId', mitraId);
   }
 
-  return apiFetchInternal<CourseListItem[]>(`/api/admin/courses?${params.toString()}`, {
+  return apiFetchInternal<CourseDetail[]>(`/api/admin/courses?${params.toString()}`, {
     method: 'GET',
   });
 }
 
-export async function getCourseById(courseId: string): Promise<CourseDetail> {
-  return apiFetchInternal<CourseDetail>(`/api/admin/courses/${courseId}`, {
+export async function getCourseById(courseId: string, scope: AccessScope): Promise<CourseDetail> {
+  const params = new URLSearchParams();
+  params.set('scope', scope);
+  const response = await apiFetchInternal<CourseDetail>(`/api/admin/courses/${courseId}?${params.toString()}`, {
     method: 'GET',
   });
+  return response;
 }
 
 export async function createCourse(data: CreateCourseDto): Promise<CourseDetail> {
@@ -41,90 +45,6 @@ export async function updateCourse(courseId: string, data: CreateCourseDto): Pro
 
 export async function deleteCourse(courseId: string): Promise<{ message: string }> {
   return apiFetchInternal<{ message: string }>(`/api/admin/courses/${courseId}`, {
-    method: 'DELETE',
-  });
-}
-
-/**
- * Get modules for an INSIDIA course (marketplace)
- */
-export async function getCourseInsidiaModules(courseInsidiaId: string): Promise<CourseModule[]> {
-  const params = new URLSearchParams();
-  params.set('courseInsidiaId', courseInsidiaId);
-
-  return apiFetchInternal<CourseModule[]>(`/api/admin/modules?${params.toString()}`, {
-    method: 'GET',
-  });
-}
-
-/**
- * Get modules for a MITRA ClassGroupCourse (academic workspace)
- */
-export async function getClassGroupCourseModules(classGroupCourseId: string): Promise<CourseModule[]> {
-  const params = new URLSearchParams();
-  params.set('classGroupCourseId', classGroupCourseId);
-
-  return apiFetchInternal<CourseModule[]>(`/api/admin/modules?${params.toString()}`, {
-    method: 'GET',
-  });
-}
-
-/**
- * Create a module for an INSIDIA course (marketplace)
- */
-export async function createCourseInsidiaModule(courseInsidiaId: string, data: CourseModuleFormValues): Promise<CourseModule> {
-  return apiFetchInternal<CourseModule>('/api/admin/modules', {
-    method: 'POST',
-    body: JSON.stringify({
-      ...data,
-      courseInsidiaId,
-    }),
-  });
-}
-
-/**
- * Create a module for a MITRA ClassGroupCourse (academic workspace)
- */
-export async function createClassGroupCourseModule(classGroupCourseId: string, data: CourseModuleFormValues): Promise<CourseModule> {
-  return apiFetchInternal<CourseModule>('/api/admin/modules', {
-    method: 'POST',
-    body: JSON.stringify({
-      ...data,
-      classGroupCourseId,
-    }),
-  });
-}
-
-/**
- * @deprecated Use getCourseInsidiaModules or getClassGroupCourseModules instead.
- * This function uses the old endpoint that assumes Course owns modules directly.
- */
-export async function getCourseModules(courseId: string): Promise<CourseModule[]> {
-  return apiFetchInternal<CourseModule[]>(`/api/admin/courses/${courseId}/modules`, {
-    method: 'GET',
-  });
-}
-
-/**
- * @deprecated Use createCourseInsidiaModule or createClassGroupCourseModule instead.
- * This function uses the old endpoint that assumes Course owns modules directly.
- */
-export async function createCourseModule(courseId: string, data: CourseModuleFormValues): Promise<CourseModule> {
-  return apiFetchInternal<CourseModule>(`/api/admin/courses/${courseId}/modules`, {
-    method: 'POST',
-    body: JSON.stringify(data),
-  });
-}
-
-export async function updateCourseModule(moduleId: string, data: CourseModuleFormValues): Promise<CourseModule> {
-  return apiFetchInternal<CourseModule>(`/api/admin/modules/${moduleId}`, {
-    method: 'PATCH',
-    body: JSON.stringify(data),
-  });
-}
-
-export async function deleteCourseModule(moduleId: string): Promise<{ message: string }> {
-  return apiFetchInternal<{ message: string }>(`/api/admin/modules/${moduleId}`, {
     method: 'DELETE',
   });
 }

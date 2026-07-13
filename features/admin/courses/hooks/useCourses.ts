@@ -1,35 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { getMutationErrorMessage } from '@/lib/error/error.message';
-import {
-  createCourse,
-  createCourseModule,
-  deleteCourse,
-  deleteCourseModule,
-  deleteMedia,
-  getCourseById,
-  getCourseMedia,
-  getCourseModules,
-  getCourses,
-  updateCourse,
-  updateCourseModule,
-  updateMedia,
-  uploadCourseMedia,
-  uploadModuleMedia,
-  getCourseInsidiaModules,
-  getClassGroupCourseModules,
-  createCourseInsidiaModule,
-  createClassGroupCourseModule,
-} from '../api/api.client';
+import { createCourse, deleteCourse, deleteMedia, getCourseById, getCourseMedia, getCourses, updateCourse, updateMedia, uploadCourseMedia, uploadModuleMedia } from '../api/api.client';
 import type { CourseScope, CourseStatus } from '../types/course.types';
-import type { CourseFormValues, CourseModuleFormValues, CreateCourseDto, MediaMetadataFormValues, MediaUploadFormValues } from '../schema/course.schema';
+import type { CreateCourseDto, MediaMetadataFormValues, MediaUploadFormValues } from '../schema/course.schema';
+import { AccessScope } from '../../access-control/types/access-control.types';
 
 export const courseKeys = {
   all: ['courses'] as const,
   lists: () => [...courseKeys.all, 'list'] as const,
   list: (scope: CourseScope, status?: CourseStatus, mitraId?: string | null) => [...courseKeys.lists(), { scope, status: status ?? null, mitraId: mitraId ?? null }] as const,
   detail: (courseId: string) => [...courseKeys.all, 'detail', courseId] as const,
-  /** @deprecated Use domain-specific module keys */
   modules: (courseId: string) => [...courseKeys.all, 'modules', courseId] as const,
   insidiaModules: (courseInsidiaId: string) => [...courseKeys.all, 'modules', 'insidia', courseInsidiaId] as const,
   mitraModules: (classGroupCourseId: string) => [...courseKeys.all, 'modules', 'mitra', classGroupCourseId] as const,
@@ -44,39 +25,11 @@ export function useGetCourses(scope: CourseScope, status?: CourseStatus, mitraId
   });
 }
 
-export function useGetCourseById(courseId: string) {
+export function useGetCourseById(courseId: string, scope: AccessScope) {
   return useQuery({
     queryKey: courseKeys.detail(courseId),
-    queryFn: () => getCourseById(courseId),
+    queryFn: () => getCourseById(courseId, scope),
     enabled: Boolean(courseId),
-    refetchOnWindowFocus: false,
-  });
-}
-
-/** @deprecated Use useGetCourseInsidiaModules or useGetClassGroupCourseModules */
-export function useGetCourseModules(courseId: string) {
-  return useQuery({
-    queryKey: courseKeys.modules(courseId),
-    queryFn: () => getCourseModules(courseId),
-    enabled: Boolean(courseId),
-    refetchOnWindowFocus: false,
-  });
-}
-
-export function useGetCourseInsidiaModules(courseInsidiaId: string | undefined | null) {
-  return useQuery({
-    queryKey: courseKeys.insidiaModules(courseInsidiaId ?? ''),
-    queryFn: () => getCourseInsidiaModules(courseInsidiaId!),
-    enabled: Boolean(courseInsidiaId),
-    refetchOnWindowFocus: false,
-  });
-}
-
-export function useGetClassGroupCourseModules(classGroupCourseId: string | undefined | null) {
-  return useQuery({
-    queryKey: courseKeys.mitraModules(classGroupCourseId ?? ''),
-    queryFn: () => getClassGroupCourseModules(classGroupCourseId!),
-    enabled: Boolean(classGroupCourseId),
     refetchOnWindowFocus: false,
   });
 }
@@ -132,89 +85,6 @@ export function useDeleteCourse() {
     },
     onError: (error) => {
       toast.error(getMutationErrorMessage(error, 'Gagal menghapus course'));
-    },
-  });
-}
-
-/** @deprecated Use useCreateCourseInsidiaModule or useCreateClassGroupCourseModule */
-export function useCreateCourseModule(courseId: string) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (data: CourseModuleFormValues) => createCourseModule(courseId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: courseKeys.modules(courseId) });
-      queryClient.invalidateQueries({ queryKey: courseKeys.detail(courseId) });
-      toast.success('Modul berhasil ditambahkan');
-    },
-    onError: (error) => {
-      toast.error(getMutationErrorMessage(error, 'Gagal menambah modul'));
-    },
-  });
-}
-
-export function useCreateCourseInsidiaModule(courseInsidiaId: string, courseId: string) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (data: CourseModuleFormValues) => createCourseInsidiaModule(courseInsidiaId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: courseKeys.insidiaModules(courseInsidiaId) });
-      queryClient.invalidateQueries({ queryKey: courseKeys.detail(courseId) });
-      toast.success('Modul berhasil ditambahkan');
-    },
-    onError: (error) => {
-      toast.error(getMutationErrorMessage(error, 'Gagal menambah modul'));
-    },
-  });
-}
-
-export function useCreateClassGroupCourseModule(classGroupCourseId: string, courseId: string) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (data: CourseModuleFormValues) => createClassGroupCourseModule(classGroupCourseId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: courseKeys.mitraModules(classGroupCourseId) });
-      queryClient.invalidateQueries({ queryKey: courseKeys.detail(courseId) });
-      toast.success('Modul berhasil ditambahkan');
-    },
-    onError: (error) => {
-      toast.error(getMutationErrorMessage(error, 'Gagal menambah modul'));
-    },
-  });
-}
-
-export function useUpdateCourseModule(courseId: string) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ moduleId, data }: { moduleId: string; data: CourseModuleFormValues }) => updateCourseModule(moduleId, data),
-    onSuccess: () => {
-      // Invalidate all module queries (both legacy and domain-specific)
-      queryClient.invalidateQueries({ queryKey: [...courseKeys.all, 'modules'] });
-      queryClient.invalidateQueries({ queryKey: courseKeys.detail(courseId) });
-      toast.success('Modul berhasil diperbarui');
-    },
-    onError: (error) => {
-      toast.error(getMutationErrorMessage(error, 'Gagal memperbarui modul'));
-    },
-  });
-}
-
-export function useDeleteCourseModule(courseId: string) {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (moduleId: string) => deleteCourseModule(moduleId),
-    onSuccess: () => {
-      // Invalidate all module queries (both legacy and domain-specific)
-      queryClient.invalidateQueries({ queryKey: [...courseKeys.all, 'modules'] });
-      queryClient.invalidateQueries({ queryKey: courseKeys.detail(courseId) });
-      toast.success('Modul berhasil dihapus');
-    },
-    onError: (error) => {
-      toast.error(getMutationErrorMessage(error, 'Gagal menghapus modul'));
     },
   });
 }

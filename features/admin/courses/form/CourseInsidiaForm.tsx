@@ -1,7 +1,7 @@
 import { Controller, UseFormReturn, useWatch } from 'react-hook-form';
 import { readErrorMessage } from '@/lib/form/form.helper';
 import { TextField, SelectField, TextAreaField } from '@/components/common/form';
-import { CourseFormValues, CreateCourseInsidiaFormValues } from '../schema/course.schema';
+import { CourseFormValues } from '../schema/course.schema';
 import { COURSE_LEVEL_OPTIONS, joinLines } from '../lib/course.helper';
 type Props = {
   form: UseFormReturn<CourseFormValues>;
