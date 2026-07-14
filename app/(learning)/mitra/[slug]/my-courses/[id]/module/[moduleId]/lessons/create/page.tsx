@@ -19,7 +19,5 @@ export default async function LessonCreateRoute({ params }: LessonCreateRoutePro
     redirect(`/mitra/${slug}/courses/${id}/module/${moduleId}`);
   }
 
-  const userProfile = toUserProfile(profile);
-
-  return <LessonCreatePage slug={slug} courseId={id} moduleId={moduleId} currentProfile={userProfile} />;
+  return <LessonCreatePage slug={slug} courseId={id} moduleId={moduleId} />;
 }
