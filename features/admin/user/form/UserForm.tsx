@@ -54,10 +54,9 @@ export function UserFormFields<TFieldValues extends FieldValues & BaseUserFormSh
 }: UserFormFieldsProps<TFieldValues>) {
   const searchParams = useSearchParams();
   const isUpdateMode = mode === 'update';
-  const assignableRoleOptions = getAssignableRoleOptions(currentUserRole, scope);
+  const assignableRoleOptions = getAssignableRoleOptions(currentUserRole, 'INSIDIA');
   const mitraRoleOptions = getAssignableRoleOptions(currentUserRole, 'MITRA');
   const role = searchParams.get('role') as MitraRole | undefined;
-  console.log(`form getValues`, form.getValues());
   return (
     <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
       <div className="grid gap-4 md:grid-cols-2">

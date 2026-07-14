@@ -4,7 +4,6 @@ import { AuthProfileResponse } from '@/features/auth/types/auth.types';
 
 export const USER_STATUS_OPTIONS = [
   { label: 'Aktif', value: 'ACTIVE' },
-  { label: 'Ditangguhkan', value: 'SUSPENDED' },
   { label: 'Diblokir', value: 'BANNED' },
 ] as const;
 
@@ -22,7 +21,6 @@ export const USER_ROLE_OPTIONS = [
 export const statusFilterOptions = [
   { label: 'Semua status', value: 'all' },
   { label: 'Aktif', value: 'ACTIVE' },
-  { label: 'Ditangguhkan', value: 'SUSPENDED' },
   { label: 'Diblokir', value: 'BANNED' },
 ] as const;
 
