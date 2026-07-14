@@ -66,9 +66,9 @@ export function CourseModulesSection({ courseId, courseInsidiaId }: CourseModule
                       <TableCell className="font-medium">{module.title}</TableCell>
                       <TableCell className="max-w-xs truncate text-sm text-muted-foreground">{module.summary ?? '-'}</TableCell>
                       <TableCell>
-                        <Badge variant="outline">{module._count.lessons} lesson</Badge>
+                        <Badge variant="outline">{module.totalLessons} lesson</Badge>
                         <Badge variant="outline" className="ml-2">
-                          {module._count.media} media
+                          {0} media
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">

@@ -49,9 +49,9 @@ export function useSubjectMutations() {
   });
 }
 
-export function useSubject() {
+export function useSubject(mitraId: string | null) {
   const query = useSubjects();
-  const curriculaQuery = useCurricula();
+  const curriculaQuery = useCurricula(mitraId ?? '');
   const mutations = useSubjectMutations();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<Subject | null>(null);

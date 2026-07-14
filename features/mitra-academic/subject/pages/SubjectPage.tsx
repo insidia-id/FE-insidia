@@ -9,10 +9,11 @@ import { useSubject } from '../hooks/useSubject';
 
 type SubjectPageProps = {
   slug: string;
+  mitraId: string | null;
 };
 
-export function SubjectPage({ slug }: SubjectPageProps) {
-  const controller = useSubject();
+export function SubjectPage({ slug, mitraId }: SubjectPageProps) {
+  const controller = useSubject(mitraId ?? '');
 
   return (
     <>

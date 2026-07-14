@@ -32,7 +32,14 @@ export function SemesterPage({ slug, mitraId }: SemesterPageProps) {
       </section>
 
       <FormDialog title={controller.state.editingItem ? 'Edit Semester' : 'Tambah Semester'} open={controller.state.isFormOpen} onOpenChange={(open) => controller.state.setIsFormOpen(open)}>
-        <SemesterForm form={controller.form} isSubmitting={controller.queries.isSubmitting} handleSubmit={controller.actions.handleSubmit} editingItem={controller.state.editingItem} handleCloseForm={controller.actions.handleCloseForm} />
+        <SemesterForm
+          form={controller.form}
+          isSubmitting={controller.queries.isSubmitting}
+          handleSubmit={controller.actions.handleSubmit}
+          editingItem={controller.state.editingItem}
+          handleCloseForm={controller.actions.handleCloseForm}
+          mitraId={mitraId}
+        />
       </FormDialog>
 
       <ConfirmDeleteDialog

@@ -14,7 +14,7 @@ export function useMyCourseColumns() {
     {
       accessorKey: 'mitra.totalClassGroupCourses',
       header: 'Total Class',
-      sortingFn: (a, b) => (a.original.mitra?.totalClassGroupCourses ?? 0) - (b.original.mitra?.totalClassGroupCourses ?? 0),
+      sortingFn: (a, b) => (a.original.totalClassGroupCourses ?? 0) - (b.original.totalClassGroupCourses ?? 0),
     },
   ];
 

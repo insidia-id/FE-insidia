@@ -15,12 +15,13 @@ type SemesterFormProps = {
   handleSubmit: (values: any) => void;
   editingItem?: ReturnType<typeof useSemester>['state']['editingItem'];
   handleCloseForm: () => void;
+  mitraId: string | null;
 };
 
-export function SemesterForm({ form, isSubmitting, handleSubmit, editingItem, handleCloseForm }: SemesterFormProps) {
+export function SemesterForm({ form, isSubmitting, handleSubmit, editingItem, handleCloseForm, mitraId }: SemesterFormProps) {
   const {
     queries: { academicYears, isLoading: isLoadingAcademicYears, isError: isErrorAcademicYears },
-  } = useAcademicYearController();
+  } = useAcademicYearController(mitraId ?? '');
 
   return (
     <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">

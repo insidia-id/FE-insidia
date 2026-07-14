@@ -8,7 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ConfirmDeleteDialog } from '@/components/dialog/DialogDelete';
 import { CourseDetailController } from '../controller/CourseDetailController';
 import { CourseModulesSection } from '../components/CourseModulesSection';
-import { CourseMediaSection } from '../components/CourseMediaSection';
+// import { CourseMediaSection } from '../components/CourseMediaSection';
 import { formatCourseScope, getCoursesHref } from '../lib/course.helper';
 import { formatDate } from '@/features/admin/user/HelperUser';
 import { AccessScope } from '../../access-control/types/access-control.types';
@@ -111,10 +111,10 @@ export function CourseDetailPage({ courseId, mitraSlug, scope }: CourseDetailPag
                 </CardContent>
               </Card>
             ) : (
-              <CourseModulesSection courseId={courseId} courseInsidiaId={course.insidiaId ?? ''} />
+              <CourseModulesSection courseId={courseId} courseInsidiaId={course.id ?? ''} />
             )}
 
-            <CourseMediaSection courseId={courseId} />
+            {/* <CourseMediaSection courseId={courseId} /> */}
           </>
         ) : null}
       </section>
