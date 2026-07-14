@@ -10,6 +10,7 @@ type PageProps = {
   }>;
 };
 
-export default function Page({ params }: PageProps) {
+export default async function Page({ params }: PageProps) {
+  const { slug, id, moduleId } = await params;
   return <LessonsPage params={params} />;
 }
