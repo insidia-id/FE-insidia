@@ -25,24 +25,20 @@ export function CoursesPage({ mitraSlug, initialScope, canChangeScope, currentPr
     mitraId: activeMitraId,
   });
   const isMitraView = scope === 'MITRA';
-  const entityLabel = isMitraView ? 'Mapel Mitra' : 'Course';
+  const entityLabel = 'Mata Pelajaran';
   return (
     <main className="min-h-screen bg-muted/30 px-4 py-10">
       <section className="mx-auto w-full max-w-6xl space-y-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="space-y-2">
-            <p className="text-sm font-medium uppercase tracking-[0.14em] text-muted-foreground">{isMitraView ? 'Manajemen Mapel Mitra' : 'Manajemen Course'}</p>
+            <p className="text-sm font-medium uppercase tracking-[0.14em] text-muted-foreground">{isMitraView ? 'Manajemen Mata Pelajaran Mitra' : 'Manajemen Mata Pelajaran'}</p>
             <h1 className="text-3xl font-semibold text-foreground">{`Daftar ${entityLabel}`}</h1>
             <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
               {isMitraView
-                ? 'Mapel mitra memakai entitas course scope MITRA yang terhubung ke kurikulum. Di sini kita bisa melihat data mapel sekaligus atribut course yang menyertainya.'
-                : 'Kelola daftar course, pantau status publikasinya, lalu buka detail untuk mengatur modul dan media.'}
+                ? 'Mata pelajaran mitra memakai entitas mata pelajaran scope MITRA yang terhubung ke kurikulum. Di sini kita bisa melihat data mata pelajaran sekaligus atribut mata pelajaran yang menyertainya.'
+                : 'Kelola daftar mata pelajaran, pantau status publikasinya, lalu buka detail untuk mengatur modul dan media.'}
             </p>
           </div>
-
-          <Button asChild variant="insidia">
-            <Link href={getCoursesHref(mitraSlug, 'create')}>{isMitraView ? 'Tambah Mapel' : 'Tambah Course'}</Link>
-          </Button>
         </div>
 
         <Card>
@@ -61,7 +57,7 @@ export function CoursesPage({ mitraSlug, initialScope, canChangeScope, currentPr
                 <Skeleton className="h-10 w-full" />
               </div>
             ) : isError ? (
-              <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{error instanceof Error ? error.message : 'Gagal memuat data course.'}</div>
+              <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{error instanceof Error ? error.message : 'Gagal memuat data mata pelajaran.'}</div>
             ) : (
               <CourseTable courses={courses} scope={scope} onScopeChange={onScopeChange} canChangeScope={canChangeScope} mitraSlug={mitraSlug} />
             )}

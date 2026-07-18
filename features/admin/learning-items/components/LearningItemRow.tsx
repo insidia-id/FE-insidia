@@ -8,6 +8,7 @@ import { formatDate } from '@/lib/helper/normalizer.helper';
 import { cn } from '@/lib/utils';
 import { formatLearningItemDuration, getAvailabilityBadge, getAvailabilityStatus } from '../helper/learning-items.helper';
 import { useRouter } from 'next/navigation';
+
 type LearningItemRowProps = {
   item: LearningItem;
   onTogglePublish: (itemId: string, isPublished: boolean) => void;
@@ -52,11 +53,11 @@ export function LearningItemRow({ item, onTogglePublish, onDelete, onOpen }: Lea
   return (
     <div
       className={cn(
-        'group relative flex items-center gap-4 p-4 rounded-xl border transition-all duration-200 bg-white',
+        'group relative flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border transition-all duration-200 bg-white',
         isLocked ? 'border-gray-100 opacity-60 hover:border-gray-200' : 'border-gray-100 hover:border-[#8557E5]/30 hover:shadow-md hover:bg-gray-50/50',
       )}
     >
-      <div className="flex-shrink-0">
+      <div className="hidden sm:flex flex-shrink-0">
         <div
           className={cn(
             'h-8 w-8 rounded-full flex items-center justify-center text-xs font-semibold transition-all',
@@ -67,70 +68,75 @@ export function LearningItemRow({ item, onTogglePublish, onDelete, onOpen }: Lea
         </div>
       </div>
 
-      <div className={cn('flex-shrink-0 h-10 w-10 rounded-xl flex items-center justify-center transition-all', typeColors[item.type], isLocked && 'opacity-50')}>{typeIcons[item.type]}</div>
+      <div className={cn('flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10 rounded-xl flex items-center justify-center transition-all', typeColors[item.type], isLocked && 'opacity-50')}>{typeIcons[item.type]}</div>
 
-      <div className="flex-1 min-w-0">
-        <div className="flex flex-wrap items-center gap-2 mb-0.5">
-          <h4 className={cn('text-sm font-medium truncate transition-colors', isLocked ? 'text-gray-500' : 'text-gray-900 group-hover:text-[#8557E5]')}>{item.title}</h4>
-          <Badge variant="outline" className={cn('text-xs font-normal', typeBadgeColors[item.type])}>
+      <div className="flex-1 min-w-0 w-full sm:w-auto">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mb-0.5">
+          <h4 className={cn('text-sm font-medium truncate transition-colors flex-1 min-w-[120px]', isLocked ? 'text-gray-500' : 'text-gray-900 group-hover:text-[#8557E5]')}>{item.title}</h4>
+          <Badge variant="outline" className={cn('text-xs font-normal shrink-0', typeBadgeColors[item.type])}>
             {typeLabels[item.type]}
           </Badge>
           {isLocked ? (
-            <Badge variant="outline" className="text-xs text-gray-400 border-gray-200 bg-gray-50">
+            <Badge variant="outline" className="text-xs text-gray-400 border-gray-200 bg-gray-50 shrink-0">
               <Lock className="h-3 w-3 mr-1" />
-              Terkunci
+              <span className="hidden xs:inline">Terkunci</span>
             </Badge>
           ) : (
             <Badge
               variant={item.published ? 'default' : 'secondary'}
-              className={cn('text-xs', item.published ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-50' : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-50')}
+              className={cn('text-xs shrink-0', item.published ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-50' : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-50')}
             >
               {item.published ? (
                 <>
                   <Eye className="h-3 w-3 mr-1" />
-                  Published
+                  <span className="hidden xs:inline">Published</span>
+                  <span className="xs:hidden">Published</span>
                 </>
               ) : (
                 <>
                   <EyeOff className="h-3 w-3 mr-1" />
-                  Draft
+                  <span className="hidden xs:inline">Draft</span>
+                  <span className="xs:hidden">Draft</span>
                 </>
               )}
             </Badge>
           )}
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 text-xs text-gray-400">
-          <span className="flex items-center gap-1">
-            update
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-gray-400">
+          <span className="flex items-center gap-1 shrink-0">
             <Calendar className="h-3 w-3" />
+            <span className="hidden xs:inline">update</span>
             {formatDate(item.updatedAt)}
           </span>
           {duration !== '-' && available && (
-            <span className="flex items-center gap-1">
+            <span className="flex items-center gap-1 shrink-0">
               <Clock className="h-3 w-3" />
               {duration}
             </span>
           )}
-          {availabilityBadge}
+          <span className="shrink-0">{availabilityBadge}</span>
         </div>
       </div>
 
-      <div className="flex items-center gap-1.5 flex-shrink-0">
+      <div className="flex items-center gap-1 flex-shrink-0 w-full sm:w-auto justify-end sm:justify-start mt-2 sm:mt-0">
         <Button
           variant="ghost"
           size="sm"
           onClick={() => onOpen(item.id, item.type)}
-          className={cn('gap-1.5 rounded-xl px-3 transition-all', isLocked ? 'text-gray-400 hover:text-gray-400 hover:bg-gray-50 cursor-not-allowed' : 'text-[#8557E5] hover:text-[#6f44c9] hover:bg-[#8557E5]/10')}
+          className={cn(
+            'gap-1.5 rounded-xl px-2 sm:px-3 transition-all flex-1 sm:flex-none justify-center',
+            isLocked ? 'text-gray-400 hover:text-gray-400 hover:bg-gray-50 cursor-not-allowed' : 'text-[#8557E5] hover:text-[#6f44c9] hover:bg-[#8557E5]/10',
+          )}
           disabled={isLocked}
         >
           <ArrowUpRight className="h-4 w-4" />
-          <span className="hidden sm:inline">Buka</span>
+          <span className="sm:inline">Buka</span>
         </Button>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600" disabled={isLocked}>
+            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 shrink-0" disabled={isLocked}>
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>

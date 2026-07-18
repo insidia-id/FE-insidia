@@ -27,7 +27,6 @@ export function LessonsPage({ params }: LessonsPageProps) {
   const { lessons, currentLesson, currentLearningItem, prevLesson, nextLesson, isLoading, isError, handleLessonSelect, toggleSidebar } = useLessonsPage({ courseId, moduleId, slug });
 
   const [isFullscreen, setIsFullscreen] = useState(false);
-
   const handleToggleFullscreen = () => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen();
@@ -38,26 +37,9 @@ export function LessonsPage({ params }: LessonsPageProps) {
     }
   };
   const { openMobile, setOpenMobile } = useSidebar();
-
   if (isLoading) {
     return <LoadingState />;
   }
-
-  if (isError) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center p-8 bg-white rounded-2xl shadow-sm border border-red-100 max-w-md w-full">
-          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Gagal Memuat Pelajaran</h3>
-          <p className="text-gray-500 mb-6">Terjadi kesalahan saat memuat data. Silakan coba lagi nanti.</p>
-          <Button onClick={() => window.location.reload()} variant="outline" className="w-full">
-            Coba Lagi
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
   if (lessons.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -65,7 +47,7 @@ export function LessonsPage({ params }: LessonsPageProps) {
           <h3 className="text-lg font-semibold text-gray-900 mb-2">Belum Ada Pelajaran</h3>
           <p className="text-gray-500 mb-6">Modul ini belum memiliki pelajaran yang tersedia.</p>
           <Link href={`/mitra/${slug}/my-courses/${courseId}`}>
-            <Button className="bg-[#8557E5] hover:bg-[#6f44c9] w-full">Kembali ke Course</Button>
+            <Button className="bg-[#8557E5] hover:bg-[#6f44c9] w-full">Kembali ke Mata Pelajaran</Button>
           </Link>
         </div>
       </div>
@@ -138,15 +120,25 @@ export function LessonsPage({ params }: LessonsPageProps) {
             </div>
           </SidebarFooter>
         </Sidebar>
+
         <main className="flex-1 overflow-y-auto">
           <div className="max-w-6xl mx-auto  py-6 space-y-6">
-            <LessonHeader learningItem={currentLearningItem} lesson={currentLesson} />
-
-            <div className="bg-white rounded-md  border border-gray-200 overflow-hidden">
-              <div className="p-6">
-                <LessonContent contentHtml={currentLesson?.contentHtml} typeLesson={currentLesson?.typeLesson || 'ARTICLE'} />
+            {isError ? (
+              <div className="flex items-center justify-center gap-2 text-sm text-red-500">
+                <AlertCircle className="h-4 w-4" />
+                <span>Materi Terkunci atau Tidak Tersedia.</span>
               </div>
-            </div>
+            ) : (
+              <>
+                <LessonHeader learningItem={currentLearningItem} lesson={currentLesson} />
+
+                <div className="bg-white rounded-md  border border-gray-200 overflow-hidden">
+                  <div className="p-6">
+                    <LessonContent contentHtml={currentLesson?.contentHtml} typeLesson={currentLesson?.typeLesson || 'ARTICLE'} />
+                  </div>
+                </div>
+              </>
+            )}
 
             <LessonAttachments />
 

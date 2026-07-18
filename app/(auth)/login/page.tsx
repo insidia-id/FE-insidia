@@ -3,6 +3,7 @@ import { getLoginErrorMessage } from '@/features/auth/error/login-error';
 import { getSafeCallbackPath } from '@/auth/redirect';
 import { CardLogin } from '@/features/auth/components/CardLogin';
 import CardSectionLogin from '@/features/auth/components/CardSectionLogin';
+import { serverEnv } from '@/lib/config/env.server';
 
 type LoginPageProps = {
   searchParams: Promise<{
@@ -16,7 +17,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const callbackParam = Array.isArray(params.callbackUrl) ? params.callbackUrl[0] : params.callbackUrl;
   const errorParam = Array.isArray(params.error) ? params.error[0] : params.error;
   const callbackUrl = getSafeCallbackPath(callbackParam);
-  const isGoogleLoginEnabled = Boolean(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET);
+  const isGoogleLoginEnabled = Boolean(serverEnv.AUTH_GOOGLE_ID && serverEnv.AUTH_GOOGLE_SECRET);
 
   return (
     <main className="w-full px-0 py-6 md:px-4 md:py-12">

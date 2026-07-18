@@ -59,7 +59,7 @@ export function LessonEditorPage({ slug, courseId, moduleId, learningItemId, les
               </Button>
               <div className="h-6 w-px bg-gray-300" />
               <div>
-                <h1 className="text-lg font-semibold text-gray-900">{lesson.title || 'Untitled Lesson'}</h1>
+                <h1 className="text-lg font-semibold text-gray-900">{lesson.title || 'Materi'}</h1>
                 <p className="text-xs text-gray-500">Editor Materi</p>
               </div>
             </div>

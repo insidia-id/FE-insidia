@@ -1,10 +1,6 @@
 import { buildClientError, createHeaders, getJson, unwrapData } from './api.shared';
-
-const publicApiUrl = process.env.NEXT_PUBLIC_AUTH_API_URL;
-
-if (!publicApiUrl) {
-  throw new Error('NEXT_PUBLIC_AUTH_API_URL not defined');
-}
+import { publicEnv } from '@/lib/config/env.public';
+const publicApiUrl = publicEnv.NEXT_PUBLIC_AUTH_API_URL;
 
 async function baseFetch<T>(input: string, init?: RequestInit): Promise<T> {
   const response = await fetch(input, {

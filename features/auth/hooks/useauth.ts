@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { getMutationErrorMessage } from '@/lib/error/error.message';
 import { requestOtpLogin } from '../api/api.client';
 import type { LoginEmailInput } from '../schema/auth.schema';
-import { logout } from '../api/api';
+import { logout } from '../api/api.client';
 import { signOut } from 'next-auth/react';
 
 export const useRequestOtpLogin = () => {

@@ -42,18 +42,18 @@ export function CourseForm({ form, isSubmitting, onSubmit, onCancel, submitLabel
       <div className="grid gap-4 md:grid-cols-2">
         <TextField
           id="course-title"
-          label={isMitraCourse ? 'Nama Mapel' : 'Judul Course'}
+          label={`Nama Mata pelajaran`}
           placeholder={isMitraCourse ? 'Matematika Wajib' : 'Belajar TypeScript Dasar'}
           error={readErrorMessage(form.formState.errors, 'title')}
           disabled={isSubmitting}
           {...form.register('title')}
         />
-        <TextField id="course-code" label="Kode Mapel" placeholder="MTK-WAJIB" error={readErrorMessage(form.formState.errors, 'code')} disabled={isSubmitting} value={form.watch('code') ?? ''} {...form.register('code')} />
+        <TextField id="course-code" label="Kode Mata Pelajaran" placeholder="MTK-WAJIB" error={readErrorMessage(form.formState.errors, 'code')} disabled={isSubmitting} value={form.watch('code') ?? ''} {...form.register('code')} />
 
         <TextField
           id="course-slug"
-          label={isMitraCourse ? 'Slug Otomatis' : 'Slug'}
-          placeholder={isMitraCourse ? 'Slug digenerate dari mitra, kode, dan nama mapel' : 'belajar-typescript-dasar'}
+          label={'Nama link (opsional)'}
+          placeholder={isMitraCourse ? 'kode unik digenerate dari mitra, kode, dan nama mata pelajaran' : 'belajar-typescript-dasar'}
           error={readErrorMessage(form.formState.errors, 'slug')}
           disabled={isSubmitting || isMitraCourse}
           {...form.register('slug')}
@@ -61,7 +61,7 @@ export function CourseForm({ form, isSubmitting, onSubmit, onCancel, submitLabel
         <TextField
           id="course-subtitle"
           label={isMitraCourse ? 'Subjudul Opsional' : 'Subtitle'}
-          placeholder={isMitraCourse ? 'Mapel inti semester ganjil' : 'Ringkasan singkat course'}
+          placeholder={isMitraCourse ? 'Mata pelajaran inti semester ganjil' : 'Ringkasan singkat mata pelajaran'}
           error={readErrorMessage(form.formState.errors, 'subtitle')}
           disabled={isSubmitting}
           value={form.watch('subtitle') ?? ''}
@@ -84,8 +84,8 @@ export function CourseForm({ form, isSubmitting, onSubmit, onCancel, submitLabel
         />
         <TextAreaField
           id="course-description"
-          label={isMitraCourse ? 'Deskripsi Mapel' : 'Deskripsi'}
-          placeholder={isMitraCourse ? 'Tulis deskripsi mapel di sini' : 'Tulis deskripsi course di sini'}
+          label={isMitraCourse ? 'Deskripsi Mata Pelajaran' : 'Deskripsi'}
+          placeholder={isMitraCourse ? 'Tulis deskripsi mata pelajaran di sini' : 'Tulis deskripsi mata pelajaran di sini'}
           error={readErrorMessage(form.formState.errors, 'description')}
           disabled={isSubmitting}
           value={form.watch('description') ?? ''}

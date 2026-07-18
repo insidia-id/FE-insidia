@@ -23,7 +23,7 @@ export function MitraDashboardHero({ slug, activeMitraRole, roleCode, isAcademic
         </div>
         <div className="space-y-2">
           <CardTitle className="text-3xl font-semibold tracking-tight text-slate-900">Dashboard Mitra</CardTitle>
-          <CardDescription className="max-w-3xl text-sm leading-6 text-slate-600">Pantau kelas dan mapel yang terhubung dengan akunmu di mitra {mitraName}.</CardDescription>
+          <CardDescription className="max-w-3xl text-sm leading-6 text-slate-600">Pantau kelas dan mata pelajaran yang terhubung dengan akunmu di mitra {mitraName}.</CardDescription>
         </div>
       </div>
 

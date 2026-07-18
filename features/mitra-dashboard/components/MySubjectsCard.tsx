@@ -17,21 +17,21 @@ export function MySubjectsCard({ overview, slug, userRole }: MySubjectsCardProps
     <Card className="border-border/70 bg-white/90 shadow-sm">
       <CardHeader className="flex flex-col gap-2">
         <div className="flex items-center justify-between gap-2 w-full">
-          <CardTitle>Mapel Saya</CardTitle>
+          <CardTitle> Mata Pelajaran Saya</CardTitle>
           <Link href={getUsersHref(slug, 'courses', userRole)} className="text-sm text-primary-600 hover:underline">
             <Button variant="insidia" size="sm">
-              Lihat semua mapel
+              Lihat semua mata pelajaran
             </Button>
           </Link>
         </div>
-        <CardDescription>Daftar mapel yang terkait dengan akunmu pada periode aktif.</CardDescription>
+        <CardDescription>Daftar mata pelajaran yang terkait dengan akunmu pada periode aktif.</CardDescription>
       </CardHeader>
       <CardContent>
         {overview.shouldLoad ? (
           overview.error ? (
             <EmptyState message={overview.error} tone="error" />
           ) : overview.courses.length === 0 ? (
-            <EmptyState message="Belum ada mapel yang muncul untuk akunmu." />
+            <EmptyState message="Belum ada mata pelajaran yang muncul untuk akunmu." />
           ) : (
             <ul className="space-y-2">
               {overview.courses.map((course) => (
@@ -43,7 +43,7 @@ export function MySubjectsCard({ overview, slug, userRole }: MySubjectsCardProps
             </ul>
           )
         ) : (
-          <EmptyState message="Mapel pribadi belum tersedia untuk role ini." />
+          <EmptyState message="Mata pelajaran pribadi belum tersedia untuk role ini." />
         )}
       </CardContent>
     </Card>

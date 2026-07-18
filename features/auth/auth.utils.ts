@@ -1,8 +1,8 @@
 import type { User } from 'next-auth';
 import type { Account } from 'next-auth';
 import type { AppAuthResponse, AppToken, AppUser, AuthProfileResponse, GoogleExchangePayload, SessionError } from './types/auth.types';
-const INTERNAL_AUTH_TOKEN = process.env.INTERNAL_AUTH_TOKEN;
-
+import { serverEnv } from '@/lib/config/env.server';
+const INTERNAL_AUTH_TOKEN = serverEnv.INTERNAL_AUTH_TOKEN;
 export function toAppUser(user: AppAuthResponse['user']): AppUser {
   return {
     id: user.id,

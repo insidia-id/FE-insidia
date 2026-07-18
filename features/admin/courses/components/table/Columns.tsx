@@ -22,7 +22,7 @@ export function useCourseColumns({ onDeleteRequest, scope, mitraSlug }: UseCours
     const baseColumns: ColumnDef<CourseDetail>[] = [
       {
         accessorKey: 'name',
-        header: 'Course',
+        header: 'Mata Pelajaran',
         cell: ({ row }) => {
           const course = row.original;
           return (

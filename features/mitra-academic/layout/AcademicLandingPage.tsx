@@ -46,15 +46,15 @@ export function AcademicLandingPage({ slug, stats }: AcademicLandingPageProps) {
     },
     {
       title: 'Kurikulum',
-      description: 'Data kurikulum sebagai fondasi penyusunan mapel dan kelas.',
+      description: 'Data kurikulum sebagai fondasi penyusunan Mata Pelajaran dan kelas.',
       href: `${baseHref}/kurikulum`,
       icon: <Library className="size-5" />,
       color: 'bg-purple-500/10 text-purple-600',
     },
     {
       title: 'Mata Pelajaran',
-      description: 'Kelola mapel yang terhubung ke kurikulum mitra.',
-      href: `${baseHref}/mapel`,
+      description: 'Kelola Mata Pelajaran yang terhubung ke kurikulum mitra.',
+      href: `courses`,
       icon: <BookOpen className="size-5" />,
       color: 'bg-purple-500/10 text-purple-600',
     },
@@ -73,8 +73,8 @@ export function AcademicLandingPage({ slug, stats }: AcademicLandingPageProps) {
       color: 'bg-green-500/10 text-green-600',
     },
     {
-      title: 'Rombel - Mapel',
-      description: 'Hubungkan rombel dengan mapel dan tentukan guru pengajar.',
+      title: 'Rombel - Mata Pelajaran',
+      description: 'Hubungkan rombel dengan mata pelajaran dan tentukan guru pengajar.',
       href: `${baseHref}/rombel-mapel`,
       icon: <GraduationCap className="size-5" />,
       color: 'bg-orange-500/10 text-orange-600',
@@ -110,7 +110,7 @@ export function AcademicLandingPage({ slug, stats }: AcademicLandingPageProps) {
                 <div className="divide-y divide-border/60 rounded-lg border border-border/60">
                   <SummaryRow label="Tahun Ajaran" value={stats.academicYears ?? 0} />
                   <SummaryRow label="Semester" value={stats.semesters ?? 0} />
-                  <SummaryRow label="Mapel" value={stats.subjects ?? 0} />
+                  <SummaryRow label="Mata Pelajaran" value={stats.subjects ?? 0} />
                   <SummaryRow label="Rombel" value={stats.classGroups ?? 0} />
                 </div>
               </CardContent>

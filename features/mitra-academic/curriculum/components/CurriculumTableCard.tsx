@@ -21,7 +21,7 @@ export function CurriculumTableCard({ controller }: CurriculumTableCardProps) {
       <CardHeader className="flex flex-row items-start justify-between">
         <div className="space-y-1">
           <CardTitle className="text-2xl font-semibold">Kurikulum</CardTitle>
-          <CardDescription>Kelola data kurikulum sebagai fondasi mapel dan kelas akademik.</CardDescription>
+          <CardDescription>Kelola data kurikulum sebagai fondasi Mata Pelajaran dan kelas akademik.</CardDescription>
         </div>
         <Button variant="insidia" onClick={controller.actions.handleCreate}>
           <Plus className="mr-2 size-4" />

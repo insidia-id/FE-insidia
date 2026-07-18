@@ -21,22 +21,22 @@ export function SubjectTableCard({ controller }: SubjectTableCardProps) {
       <CardHeader className="flex flex-row items-start justify-between">
         <div className="space-y-1">
           <CardTitle className="text-2xl font-semibold">Mata Pelajaran</CardTitle>
-          <CardDescription>Kelola mapel yang terhubung ke kurikulum mitra.</CardDescription>
+          <CardDescription>Kelola Mata Pelajaran yang terhubung ke kurikulum mitra.</CardDescription>
         </div>
         <Button variant="insidia" onClick={controller.actions.handleCreate}>
           <Plus className="mr-2 size-4" />
-          Tambah Mapel
+          Tambah Mata Pelajaran
         </Button>
       </CardHeader>
       <CardContent>
         <DataTable
           columns={columns}
           data={controller.queries.subjects}
-          searchPlaceholder="Cari mapel..."
-          emptyMessage="Belum ada data mapel."
+          searchPlaceholder="Cari mata pelajaran..."
+          emptyMessage="Belum ada data mata pelajaran."
           isLoading={controller.queries.isLoading}
           isError={controller.queries.isError}
-          errorMessage="Gagal memuat data mapel"
+          errorMessage="Gagal memuat data mata pelajaran"
         />
       </CardContent>
     </Card>

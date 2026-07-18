@@ -33,18 +33,18 @@ export function CreateCoursePage({ currentProfile }: CreateCoursePageProps) {
       <section className="mx-auto w-full px-4 space-y-6">
         <div className="space-y-2">
           {/* <p className="text-sm font-medium uppercase tracking-[0.14em] text-muted-foreground">{isMitraCourse ? 'Manajemen Mapel Mitra' : 'Manajemen Course'}</p> */}
-          <h1 className="text-3xl font-semibold text-foreground">{isMitraCourse ? 'Tambah Mapel Mitra' : 'Tambah Course'}</h1>
+          <h1 className="text-3xl font-semibold text-foreground">{'Tambah Mata Pelajaran'}</h1>
           <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
             {isMitraCourse
-              ? 'Mapel mitra menggunakan entitas course scope MITRA yang terhubung ke kurikulum. Lengkapi identitas mapel dulu, lalu detail kontennya bisa dikelola dari halaman course.'
-              : 'Isi informasi dasar course terlebih dahulu. Setelah course dibuat, modul dan media bisa dikelola dari halaman detail.'}
+              ? 'Mata pelajaran mitra menggunakan entitas mata pelajaran scope MITRA yang terhubung ke kurikulum. Lengkapi identitas mata pelajaran dulu, lalu detail kontennya bisa dikelola dari halaman mata pelajaran.'
+              : 'Isi informasi dasar mata pelajaran terlebih dahulu. Setelah mata pelajaran dibuat, modul dan media bisa dikelola dari halaman detail.'}
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>{isMitraCourse ? 'Form Mapel Mitra' : 'Form Course'}</CardTitle>
-            <CardDescription>{isMitraCourse ? 'Pastikan kurikulum, kode mapel, dan status akademiknya sesuai sebelum disimpan.' : 'Pastikan status, harga, dan scope course sudah sesuai sebelum disimpan.'}</CardDescription>
+            <CardTitle>{isMitraCourse ? 'Form Mata Pelajaran Mitra' : 'Form Mata Pelajaran'}</CardTitle>
+            <CardDescription>{isMitraCourse ? 'Pastikan kurikulum, kode Mata Pelajaran, dan status akademiknya sesuai sebelum disimpan.' : 'Pastikan status, harga, dan scope mata pelajaran sudah sesuai sebelum disimpan.'}</CardDescription>
           </CardHeader>
           <CardContent>
             <CourseForm
@@ -57,7 +57,7 @@ export function CreateCoursePage({ currentProfile }: CreateCoursePageProps) {
                   router.push(getUsersHref(activeMitraSlug, `courses/${courseId}?scope=${data.scope}`));
                 });
               }}
-              submitLabel={isMitraCourse ? 'Simpan Mapel' : 'Simpan Course'}
+              submitLabel={isMitraCourse ? 'Simpan Mapel' : 'Simpan Mata Pelajaran'}
               mitraOptions={mitraOptions}
               isLoadingMitras={isLoadingMitras}
               userRole={userRole}

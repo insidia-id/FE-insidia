@@ -1,4 +1,4 @@
-import { apiFetchExternal } from '@/lib/api/express.client';
+import { apiFetchExternal, apiFetchInternal } from '@/lib/api/express.client';
 import type { LoginEmailInput } from '../schema/auth.schema';
 type RequestOtpLoginResponse = {
   message: string;
@@ -13,4 +13,10 @@ export async function requestOtpLogin(data: LoginEmailInput): Promise<RequestOtp
     body: JSON.stringify(data),
   });
   return res;
+}
+
+export async function logout() {
+  return apiFetchInternal(`/api/auth/logout`, {
+    method: 'POST',
+  });
 }

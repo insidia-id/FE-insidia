@@ -15,7 +15,7 @@ export function ModuleDeleteDialog({ module, onOpenChange, onConfirm, isDeleting
     <ConfirmDeleteDialog
       open={Boolean(module)}
       onOpenChange={onOpenChange}
-      description={`Modul "${module?.title ?? ''}" akan dihapus dari course ini. Semua materi pembelajaran di dalam modul ini juga akan terhapus.`}
+      description={`Modul "${module?.title ?? ''}" akan dihapus dari mata pelajaran ini. Semua materi pembelajaran di dalam modul ini juga akan terhapus.`}
       isLoading={isDeleting}
       onConfirm={onConfirm}
     />

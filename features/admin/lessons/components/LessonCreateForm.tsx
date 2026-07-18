@@ -21,7 +21,7 @@ export function LessonCreateForm({ form, isSubmitting, onSubmit, onCancel }: Les
     <form onSubmit={onSubmit} className="space-y-6">
       <div className="rounded-xl border bg-white p-6">
         <div className="grid gap-4 md:grid-cols-2">
-          <TextField id="lesson-title" label="Title" placeholder="Masukkan judul lesson" error={readErrorMessage(form.formState.errors, 'title')} disabled={isSubmitting} {...form.register('title')} />
+          <TextField id="lesson-title" label="Title" placeholder="Masukkan judul Materi" error={readErrorMessage(form.formState.errors, 'title')} disabled={isSubmitting} {...form.register('title')} />
 
           <TextField id="lesson-slug" label="Nama URL (Slug)" placeholder="contoh: belajar-javascript-dasar" error={readErrorMessage(form.formState.errors, 'slug')} disabled={isSubmitting} {...form.register('slug')} />
 
@@ -31,8 +31,8 @@ export function LessonCreateForm({ form, isSubmitting, onSubmit, onCancel }: Les
               name="typeLesson"
               render={({ field }) => (
                 <SelectField
-                  label="Tipe Lesson"
-                  placeholder="Pilih tipe lesson"
+                  label="Tipe Materi"
+                  placeholder="Pilih tipe materi"
                   value={field.value}
                   onChange={field.onChange}
                   options={[
@@ -60,13 +60,13 @@ export function LessonCreateForm({ form, isSubmitting, onSubmit, onCancel }: Les
           />
 
           <div className="md:col-span-2">
-            <TextAreaField id="lesson-description" label="Description" placeholder="Deskripsi lesson" error={readErrorMessage(form.formState.errors, 'description')} disabled={isSubmitting} {...form.register('description')} />
+            <TextAreaField id="lesson-description" label="Description" placeholder="Deskripsi materi" error={readErrorMessage(form.formState.errors, 'description')} disabled={isSubmitting} {...form.register('description')} />
           </div>
 
           <div className="flex items-center gap-6 md:col-span-2">
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" className="size-4 rounded border-input" disabled={isSubmitting} {...form.register('isPreview')} />
-              Preview lesson
+              Preview Materi
             </label>
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" className="size-4 rounded border-input" disabled={isSubmitting} {...form.register('published')} />
@@ -77,7 +77,7 @@ export function LessonCreateForm({ form, isSubmitting, onSubmit, onCancel }: Les
       </div>
 
       <div>
-        <Label className="mb-2 block">Lesson Content</Label>
+        <Label className="mb-2 block">Materi Content</Label>
         <LessonEditor
           initialContentJson={form.watch('contentJson')}
           initialContentHtml={form.watch('contentHtml')}
@@ -92,11 +92,11 @@ export function LessonCreateForm({ form, isSubmitting, onSubmit, onCancel }: Les
       <div className="sticky bottom-0 flex justify-between gap-3 rounded-xl border bg-white p-4 shadow-sm">
         <Button type="button" variant="outline" disabled={isSubmitting} onClick={onCancel}>
           <ArrowLeft className="mr-2 h-4 w-4" />
-          Cancel
+          Kembali
         </Button>
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Create Lesson
+          Buat Materi
         </Button>
       </div>
     </form>

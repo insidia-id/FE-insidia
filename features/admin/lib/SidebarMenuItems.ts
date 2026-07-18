@@ -84,20 +84,20 @@ export function getAdminMenuItems(activeRole: UserRoleCode | null, mitraSlug: st
       ],
     },
     {
-      title: 'Manajemen Course',
+      title: 'Manajemen Mata Pelajaran',
       icon: 'BookOpen',
       href: getUsersHref(mitraSlug, 'courses'),
       permissions: [Permissions.coursePermissions.view.MITRA, Permissions.coursePermissions.view.INSIDIA],
       submenu: [
         {
-          title: 'Semua Course',
+          title: 'Semua Mata Pelajaran',
           href: getUsersHref(mitraSlug, 'courses'),
           icon: 'BookOpen',
           exact: true,
           permissions: [Permissions.coursePermissions.view.MITRA, Permissions.coursePermissions.view.INSIDIA],
         },
         {
-          title: 'Tambah Course',
+          title: 'Tambah Mata Pelajaran',
           href: getUsersHref(mitraSlug, 'courses/create'),
           icon: 'FolderKanban',
           permissions: [Permissions.coursePermissions.create.MITRA, Permissions.coursePermissions.create.INSIDIA],

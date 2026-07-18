@@ -30,11 +30,11 @@ export function useCreateLesson() {
         queryKey: lessonKeys.learningItemLessons(variables.moduleId),
       });
 
-      toast.success('Lesson berhasil ditambahkan');
+      toast.success('Materi berhasil ditambahkan');
     },
 
     onError: (error) => {
-      toast.error(getMutationErrorMessage(error, 'Gagal menambah lesson'));
+      toast.error(getMutationErrorMessage(error, 'Gagal menambah materi'));
     },
   });
 }
@@ -51,7 +51,7 @@ export function useUpdateLesson() {
       });
       queryClient.invalidateQueries({ queryKey: learningItemKeys.moduleItems(variables?.moduleId) });
 
-      toast.success('Lesson berhasil diperbarui');
+      toast.success('Materi berhasil diperbarui');
     },
   });
 }
@@ -63,10 +63,10 @@ export function useDeleteLesson() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: lessonKeys.learningItemLessons(variables.learningItemId) });
       queryClient.invalidateQueries({ queryKey: learningItemKeys.moduleItems(variables.moduleId) });
-      toast.success('Lesson berhasil dihapus');
+      toast.success('Materi berhasil dihapus');
     },
     onError: (error) => {
-      toast.error(getMutationErrorMessage(error, 'Gagal menghapus lesson'));
+      toast.error(getMutationErrorMessage(error, 'Gagal menghapus materi'));
     },
   });
 }

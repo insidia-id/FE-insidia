@@ -7,6 +7,7 @@ import { LearningItem, LearningItemType } from '../types/learnig-items.type';
 import { LearningItemRow } from './LearningItemRow';
 import Link from 'next/link';
 import { UserRoleCode } from '@/features/admin/user/types/user.types';
+import { toast } from 'sonner';
 type LearningItemsSectionProps = {
   items: LearningItem[];
   onTogglePublish: (itemId: string, isPublished: boolean) => void;
@@ -20,39 +21,40 @@ type LearningItemsSectionProps = {
 
 export function LearningItemsSection({ items, onTogglePublish, onDelete, onOpen, slug, courseId, moduleId, userRole }: LearningItemsSectionProps) {
   const sortedItems = [...items].sort((a, b) => a.order - b.order);
-  const canManage = userRole !== 'MURID' && userRole !== 'USER';
   return (
     <div className="bg-white rounded-xl border overflow-hidden">
       <div className="p-4 border-b bg-gray-50 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-gray-900">Learning Items</h2>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="insidia" size="sm">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Item
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem asChild>
-              <Link href={`/mitra/${slug}/my-courses/${courseId}/module/${moduleId}/lessons/create`} className="cursor-pointer">
-                <BookOpen className="mr-2 h-4 w-4" />
-                Lesson
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href={`/mitra/${slug}/my-courses/${courseId}/module/${moduleId}/quiz/create`} className="cursor-pointer">
-                <FileQuestion className="mr-2 h-4 w-4" />
-                Quiz
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href={`/mitra/${slug}/my-courses/${courseId}/module/${moduleId}/assignment/create`} className="cursor-pointer">
-                <ClipboardList className="mr-2 h-4 w-4" />
-                Assignment
-              </Link>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <h2 className="text-lg font-semibold text-gray-900">Item Pembelajaran</h2>
+        {userRole !== 'MURID' && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="insidia" size="sm">
+                <Plus className="mr-2 h-4 w-4" />
+                Tambah Item
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem asChild>
+                <Link href={`/mitra/${slug}/my-courses/${courseId}/module/${moduleId}/lessons/create`} className="cursor-pointer">
+                  <BookOpen className="mr-2 h-4 w-4" />
+                  Materi
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={`/mitra/${slug}/my-courses/${courseId}/module/${moduleId}/quiz/create`} className="cursor-pointer">
+                  <FileQuestion className="mr-2 h-4 w-4" />
+                  Kuis
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={`/mitra/${slug}/my-courses/${courseId}/module/${moduleId}/assignment/create`} className="cursor-pointer">
+                  <ClipboardList className="mr-2 h-4 w-4" />
+                  Tugas
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
 
       <div className="p-4">
@@ -63,28 +65,26 @@ export function LearningItemsSection({ items, onTogglePublish, onDelete, onOpen,
                 <BookOpen className="h-8 w-8 text-gray-400" />
               </div>
             </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-1">No Learning Items</h3>
-            <p className="text-sm text-gray-500 mb-4">Get started by adding your first lesson, quiz, or assignment.</p>
-            <div className="flex justify-center gap-2">
-              <Link href={`/mitra/${slug}/my-courses/${courseId}/module/${moduleId}/lessons/create`}>
-                <Button variant="outline" size="sm">
-                  <BookOpen className="mr-2 h-4 w-4" />
-                  Add Lesson
-                </Button>
-              </Link>
-              <Link href={`/mitra/${slug}/my-courses/${courseId}/module/${moduleId}/quiz/create`}>
-                <Button variant="outline" size="sm">
+            <h3 className="text-lg font-semibold text-gray-900 mb-1">Tidak ada Item Pembelajaran</h3>
+            <p className="text-sm text-gray-500 mb-4">Belum ada item pembelajaran yang ditambahkan.</p>
+            {userRole !== 'MURID' && (
+              <div className="flex flex-col sm:flex-row justify-center gap-2">
+                <Link href={`/mitra/${slug}/my-courses/${courseId}/module/${moduleId}/lessons/create`}>
+                  <Button variant="outline" size="sm">
+                    <BookOpen className="mr-2 h-4 w-4" />
+                    Tambah Materi
+                  </Button>
+                </Link>
+                <Button onClick={() => toast.warning('Fitur Kuis sedang dalam pengembangan')} variant="outline" size="sm">
                   <FileQuestion className="mr-2 h-4 w-4" />
-                  Add Quiz
+                  Tambah Kuis
                 </Button>
-              </Link>
-              <Link href={`/mitra/${slug}/my-courses/${courseId}/module/${moduleId}/assignment/create`}>
-                <Button variant="outline" size="sm">
+                <Button onClick={() => toast.warning('Fitur Tugas sedang dalam pengembangan')} variant="outline" size="sm">
                   <ClipboardList className="mr-2 h-4 w-4" />
-                  Add Assignment
+                  Tambah Tugas
                 </Button>
-              </Link>
-            </div>
+              </div>
+            )}
           </div>
         ) : (
           <div className="space-y-2">

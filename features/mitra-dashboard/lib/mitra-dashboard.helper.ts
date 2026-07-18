@@ -7,7 +7,7 @@ export function shouldLoadAcademicOverview(roleCode: MitraDashboardRoleCode) {
 
 export function getClassesDescription(roleCode: MitraDashboardRoleCode) {
   if (roleCode === 'GURU') {
-    return 'Rombel dan mapel yang sedang kamu ampu pada periode aktif.';
+    return 'Rombel dan mata pelajaran yang sedang kamu ampu pada periode aktif.';
   }
 
   if (roleCode === 'MURID') {

@@ -50,10 +50,10 @@ export function useCreateCourse() {
     mutationFn: (data: CreateCourseDto) => createCourse(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: courseKeys.all });
-      toast.success('Course berhasil dibuat');
+      toast.success('Mata Pelajaran berhasil dibuat');
     },
     onError: (error) => {
-      toast.error(getMutationErrorMessage(error, 'Gagal membuat course'));
+      toast.error(getMutationErrorMessage(error, 'Gagal membuat Mata Pelajaran'));
     },
   });
 }
@@ -66,10 +66,10 @@ export function useUpdateCourse() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: courseKeys.all });
       queryClient.invalidateQueries({ queryKey: courseKeys.detail(variables.courseId) });
-      toast.success('Course berhasil diperbarui');
+      toast.success('Mata Pelajaran berhasil diperbarui');
     },
     onError: (error) => {
-      toast.error(getMutationErrorMessage(error, 'Gagal memperbarui course'));
+      toast.error(getMutationErrorMessage(error, 'Gagal memperbarui Mata Pelajaran'));
     },
   });
 }
@@ -81,10 +81,10 @@ export function useDeleteCourse() {
     mutationFn: (courseId: string) => deleteCourse(courseId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: courseKeys.all });
-      toast.success('Course berhasil dihapus');
+      toast.success('Mata Pelajaran berhasil dihapus');
     },
     onError: (error) => {
-      toast.error(getMutationErrorMessage(error, 'Gagal menghapus course'));
+      toast.error(getMutationErrorMessage(error, 'Gagal menghapus Mata Pelajaran'));
     },
   });
 }
@@ -97,10 +97,10 @@ export function useUploadCourseMedia(courseId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: courseKeys.media(courseId) });
       queryClient.invalidateQueries({ queryKey: courseKeys.detail(courseId) });
-      toast.success('Media course berhasil diunggah');
+      toast.success('Media Mata Pelajaran berhasil diunggah');
     },
     onError: (error) => {
-      toast.error(getMutationErrorMessage(error, 'Gagal mengunggah media course'));
+      toast.error(getMutationErrorMessage(error, 'Gagal mengunggah media Mata Pelajaran'));
     },
   });
 }

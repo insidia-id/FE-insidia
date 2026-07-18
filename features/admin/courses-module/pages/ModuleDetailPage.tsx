@@ -39,6 +39,7 @@ export function ModuleDetailPage({ slug, id, moduleId, currentProfile }: ModuleD
   });
 
   const userRole = activeMitraRole || activeInsidiaRole;
+  console.log('ModuleDetailPage userRole:', userRole);
   if (isModuleLoading) {
     return (
       <div className="space-y-6 px-4 py-8 sm:px-6 lg:px-8">
@@ -70,7 +71,7 @@ export function ModuleDetailPage({ slug, id, moduleId, currentProfile }: ModuleD
 
   return (
     <div className="space-y-6 px-4 py-8 sm:px-6 lg:px-8">
-      <ModuleDetailHeader module={module} mitraSlug={slug} courseId={id} onEdit={() => onEdit(module)} onDelete={() => onDeleteTargetChange(module)} />
+      <ModuleDetailHeader userRole={userRole} module={module} mitraSlug={slug} courseId={id} onEdit={() => onEdit(module)} onDelete={() => onDeleteTargetChange(module)} />
 
       <ModuleDetailStats module={module} />
 

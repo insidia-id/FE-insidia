@@ -3,8 +3,10 @@ import { MyCourseResponse } from '../types/my-courses.types';
 import { Calendar, Building2, Clock, BookOpen, FileText, Users, GraduationCap } from 'lucide-react';
 import { formatDate } from '@/lib/helper/normalizer.helper';
 import { formatDuration } from '../lib/MyCourses.helper';
+import { UserRoleCode } from '@/features/admin/user/types/user.types';
 type MyCoursesDetailHeaderProps = {
   course: MyCourseResponse | undefined;
+  userRole: UserRoleCode | null;
 };
 export const MyCoursesDetailHeader = ({ course }: MyCoursesDetailHeaderProps) => {
   return (

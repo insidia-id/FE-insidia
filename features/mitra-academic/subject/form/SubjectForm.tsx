@@ -26,8 +26,8 @@ export function SubjectForm({ form, queries, isSubmitting, handleSubmit, editing
         isError={queries.isErrorCurricula}
         error={readErrorMessage(form.formState.errors, 'curriculumId')}
       />
-      <TextField id="subject-name" label="Nama Mapel" placeholder="Matematika" error={readErrorMessage(form.formState.errors, 'name')} disabled={isSubmitting} {...form.register('name')} />
-      <TextField id="subject-code" label="Kode Mapel" placeholder="MTK" error={readErrorMessage(form.formState.errors, 'code')} disabled={isSubmitting} {...form.register('code')} />
+      <TextField id="subject-name" label="Nama Mata Pelajaran" placeholder="Matematika" error={readErrorMessage(form.formState.errors, 'name')} disabled={isSubmitting} {...form.register('name')} />
+      <TextField id="subject-code" label="Kode Mata Pelajaran" placeholder="MTK" error={readErrorMessage(form.formState.errors, 'code')} disabled={isSubmitting} {...form.register('code')} />
       <TextAreaField id="subject-description" label="Deskripsi" error={readErrorMessage(form.formState.errors, 'description')} disabled={isSubmitting} {...form.register('description')} />
       <AcademicStatusSelectField value={form.watch('status')} onChange={(value) => form.setValue('status', value, { shouldValidate: true })} error={readErrorMessage(form.formState.errors, 'status')} disabled={isSubmitting} />
       <AcademicFormActions isSubmitting={isSubmitting} isEditing={Boolean(editingItem)} onCancel={handleCloseForm} />

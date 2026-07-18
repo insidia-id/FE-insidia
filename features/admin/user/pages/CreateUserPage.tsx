@@ -25,6 +25,7 @@ export function CreateUserPage({ currentProfile, defaultRoleCode, defaultScope }
     contextMitraName: activeMitraName ?? undefined,
     defaultRoleCode: normalizedRoleCode,
     activeMitraSlug: activeMitraSlug ?? undefined,
+    defaultScope,
   });
 
   const title = normalizedRoleCode ? `Tambah ${formatRole(normalizedRoleCode)}` : 'Tambah User';

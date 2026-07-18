@@ -28,8 +28,8 @@ export function CourseModulesSection({ courseId, courseInsidiaId }: CourseModule
     <Card>
       <CardHeader className="flex flex-row items-start justify-between gap-4">
         <div>
-          <CardTitle>Modul Course</CardTitle>
-          <CardDescription>{modules.length} modul terdaftar untuk course ini.</CardDescription>
+          <CardTitle>Modul Mata Pelajaran</CardTitle>
+          <CardDescription>{modules.length} modul terdaftar untuk Mata Pelajaran ini.</CardDescription>
         </div>
         <Button variant="insidia" onClick={onCreate}>
           Tambah Modul
@@ -39,7 +39,7 @@ export function CourseModulesSection({ courseId, courseInsidiaId }: CourseModule
         {isLoading ? (
           <p className="text-sm text-muted-foreground">Memuat modul...</p>
         ) : isError ? (
-          <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{error instanceof Error ? error.message : 'Gagal memuat modul course.'}</div>
+          <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{error instanceof Error ? error.message : 'Gagal memuat modul Mata Pelajaran.'}</div>
         ) : (
           <div className="overflow-x-auto">
             <Table>
@@ -56,7 +56,7 @@ export function CourseModulesSection({ courseId, courseInsidiaId }: CourseModule
                 {modules.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} className="py-8 text-center text-sm text-muted-foreground">
-                      Belum ada modul untuk course ini.
+                      Belum ada modul untuk Mata Pelajaran ini.
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -66,7 +66,7 @@ export function CourseModulesSection({ courseId, courseInsidiaId }: CourseModule
                       <TableCell className="font-medium">{module.title}</TableCell>
                       <TableCell className="max-w-xs truncate text-sm text-muted-foreground">{module.summary ?? '-'}</TableCell>
                       <TableCell>
-                        <Badge variant="outline">{module.totalLessons} lesson</Badge>
+                        <Badge variant="outline">{module.totalLessons} Materi</Badge>
                         <Badge variant="outline" className="ml-2">
                           {0} media
                         </Badge>
@@ -94,7 +94,7 @@ export function CourseModulesSection({ courseId, courseInsidiaId }: CourseModule
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{editingModule ? 'Edit Modul' : 'Tambah Modul'}</DialogTitle>
-            <DialogDescription>Atur judul, ringkasan, dan urutan modul agar struktur course tetap rapi.</DialogDescription>
+            <DialogDescription>Atur judul, ringkasan, dan urutan modul agar struktur Mata Pelajaran tetap rapi.</DialogDescription>
           </DialogHeader>
 
           <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
@@ -141,7 +141,7 @@ export function CourseModulesSection({ courseId, courseInsidiaId }: CourseModule
             onDeleteTargetChange(null);
           }
         }}
-        description={`Modul "${moduleToDelete?.title ?? ''}" akan dihapus dari course ini.`}
+        description={`Modul "${moduleToDelete?.title ?? ''}" akan dihapus dari Mata Pelajaran ini.`}
         isLoading={isDeleting}
         onConfirm={onDelete}
       />

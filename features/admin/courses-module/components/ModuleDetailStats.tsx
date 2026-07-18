@@ -36,10 +36,10 @@ function StatsCard({ label, value, icon, color }: StatsCardProps) {
 export function ModuleDetailStats({ module }: ModuleDetailStatsProps) {
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      <StatsCard label="Total Items" value={module.totalLearningItems ?? 0} icon={<LayoutList className="h-5 w-5 text-purple-600" />} color="purple" />
-      <StatsCard label="Lessons" value={module.totalLessons ?? 0} icon={<BookOpen className="h-5 w-5 text-blue-600" />} color="blue" />
-      <StatsCard label="Quizzes" value={module.totalQuizzes ?? 0} icon={<FileQuestion className="h-5 w-5 text-amber-600" />} color="amber" />
-      <StatsCard label="Assignments" value={module.totalAssignments ?? 0} icon={<ClipboardList className="h-5 w-5 text-green-600" />} color="green" />
+      <StatsCard label="Total item pembelajaran" value={module.totalLearningItems ?? 0} icon={<LayoutList className="h-5 w-5 text-purple-600" />} color="purple" />
+      <StatsCard label="Materi" value={module.totalLessons ?? 0} icon={<BookOpen className="h-5 w-5 text-blue-600" />} color="blue" />
+      <StatsCard label="Kuis" value={module.totalQuizzes ?? 0} icon={<FileQuestion className="h-5 w-5 text-amber-600" />} color="amber" />
+      <StatsCard label="Tugas" value={module.totalAssignments ?? 0} icon={<ClipboardList className="h-5 w-5 text-green-600" />} color="green" />
     </div>
   );
 }

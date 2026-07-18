@@ -6,15 +6,11 @@ import { verifyAuthOtp, refreshAccessTokenOnce, exchangeGoogleLogin } from '@/fe
 import { verifyAuthOtpSchema } from '@/features/auth/schema/auth.schema';
 import { AppToken } from '../features/auth/types/auth.types';
 import { clearAuthToken, mergeTokenWithUser, toGoogleExchangePayload, toNextAuthUser } from '../features/auth/auth.utils';
+import { serverEnv } from '@/lib/config/env.server';
+const secret = serverEnv.BETTER_AUTH_SECRET;
 
-const secret = process.env.BETTER_AUTH_SECRET;
-
-if (!secret) {
-  throw new Error('BETTER_AUTH_SECRET is not defined in environment variables');
-}
-
-const googleClientId = process.env.AUTH_GOOGLE_ID;
-const googleClientSecret = process.env.AUTH_GOOGLE_SECRET;
+const googleClientId = serverEnv.AUTH_GOOGLE_ID;
+const googleClientSecret = serverEnv.AUTH_GOOGLE_SECRET;
 
 const providers: Provider[] = [
   Credentials({

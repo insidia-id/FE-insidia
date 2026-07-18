@@ -27,12 +27,12 @@ export function CourseDetailPage({ courseId, mitraSlug, scope }: CourseDetailPag
       <section className="mx-auto w-full max-w-6xl space-y-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div className="space-y-2">
-            <p className="text-sm font-medium uppercase tracking-[0.14em] text-muted-foreground">{isMitraCourse ? 'Manajemen Mapel Mitra' : 'Manajemen Course'}</p>
-            <h1 className="text-3xl font-semibold text-foreground">{course?.title ?? (isMitraCourse ? 'Detail Mapel Mitra' : 'Detail Course')}</h1>
+            <p className="text-sm font-medium uppercase tracking-[0.14em] text-muted-foreground">{'Manajemen Mata Pelajaran'}</p>
+            <h1 className="text-3xl font-semibold text-foreground">{course?.title ?? 'Detail Mata Pelajaran'}</h1>
             <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
               {isMitraCourse
-                ? 'Mapel mitra memakai entitas course scope MITRA. Detail ini menampilkan identitas mapel sekaligus struktur kontennya.'
-                : 'Detail course dipisah dari modul dan media agar struktur file tetap rapi dan mudah di-maintain.'}
+                ? 'Mata pelajaran mitra memakai entitas Mata Pelajaran scope MITRA. Detail ini menampilkan identitas mata pelajaran sekaligus struktur kontennya.'
+                : 'Detail mata pelajaran dipisah dari modul dan media agar struktur file tetap rapi dan mudah di-maintain.'}
             </p>
           </div>
 
@@ -41,10 +41,10 @@ export function CourseDetailPage({ courseId, mitraSlug, scope }: CourseDetailPag
               <Link href={getCoursesHref(mitraSlug, `?scope=${scope}`)}>Kembali</Link>
             </Button>
             <Button asChild variant="insidia">
-              <Link href={getCoursesHref(mitraSlug, `${courseId}/edit?scope=${scope}`)}>{isMitraCourse ? 'Edit Mapel' : 'Edit Course'}</Link>
+              <Link href={getCoursesHref(mitraSlug, `${courseId}/edit?scope=${scope}`)}>{'Edit Mata Pelajaran'}</Link>
             </Button>
             <Button variant="destructive" onClick={() => onDeleteOpenChange(true)}>
-              {isMitraCourse ? 'Hapus Mapel' : 'Hapus Course'}
+              {'Hapus Mata Pelajaran'}
             </Button>
           </div>
         </div>
@@ -60,7 +60,7 @@ export function CourseDetailPage({ courseId, mitraSlug, scope }: CourseDetailPag
         ) : isError ? (
           <Card>
             <CardContent className="p-6">
-              <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{error instanceof Error ? error.message : 'Gagal memuat detail course.'}</div>
+              <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{error instanceof Error ? error.message : 'Gagal memuat detail mata pelajaran.'}</div>
             </CardContent>
           </Card>
         ) : course ? (
@@ -68,7 +68,9 @@ export function CourseDetailPage({ courseId, mitraSlug, scope }: CourseDetailPag
             <Card>
               <CardHeader>
                 <CardTitle>Informasi Utama</CardTitle>
-                <CardDescription>{isMitraCourse ? 'Ringkasan identitas mapel, kurikulum, status akademik, dan atribut course yang melekat padanya.' : 'Ringkasan data dasar course beserta status publikasi dan kontennya.'}</CardDescription>
+                <CardDescription>
+                  {isMitraCourse ? 'Ringkasan identitas Mata Pelajaran, kurikulum, status akademik, dan atribut mata pelajaran yang melekat padanya.' : 'Ringkasan data dasar mata pelajaran beserta status publikasi dan kontennya.'}
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex flex-wrap gap-2">
@@ -103,7 +105,8 @@ export function CourseDetailPage({ courseId, mitraSlug, scope }: CourseDetailPag
                 <CardHeader>
                   <CardTitle>Struktur Modul (MITRA)</CardTitle>
                   <CardDescription>
-                    Sesuai dengan arsitektur baru, modul untuk mapel MITRA dikelola secara independen oleh masing-masing pengajar melalui ruang kelas (Class Group) mereka. Setiap pengajar memiliki modul dan materi pembelajarannya sendiri.
+                    Sesuai dengan arsitektur baru, modul untuk mata pelajaran MITRA dikelola secara independen oleh masing-masing pengajar melalui ruang kelas (Class Group) mereka. Setiap pengajar memiliki modul dan materi pembelajarannya
+                    sendiri.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -119,13 +122,7 @@ export function CourseDetailPage({ courseId, mitraSlug, scope }: CourseDetailPag
         ) : null}
       </section>
 
-      <ConfirmDeleteDialog
-        open={isDeleteOpen}
-        onOpenChange={onDeleteOpenChange}
-        description={`${isMitraCourse ? 'Mapel' : 'Course'} "${course?.title ?? ''}" akan diarsipkan dan dihapus dari daftar aktif.`}
-        isLoading={isDeleting}
-        onConfirm={onDelete}
-      />
+      <ConfirmDeleteDialog open={isDeleteOpen} onOpenChange={onDeleteOpenChange} description={`Mata Pelajaran "${course?.title ?? ''}" akan diarsipkan dan dihapus dari daftar aktif.`} isLoading={isDeleting} onConfirm={onDelete} />
     </main>
   );
 }

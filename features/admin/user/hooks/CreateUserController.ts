@@ -4,6 +4,7 @@ import { useCreateUser } from './useUser';
 import { CreateUserInput, createUserSchema } from '../schema/user.schema';
 import { createProfileByRole, getUsersHref, normalizeRoleQueryParam, normalizeUserRolePayload, toUserMitraAssignments } from '../HelperUser';
 import { useRouter } from 'next/navigation';
+import { AccessScope } from '../../access-control/types/access-control.types';
 function getDefaultValues(contextMitraId?: string, contextMitraName?: string, defaultRoleCode?: string): CreateUserInput {
   const normalizedRoleCode = normalizeRoleQueryParam(defaultRoleCode);
 
@@ -42,9 +43,10 @@ export type CreateUserControllerProps = {
   contextMitraName?: string;
   defaultRoleCode?: string;
   activeMitraSlug?: string;
+  defaultScope?: AccessScope | undefined;
 };
 
-export const useCreateUserController = ({ contextMitraId, contextMitraName, defaultRoleCode, activeMitraSlug }: CreateUserControllerProps) => {
+export const useCreateUserController = ({ contextMitraId, contextMitraName, defaultRoleCode, activeMitraSlug, defaultScope }: CreateUserControllerProps) => {
   const form = useForm<CreateUserInput>({
     resolver: zodResolver(createUserSchema),
     defaultValues: getDefaultValues(contextMitraId, contextMitraName, defaultRoleCode),
@@ -63,7 +65,7 @@ export const useCreateUserController = ({ contextMitraId, contextMitraName, defa
 
     createUserMutation.mutate(data, {
       onSuccess: (createdUser) => {
-        router.push(getUsersHref(activeMitraSlug ?? '', `users/${createdUser.id}`));
+        router.push(getUsersHref(activeMitraSlug ?? '', `users/${createdUser.id}?scope=${defaultScope ?? data.scope}`));
       },
     });
   };

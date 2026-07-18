@@ -35,19 +35,19 @@ export function UpdateCoursePage({ currentProfile, courseId, scope }: UpdateCour
     <main className="min-h-screen bg-muted/30 px-4 py-10">
       <section className="mx-auto w-full max-w-4xl space-y-6">
         <div className="space-y-2">
-          <p className="text-sm font-medium uppercase tracking-[0.14em] text-muted-foreground">{isMitraCourse ? 'Manajemen Mapel Mitra' : 'Manajemen Course'}</p>
-          <h1 className="text-3xl font-semibold text-foreground">{isMitraCourse ? 'Edit Mapel Mitra' : 'Edit Course'}</h1>
+          <p className="text-sm font-medium uppercase tracking-[0.14em] text-muted-foreground">{isMitraCourse ? 'Manajemen Mata Pelajaran Mitra' : 'Manajemen Mata Pelajaran'}</p>
+          <h1 className="text-3xl font-semibold text-foreground">{isMitraCourse ? 'Edit Mata Pelajaran Mitra' : 'Edit Mata Pelajaran'}</h1>
           <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
             {isMitraCourse
-              ? 'Perbarui data mapel mitra yang memakai entitas course scope MITRA agar tetap sinkron dengan kurikulum akademik.'
-              : 'Perbarui informasi dasar course tanpa mencampur pengelolaan modul dan media di file yang sama.'}
+              ? 'Perbarui data mata pelajaran mitra yang memakai entitas mata pelajaran scope MITRA agar tetap sinkron dengan kurikulum akademik.'
+              : 'Perbarui informasi dasar mata pelajaran tanpa mencampur pengelolaan modul dan media di file yang sama.'}
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>{isMitraCourse ? 'Form Mapel Mitra' : 'Form Course'}</CardTitle>
-            <CardDescription>{course ? `Mengubah data ${course.title}` : 'Memuat data course...'}</CardDescription>
+            <CardTitle>{isMitraCourse ? 'Form Mata Pelajaran Mitra' : 'Form Mata Pelajaran'}</CardTitle>
+            <CardDescription>{course ? `Mengubah data ${course.title}` : 'Memuat data mata pelajaran...'}</CardDescription>
           </CardHeader>
           <CardContent>
             {isLoading ? (
@@ -57,7 +57,7 @@ export function UpdateCoursePage({ currentProfile, courseId, scope }: UpdateCour
                 <Skeleton className="h-32 w-full" />
               </div>
             ) : isError ? (
-              <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{error instanceof Error ? error.message : 'Gagal memuat detail course.'}</div>
+              <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive">{error instanceof Error ? error.message : 'Gagal memuat detail mata pelajaran.'}</div>
             ) : (
               <CourseForm
                 form={form}
@@ -69,7 +69,7 @@ export function UpdateCoursePage({ currentProfile, courseId, scope }: UpdateCour
                     router.push(getCoursesHref(activeMitraSlug, courseId));
                   });
                 }}
-                submitLabel={isMitraCourse ? 'Simpan Mapel' : 'Simpan Course'}
+                submitLabel={'Simpan Mata Pelajaran'}
                 mitraOptions={mitraOptions}
                 isLoadingMitras={isLoadingMitras}
                 userRole={userRole}

@@ -2,9 +2,9 @@ import { apiFetchInternal } from '@/lib/api/express.client';
 import { VerifyAuthOtpInput } from '../schema/auth.schema';
 import { AppAuthResponse, AppToken, GoogleExchangePayload, MiddlewareSessionRequest, RefreshResponse, ResolvedSessionState } from '../types/auth.types';
 import { clearAuthToken, getInternalAuthToken } from '../auth.utils';
-
-const apiUrl = process.env.API_URL;
-const debugAuthTiming = process.env.DEBUG_AUTH_TIMING === 'true';
+import { serverEnv } from '@/lib/config/env.server';
+const apiUrl = serverEnv.API_URL;
+const debugAuthTiming = serverEnv.DEBUG_AUTH_TIMING === 'true';
 
 export const verifyAuthOtp = (data: VerifyAuthOtpInput) => {
   return apiFetchInternal<AppAuthResponse>(`${apiUrl}/auth/verify-otp`, {
@@ -91,11 +91,7 @@ export async function refreshAccessTokenOnce(token: AppToken): Promise<AppToken>
   refreshQueue.set(key, promise);
   return promise;
 }
-export async function logout() {
-  return apiFetchInternal(`/api/auth/logout`, {
-    method: 'POST',
-  });
-}
+
 export async function resolveSessionState(req: MiddlewareSessionRequest): Promise<ResolvedSessionState> {
   if (!req.auth?.user || req.auth.error) {
     return null;

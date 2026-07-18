@@ -23,7 +23,7 @@ export function HeaderTable({ globalFilter, onGlobalFilterChange, scope, onScope
         <div className="relative w-full sm:max-w-sm ">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
 
-          <Input value={globalFilter} onChange={(event) => onGlobalFilterChange(event.target.value)} placeholder="Cari course..." className="pl-9" />
+          <Input value={globalFilter} onChange={(event) => onGlobalFilterChange(event.target.value)} placeholder="Cari Mata Pelajaran..." className="pl-9" />
         </div>
         {canChangeScope && (
           <div className="w-full sm:w-52">
@@ -35,7 +35,7 @@ export function HeaderTable({ globalFilter, onGlobalFilterChange, scope, onScope
       <Button asChild variant="insidia" className="w-full sm:w-auto">
         <Link href={getUsersHref(mitraSlug, `courses/create`)}>
           <Plus className="mr-2 size-4" />
-          Tambah Course
+          Tambah Mata Pelajaran
         </Link>
       </Button>
     </div>

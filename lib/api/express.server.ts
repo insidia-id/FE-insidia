@@ -3,11 +3,8 @@ import { getToken } from 'next-auth/jwt';
 import { refreshAccessTokenOnce } from '@/features/auth/api/api';
 import type { AppToken } from '@/features/auth/types/auth.types';
 import { buildClientError, createHeaders, getJson, unwrapData } from './api.shared';
-
-const apiUrl = process.env.API_URL;
-if (!apiUrl) {
-  throw new Error('API_URL environment variable is not defined');
-}
+import { serverEnv } from '@/lib/config/env.server';
+const apiUrl = serverEnv.API_URL;
 
 export async function apiFetchWithAuth<T = unknown>(path: string, init?: RequestInit): Promise<T> {
   const requestHeaders = createHeaders(init);
@@ -42,13 +39,13 @@ export async function apiFetchWithAuth<T = unknown>(path: string, init?: Request
 
 async function resolveAuthToken(): Promise<AppToken | null> {
   const incomingHeaders = await headers();
-  const secureCookie = incomingHeaders.get('x-forwarded-proto') === 'https' || process.env.NODE_ENV !== 'development';
+  const secureCookie = incomingHeaders.get('x-forwarded-proto') === 'https' || serverEnv.NODE_ENV !== 'development';
 
   const token = (await getToken({
     req: {
       headers: Object.fromEntries(incomingHeaders.entries()),
     },
-    secret: process.env.BETTER_AUTH_SECRET,
+    secret: serverEnv.BETTER_AUTH_SECRET,
     secureCookie,
   })) as AppToken | null;
 

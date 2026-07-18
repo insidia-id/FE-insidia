@@ -27,7 +27,7 @@ export function useLessonCreateForm({ moduleId, courseId, slug }: UseCreateLesso
       {
         onSuccess: () => {
           form.reset(defaultLessonValues());
-          router.push(`/mitra/${slug}/my-courses/${courseId}/module/${moduleId}/lessons`);
+          router.push(`/mitra/${slug}/my-courses/${courseId}/module/${moduleId}`);
         },
       },
     );
