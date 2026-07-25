@@ -38,7 +38,7 @@ export function ModuleSection({ course, activeMitraId, classGroupOptions, userRo
 
   return (
     <div>
-      <div className="bg-white rounded-2xl shadow-sm border my-3 border-gray-100/80 overflow-hidden">
+      <div className=" rounded-2xl border border-gray-300 my-3  overflow-hidden">
         {classGroupOptions.length > 1 && (
           <div className="p-4 sm:p-6 border-b w-1/2 border-gray-100">
             <SelectField placeholder="Pilih Kelas Grup" value={selectedClassGroupCourseId || ''} onChange={setSelectedClassGroupCourseId} options={classGroupOptions} disabled={isLoading} />

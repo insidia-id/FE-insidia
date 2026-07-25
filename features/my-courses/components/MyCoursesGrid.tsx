@@ -16,7 +16,7 @@ export function MyCourseGrid({ table, viewMode }: MyCourseGridProps) {
 
   if (rows.length === 0) {
     return (
-      <Card className="flex h-64 items-center justify-center border-dashed">
+      <Card className="flex h-64 items-center justify-center border-dashed ">
         <div className="text-center">
           <h3 className="text-lg font-semibold text-gray-900">Mata pelajaran tidak ditemukan</h3>
           <p className="mt-1 text-sm text-gray-500">Coba ubah kata kunci pencarian atau filter yang digunakan.</p>

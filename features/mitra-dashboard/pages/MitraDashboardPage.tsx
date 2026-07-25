@@ -106,7 +106,6 @@ export function MitraDashboardPage({ data, currentProfile }: MitraDashboardPageP
                CARD STATS KHUSUS MURID (3 Card)
                ========================================= */
             <>
-              {/* Card 1: Kehadiran */}
               <Card className="col-span-2 md:col-span-1 rounded-2xl border border-gray-100/80 bg-white p-5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_25px_-2px_rgba(0,0,0,0.08)] transition-all duration-300">
                 <CardHeader className="p-0 space-y-0">
                   <CardTitle className="text-xs font-semibold text-gray-500 tracking-wide uppercase">Persentase Kehadiran</CardTitle>
@@ -127,7 +126,6 @@ export function MitraDashboardPage({ data, currentProfile }: MitraDashboardPageP
                 </CardContent>
               </Card>
 
-              {/* Card 2: Kelas (Status) */}
               <Card className="col-span-1 rounded-2xl border border-gray-100/80 bg-white p-5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_25px_-2px_rgba(0,0,0,0.08)] transition-all duration-300">
                 <CardHeader className="p-0 space-y-0">
                   <CardTitle className="text-xs font-semibold text-gray-500 tracking-wide uppercase">Kelas Saat Ini</CardTitle>
@@ -145,7 +143,6 @@ export function MitraDashboardPage({ data, currentProfile }: MitraDashboardPageP
                 </CardContent>
               </Card>
 
-              {/* Card 3: Semester (Status) */}
               <Card className="col-span-1 rounded-2xl border border-gray-100/80 bg-white p-5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:shadow-[0_4px_25px_-2px_rgba(0,0,0,0.08)] transition-all duration-300">
                 <CardHeader className="p-0 space-y-0">
                   <CardTitle className="text-xs font-semibold text-gray-500 tracking-wide uppercase">Semester Aktif</CardTitle>

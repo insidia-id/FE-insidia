@@ -32,7 +32,7 @@ export function CourseStats({ stats }: CourseStatsProps) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
       {statItems.map((item, index) => (
-        <div key={index} className="bg-white rounded-2xl shadow-sm border border-gray-100/80 p-4 sm:p-5 hover:shadow-md transition-shadow">
+        <div key={index} className="bg-white rounded-2xl border border-gray-300 p-4 sm:p-5 hover:shadow-md transition-shadow">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{item.label}</p>

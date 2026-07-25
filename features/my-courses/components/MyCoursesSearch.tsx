@@ -15,7 +15,7 @@ type MyCoursesSearchProps = {
 
 export function MyCoursesSearch({ globalFilter, onGlobalFilterChange, viewMode, setViewMode }: MyCoursesSearchProps) {
   return (
-    <div className="flex bg-white shadow-sm my-4 p-4 rounded-xl flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <div className="flex bg-white border border-gray-300 my-4 p-4 rounded-xl flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div className="relative w-full md:max-w-md">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
 
@@ -23,7 +23,7 @@ export function MyCoursesSearch({ globalFilter, onGlobalFilterChange, viewMode, 
           value={globalFilter}
           onChange={(e) => onGlobalFilterChange(e.target.value)}
           placeholder="Cari mata pelajaran..."
-          className="h-11 rounded-xl border-gray-200 bg-white pl-10 pr-10 shadow-sm transition-colors focus:border-[#8557E5]"
+          className="h-11 rounded-xl border-gray-300 bg-white pl-10 pr-10 transition-colors focus:border-[#8557E5]"
         />
 
         {globalFilter && (

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { CourseModule } from '../types/courses-module.types';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2, Undo2Icon } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { MoreHorizontal } from 'lucide-react';
 import { UserRoleCode } from '../../user/types/user.types';
@@ -23,8 +23,9 @@ export function ModuleDetailHeader({ module, mitraSlug, courseId, onEdit, onDele
   const courseName = module.course?.title || module.classGroupCourse?.courseMitra.course.title || module.courseInsidia?.course.title || 'Mata Pelajaran';
   return (
     <div className="mb-6 space-y-4">
+      {/* Breadcrumb Di pindah ke Navbar */}
       <div className="flex items-center gap-2 text-sm text-gray-500">
-        <Link href={`/mitra/${mitraSlug}/my-courses`} className="hover:text-gray-700">
+        {/* <Link href={`/mitra/${mitraSlug}/my-courses`} className="hover:text-gray-700">
           Semua Mata Pelajaran
         </Link>
         <span>/</span>
@@ -32,7 +33,11 @@ export function ModuleDetailHeader({ module, mitraSlug, courseId, onEdit, onDele
           {courseName}
         </Link>
         <span>/</span>
-        <span className="font-medium text-gray-900">{module.title}</span>
+        <span className="font-medium text-gray-900">{module.title}</span> */}
+        <Undo2Icon className="h-4 w-4 text-purple-700" />   
+        <Link href={`/mitra/${mitraSlug}/my-courses/${courseId}`} className="font-medium text-purple-700 hover:text-gray-700">
+          {courseName}
+        </Link>
       </div>
 
       <div className="flex items-start justify-between gap-4">

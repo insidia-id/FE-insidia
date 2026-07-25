@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { BookOpen, Plus } from 'lucide-react';
 import { UserRoleCode } from '@/features/admin/user/types/user.types';
+
 interface ModuleToolbarProps {
   moduleCount: number;
   onAddModule: () => void;
@@ -14,7 +15,8 @@ export function ModuleToolbar({ moduleCount, onAddModule, disabled, userRole }: 
   const canManageModule = userRole !== 'MURID' && userRole !== 'USER';
 
   return (
-    <div className="p-4 flex items-center gap-4 justify-between sm:p-6 border-b border-gray-100">
+    /* PERBAIKAN: Tambahkan 'w-full' */
+    <div className="w-full p-6 sm:p-6 flex items-center gap-8 justify-between border-b border-gray-300 bg-gray-50/50">
       <div>
         <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
           <BookOpen className="h-5 w-5 text-[#8557E5]" />

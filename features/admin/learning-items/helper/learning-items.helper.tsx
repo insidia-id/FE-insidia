@@ -1,6 +1,6 @@
-import { intervalToDuration } from 'date-fns';
 import { Clock } from 'lucide-react';
 import { formatDate } from '@/lib/helper/normalizer.helper';
+
 export function formatLearningItemDuration(availableFrom: Date | string | null | undefined, availableUntil: Date | string | null | undefined): string {
   if (!availableFrom || !availableUntil) {
     return '-';
@@ -17,21 +17,20 @@ export function formatLearningItemDuration(availableFrom: Date | string | null |
     return '0 menit';
   }
 
-  const duration = intervalToDuration({
-    start,
-    end,
-  });
+  const diffMs = end.getTime() - start.getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
 
   const parts: string[] = [];
 
-  if (duration.years) parts.push(`${duration.years} tahun`);
-  if (duration.months) parts.push(`${duration.months} bulan`);
-  if (duration.days) parts.push(`${duration.days} hari`);
-  if (duration.hours) parts.push(`${duration.hours} jam`);
-  if (duration.minutes) parts.push(`${duration.minutes} menit`);
+  if (diffDays > 0) parts.push(`${diffDays} hari`);
+  if (diffHours > 0) parts.push(`${diffHours} jam`);
+  if (diffMinutes > 0) parts.push(`${diffMinutes} menit`);
 
   return parts.length > 0 ? parts.join(' ') : 'Kurang dari 1 menit';
 }
+
 export function getAvailabilityStatus(availableFrom: Date | string | null | undefined, availableUntil: Date | string | null | undefined) {
   const now = new Date();
 
